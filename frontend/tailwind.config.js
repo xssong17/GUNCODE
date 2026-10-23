@@ -7,20 +7,24 @@ export default {
   theme: {
     extend: {
       colors: {
-        // 面板底色（浅沙色/米白暖调，贴合三角洲主菜单"军事情报站"的明亮风格）
+        // 面板底色：中等深度的暖军绿灰（非死黑、非军绿深、非浅白），贴合三角洲军事信息板
         surface: {
-          DEFAULT: '#e8e4da',
-          raised: '#f4f1ea',
-          sunken: '#ddd8cb',
-          border: '#c6bfad',
+          DEFAULT: '#282d29',
+          raised: '#303630',
+          sunken: '#212522',
+          border: '#424a42',
         },
-        // 强调色：三角洲琥珀橙（浅底上用更深的橙更醒目）
+        // 强调色：三角洲琥珀橙，只用于选中/主按钮/重要数据
         accent: {
-          DEFAULT: '#e07f10',
-          soft: '#f6ead2',
+          DEFAULT: '#f0a31a',
+          soft: '#332713',
         },
       },
       fontFamily: {
+        // 正文/中文：微软雅黑，清晰耐读
+        sans: ['Microsoft YaHei UI', 'Microsoft YaHei', 'PingFang SC', 'system-ui', 'sans-serif'],
+        // 标题/数字/英文：BarlowCondensed 战术窄体（只做强调）
+        display: ['BarlowCondensed', 'Microsoft YaHei UI', 'Microsoft YaHei', 'sans-serif'],
         // 改枪码必须等宽显示
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
       },

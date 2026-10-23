@@ -35,7 +35,7 @@ const sorts: { key: SortKey; label: string }[] = [
         :value="keyword"
         type="search"
         placeholder="搜索方案 / 标签 / 枪械…"
-        class="w-56 rounded-md border border-surface-border bg-surface-sunken py-1.5 pl-7 pr-2 text-sm text-slate-800
+        class="w-56 rounded-md border border-surface-border bg-surface-sunken py-1.5 pl-7 pr-2 text-sm text-slate-200
                placeholder:text-slate-500 focus:border-accent focus:outline-none"
         @input="emit('update:keyword', ($event.target as HTMLInputElement).value)"
       />
@@ -45,14 +45,14 @@ const sorts: { key: SortKey; label: string }[] = [
     <!-- 排序 -->
     <select
       :value="sort"
-      class="rounded-md border border-surface-border bg-surface-sunken px-2 py-1.5 text-sm text-slate-700 focus:border-accent focus:outline-none"
+      class="rounded-md border border-surface-border bg-surface-sunken px-2 py-1.5 text-sm text-slate-300 focus:border-accent focus:outline-none"
       @change="emit('update:sort', ($event.target as HTMLSelectElement).value as SortKey)"
     >
       <option v-for="s in sorts" :key="s.key" :value="s.key">{{ s.label }}</option>
     </select>
 
     <!-- 仅看收藏 -->
-    <label class="flex cursor-pointer select-none items-center gap-1.5 text-sm text-slate-600 hover:text-slate-800">
+    <label class="flex cursor-pointer select-none items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200">
       <input
         :checked="onlyFavorite"
         type="checkbox"
@@ -63,7 +63,7 @@ const sorts: { key: SortKey; label: string }[] = [
     </label>
 
     <!-- 上下文与计数 -->
-    <div class="text-xs text-slate-600">
+    <div class="text-xs text-slate-400">
       <span v-if="context" class="mr-2 rounded bg-accent-soft px-2 py-0.5 text-accent">{{ context }}</span>
       {{ shown }} / {{ total }} 条
     </div>

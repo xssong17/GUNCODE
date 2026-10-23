@@ -43,7 +43,7 @@ function onImgError(e: Event) {
 <template>
   <aside class="flex w-64 shrink-0 flex-col overflow-hidden border-r border-surface-border bg-surface">
     <div class="shrink-0 border-b border-surface-border px-3 py-2.5">
-      <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-600">枪械分类</div>
+      <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">枪械分类</div>
     </div>
 
     <div class="min-h-0 flex-1 overflow-y-auto p-2">
@@ -53,12 +53,12 @@ function onImgError(e: Event) {
         :class="
           selectedCategory === '' && selectedWeaponId === 0
             ? 'bg-accent-soft text-accent'
-            : 'text-slate-700 hover:bg-surface-raised'
+            : 'text-slate-300 hover:bg-surface-raised'
         "
         @click="emit('select-category', ''); emit('select-weapon', 0)"
       >
         <span>全部枪械</span>
-        <span class="text-xs text-slate-600">{{ groups.reduce((n, g) => n + g.weapons.length, 0) }}</span>
+        <span class="text-xs text-slate-400">{{ groups.reduce((n, g) => n + g.weapons.length, 0) }}</span>
       </button>
 
       <!-- 按分类分组 -->
@@ -69,15 +69,15 @@ function onImgError(e: Event) {
             :class="
               selectedCategory === group.key && selectedWeaponId === 0
                 ? 'bg-accent-soft text-accent'
-                : 'text-slate-700 hover:bg-surface-raised'
+                : 'text-slate-300 hover:bg-surface-raised'
             "
             @click="toggleCollapse(group.key); emit('select-category', group.key); emit('select-weapon', 0)"
           >
             <span>{{ group.name }}</span>
-            <span class="text-xs text-slate-600">{{ group.weapons.length }}</span>
+            <span class="text-xs text-slate-400">{{ group.weapons.length }}</span>
           </button>
           <button
-            class="rounded px-1 text-[10px] text-slate-500 transition-colors hover:text-slate-700"
+            class="rounded px-1 text-[10px] text-slate-500 transition-colors hover:text-slate-300"
             :title="collapsed.has(group.key) ? '展开' : '折叠'"
             @click="toggleCollapse(group.key)"
           >
@@ -93,7 +93,7 @@ function onImgError(e: Event) {
             :class="
               selectedWeaponId === w.id
                 ? 'bg-accent-soft text-accent'
-                : 'text-slate-700 hover:bg-surface-raised hover:text-slate-900'
+                : 'text-slate-300 hover:bg-surface-raised hover:text-slate-100'
             "
             @click="emit('select-weapon', w.id)"
           >
@@ -109,7 +109,7 @@ function onImgError(e: Event) {
               class="ml-auto shrink-0 rounded px-1.5 text-[10px]"
               :class="
                 (weaponCounts.get(w.id) ?? 0) > 0
-                  ? 'bg-surface-border text-slate-700'
+                  ? 'bg-surface-border text-slate-300'
                   : 'text-slate-500'
               "
             >

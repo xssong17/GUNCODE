@@ -56,14 +56,14 @@ const bgClass = computed(() => CATEGORY_BG[props.weapon.categoryKey] ?? 'from-sl
         @error="imgFailed = true"
       />
       <div v-if="imgFailed" class="absolute inset-0 flex flex-col items-center justify-center">
-        <span class="text-xl font-bold tracking-wide text-slate-800/80">{{ weapon.name }}</span>
-        <span class="mt-0.5 text-[10px] text-slate-600/70">{{ weapon.categoryName }}</span>
+        <span class="text-xl font-bold tracking-wide text-slate-200/80">{{ weapon.name }}</span>
+        <span class="mt-0.5 text-[10px] text-slate-400/70">{{ weapon.categoryName }}</span>
       </div>
 
       <!-- 待核实角标 -->
       <span
         v-if="weapon.status === 'unverified'"
-        class="absolute right-1 top-1 rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] text-amber-700"
+        class="absolute right-1 top-1 rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] text-amber-300"
         :title="STATUS_LABEL[weapon.status]"
       >
         {{ STATUS_LABEL[weapon.status] }}
@@ -72,12 +72,12 @@ const bgClass = computed(() => CATEGORY_BG[props.weapon.categoryKey] ?? 'from-sl
 
     <!-- 信息区 -->
     <div class="flex items-center justify-between gap-2 px-3 pt-2">
-      <span class="truncate text-sm font-semibold text-slate-900">{{ weapon.name }}</span>
+      <span class="truncate text-sm font-semibold text-slate-100">{{ weapon.name }}</span>
       <span class="shrink-0 rounded bg-accent-soft px-1.5 py-0.5 text-[11px] font-medium text-accent">
         {{ count }} 套
       </span>
     </div>
-    <div class="truncate px-3 pb-2 pt-0.5 text-[11px] text-slate-600" :title="weapon.inGameName">
+    <div class="truncate px-3 pb-2 pt-0.5 text-[11px] text-slate-400" :title="weapon.inGameName">
       {{ weapon.inGameName }}
     </div>
   </article>

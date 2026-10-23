@@ -210,7 +210,7 @@ function msg(e: unknown) {
       <!-- 内容区 -->
       <div class="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden p-4">
         <!-- 加载中 -->
-        <div v-if="loading" class="flex h-full items-center justify-center text-sm text-slate-600">
+        <div v-if="loading" class="flex h-full items-center justify-center text-sm text-slate-400">
           正在加载…
         </div>
 
@@ -227,7 +227,7 @@ function msg(e: unknown) {
             class="flex h-full flex-col items-center justify-center gap-3 text-center"
           >
             <div class="text-4xl opacity-40">🔫</div>
-            <p class="text-sm text-slate-600">
+            <p class="text-sm text-slate-400">
               {{ loadouts.length === 0 ? '还没有任何改枪码' : '当前分类下没有带改枪码的枪械' }}
             </p>
             <button
@@ -253,7 +253,7 @@ function msg(e: unknown) {
         <!-- 空状态（选中具体枪但无方案） -->
         <div v-else-if="visible.length === 0" class="flex h-full flex-col items-center justify-center gap-3 text-center">
           <div class="text-4xl opacity-40">🔫</div>
-          <p class="text-sm text-slate-600">
+          <p class="text-sm text-slate-400">
             {{ loadouts.length === 0 ? '还没有任何改枪码' : '当前筛选条件下没有方案' }}
           </p>
           <button
