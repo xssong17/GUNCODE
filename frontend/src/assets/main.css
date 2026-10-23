@@ -3,11 +3,25 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: 'Nunito';
+  font-family: 'BarlowCondensed';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('./fonts/nunito-v16-latin-regular.woff2') format('woff2');
+  src: url('./fonts/barlow-condensed-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'BarlowCondensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/barlow-condensed-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'BarlowCondensed';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./fonts/barlow-condensed-700.woff2') format('woff2');
 }
 
 @layer base {
@@ -19,11 +33,12 @@
 
   body {
     @apply bg-surface-sunken text-slate-200 antialiased;
-    font-family: 'Nunito', 'Microsoft YaHei UI', 'Microsoft YaHei', system-ui, sans-serif;
+    /* 英文/数字用 BarlowCondensed 窄体硬朗字，中文回退黑体（贴合三角洲的硬朗标题感） */
+    font-family: 'BarlowCondensed', 'Microsoft YaHei UI', 'Microsoft YaHei', 'PingFang SC', system-ui, sans-serif;
     overflow: hidden; /* 桌面应用：整体不滚动，内部区域自行滚动 */
   }
 
-  /* 滚动条（Windows 深色） */
+  /* 滚动条（深色） */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -40,9 +55,9 @@
 }
 
 @layer components {
-  /* 卡片：改枪码方案卡片的基础样式 */
+  /* 卡片：方正硬朗、高对比，弱化圆润科技感 */
   .card {
-    @apply rounded-xl border border-surface-border bg-surface-raised p-4 shadow-sm
+    @apply rounded-lg border border-surface-border bg-surface-raised p-4 shadow-sm
            transition-colors hover:border-slate-500;
   }
 

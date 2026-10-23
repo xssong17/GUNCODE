@@ -7,16 +7,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        // 面板底色（深色主题）
+        // 面板底色（深炭黑，贴合《三角洲行动》黑底橙强调的界面）
         surface: {
-          DEFAULT: '#1b1e24',
-          raised: '#242830',
-          sunken: '#15171c',
-          border: '#333844',
+          DEFAULT: '#17181b',
+          raised: '#202226',
+          sunken: '#0e0f11',
+          border: '#2c2f35',
         },
+        // 强调色：三角洲琥珀橙
         accent: {
-          DEFAULT: '#f0a020',
-          soft: '#3a2c14',
+          DEFAULT: '#ff9f1c',
+          soft: '#2b1f0e',
         },
       },
       fontFamily: {
