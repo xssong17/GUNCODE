@@ -7,17 +7,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        // 面板底色（深军绿暖调，贴合三角洲"军事情报板"质感，非冷黑科技风）
+        // 面板底色（浅沙色/米白暖调，贴合三角洲主菜单"军事情报站"的明亮风格）
         surface: {
-          DEFAULT: '#1b201a',
-          raised: '#242a23',
-          sunken: '#141815',
-          border: '#394033',
+          DEFAULT: '#e8e4da',
+          raised: '#f4f1ea',
+          sunken: '#ddd8cb',
+          border: '#c6bfad',
         },
-        // 强调色：三角洲琥珀橙（更暖）
+        // 强调色：三角洲琥珀橙（浅底上用更深的橙更醒目）
         accent: {
-          DEFAULT: '#f5a81a',
-          soft: '#2a2010',
+          DEFAULT: '#e07f10',
+          soft: '#f6ead2',
         },
       },
       fontFamily: {

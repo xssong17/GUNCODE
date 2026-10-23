@@ -7,7 +7,7 @@ const { toasts, dismiss } = useToast()
 function cls(type: string) {
   if (type === 'success') return 'border-emerald-500/40 bg-emerald-950/80 text-emerald-200'
   if (type === 'error') return 'border-rose-500/40 bg-rose-950/80 text-rose-200'
-  return 'border-surface-border bg-surface-raised text-slate-200'
+  return 'border-surface-border bg-surface-raised text-slate-800'
 }
 </script>
 
@@ -21,7 +21,7 @@ function cls(type: string) {
       @click="dismiss(t.id)"
     >
       <span class="flex-1">{{ t.message }}</span>
-      <span class="cursor-pointer text-slate-500">✕</span>
+      <span class="cursor-pointer text-slate-600">✕</span>
     </div>
   </div>
 </template>

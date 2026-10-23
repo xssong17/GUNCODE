@@ -8,7 +8,7 @@ import HomeView from './views/HomeView.vue'
     <!-- 顶栏 -->
     <header class="flex h-12 shrink-0 items-center gap-3 border-b border-surface-border bg-surface px-4">
       <span class="text-accent text-base leading-none">▲</span>
-      <h1 class="text-sm font-bold uppercase tracking-widest text-slate-100">
+      <h1 class="text-sm font-bold uppercase tracking-widest text-slate-900">
         GunCode <span class="text-accent">// 改枪码管理器</span>
       </h1>
       <span class="ml-auto rounded border border-accent/40 px-2 py-0.5 text-[10px] tracking-wider text-accent">

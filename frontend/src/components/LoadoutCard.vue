@@ -27,9 +27,9 @@ function onCopy() {
 }
 
 function modeClass(mode: string) {
-  if (mode === MODE_OP) return 'bg-sky-500/15 text-sky-300'
-  if (mode === MODE_UNKNOWN) return 'bg-slate-600/30 text-slate-400'
-  return 'bg-emerald-500/15 text-emerald-300'
+  if (mode === MODE_OP) return 'bg-sky-500/15 text-sky-700'
+  if (mode === MODE_UNKNOWN) return 'bg-slate-400/30 text-slate-600'
+  return 'bg-emerald-500/15 text-emerald-700'
 }
 </script>
 
@@ -50,7 +50,7 @@ function modeClass(mode: string) {
     <div
       class="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pb-1.5 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
     >
-      <span class="rounded-full bg-accent px-2.5 py-0.5 text-[10px] font-medium text-slate-900 shadow">
+      <span class="rounded-full bg-accent px-2.5 py-0.5 text-[10px] font-medium text-slate-300 shadow">
         点击卡片复制
       </span>
     </div>
@@ -58,16 +58,16 @@ function modeClass(mode: string) {
     <header class="flex items-start justify-between gap-2">
       <div class="min-w-0">
         <div class="flex items-center gap-2">
-          <span class="truncate text-sm font-semibold text-slate-100">{{ loadout.weaponName }}</span>
+          <span class="truncate text-sm font-semibold text-slate-900">{{ loadout.weaponName }}</span>
           <span class="shrink-0 rounded px-1.5 py-0.5 text-[10px]" :class="modeClass(loadout.mode)">
             {{ MODE_LABEL[loadout.mode] ?? '未标注' }}
           </span>
         </div>
-        <h3 class="mt-1 truncate text-[13px] text-slate-300" :title="loadout.title">{{ loadout.title }}</h3>
+        <h3 class="mt-1 truncate text-[13px] text-slate-700" :title="loadout.title">{{ loadout.title }}</h3>
       </div>
       <button
         class="shrink-0 text-base leading-none transition-colors"
-        :class="loadout.favorite ? 'text-accent' : 'text-slate-600 hover:text-slate-400'"
+        :class="loadout.favorite ? 'text-accent' : 'text-slate-500 hover:text-slate-600'"
         :title="loadout.favorite ? '取消收藏' : '收藏'"
         @click.stop="emit('toggle-favorite', loadout)"
       >
@@ -80,7 +80,7 @@ function modeClass(mode: string) {
       <span
         v-for="tag in loadout.tags"
         :key="tag"
-        class="rounded bg-surface-border/70 px-1.5 py-0.5 text-[10px] text-slate-400"
+        class="rounded bg-surface-border/70 px-1.5 py-0.5 text-[10px] text-slate-600"
       >
         #{{ tag }}
       </span>
@@ -90,10 +90,10 @@ function modeClass(mode: string) {
     <div class="code-text mt-2.5 line-clamp-4" :title="loadout.code">{{ loadout.code }}</div>
 
     <!-- 备注与调校 -->
-    <p v-if="loadout.note" class="mt-2 truncate text-[11px] text-slate-500" :title="loadout.note">
+    <p v-if="loadout.note" class="mt-2 truncate text-[11px] text-slate-600" :title="loadout.note">
       {{ loadout.note }}
     </p>
-    <p v-if="loadout.tuning" class="mt-1 truncate text-[11px] text-slate-600" :title="loadout.tuning">
+    <p v-if="loadout.tuning" class="mt-1 truncate text-[11px] text-slate-500" :title="loadout.tuning">
       调校：{{ loadout.tuning }}
     </p>
 
@@ -107,13 +107,13 @@ function modeClass(mode: string) {
         {{ copied ? '已复制 ✓' : '复制' }}
       </button>
       <button
-        class="rounded-md border border-surface-border px-2.5 py-1 text-xs text-slate-300 transition hover:bg-surface-sunken"
+        class="rounded-md border border-surface-border px-2.5 py-1 text-xs text-slate-700 transition hover:bg-surface-sunken"
         @click.stop="emit('edit', loadout)"
       >
         编辑
       </button>
       <button
-        class="ml-auto rounded-md px-2 py-1 text-xs text-slate-500 transition hover:bg-rose-500/15 hover:text-rose-300"
+        class="ml-auto rounded-md px-2 py-1 text-xs text-slate-600 transition hover:bg-rose-500/15 hover:text-rose-600"
         @click.stop="emit('remove', loadout)"
       >
         删除

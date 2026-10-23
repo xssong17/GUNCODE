@@ -35,24 +35,24 @@ const sorts: { key: SortKey; label: string }[] = [
         :value="keyword"
         type="search"
         placeholder="搜索方案 / 标签 / 枪械…"
-        class="w-56 rounded-md border border-surface-border bg-surface-sunken py-1.5 pl-7 pr-2 text-sm text-slate-200
-               placeholder:text-slate-600 focus:border-accent focus:outline-none"
+        class="w-56 rounded-md border border-surface-border bg-surface-sunken py-1.5 pl-7 pr-2 text-sm text-slate-800
+               placeholder:text-slate-500 focus:border-accent focus:outline-none"
         @input="emit('update:keyword', ($event.target as HTMLInputElement).value)"
       />
-      <span class="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs text-slate-600">🔍</span>
+      <span class="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs text-slate-500">🔍</span>
     </div>
 
     <!-- 排序 -->
     <select
       :value="sort"
-      class="rounded-md border border-surface-border bg-surface-sunken px-2 py-1.5 text-sm text-slate-300 focus:border-accent focus:outline-none"
+      class="rounded-md border border-surface-border bg-surface-sunken px-2 py-1.5 text-sm text-slate-700 focus:border-accent focus:outline-none"
       @change="emit('update:sort', ($event.target as HTMLSelectElement).value as SortKey)"
     >
       <option v-for="s in sorts" :key="s.key" :value="s.key">{{ s.label }}</option>
     </select>
 
     <!-- 仅看收藏 -->
-    <label class="flex cursor-pointer select-none items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200">
+    <label class="flex cursor-pointer select-none items-center gap-1.5 text-sm text-slate-600 hover:text-slate-800">
       <input
         :checked="onlyFavorite"
         type="checkbox"
@@ -63,14 +63,14 @@ const sorts: { key: SortKey; label: string }[] = [
     </label>
 
     <!-- 上下文与计数 -->
-    <div class="text-xs text-slate-500">
+    <div class="text-xs text-slate-600">
       <span v-if="context" class="mr-2 rounded bg-accent-soft px-2 py-0.5 text-accent">{{ context }}</span>
       {{ shown }} / {{ total }} 条
     </div>
 
     <div class="ml-auto">
       <button
-        class="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-slate-900 transition hover:brightness-110"
+        class="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-slate-300 transition hover:brightness-110"
         @click="emit('add')"
       >
         新增改枪码

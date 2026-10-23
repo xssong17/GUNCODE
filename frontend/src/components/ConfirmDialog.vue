@@ -23,11 +23,11 @@ const emit = defineEmits<{
       @keydown.esc="emit('cancel')"
     >
       <div class="w-full max-w-sm rounded-xl border border-surface-border bg-surface-raised p-5 shadow-2xl">
-        <h3 class="text-base font-semibold text-slate-100">{{ title }}</h3>
-        <p class="mt-2 text-sm leading-relaxed text-slate-400">{{ message }}</p>
+        <h3 class="text-base font-semibold text-slate-900">{{ title }}</h3>
+        <p class="mt-2 text-sm leading-relaxed text-slate-600">{{ message }}</p>
         <div class="mt-5 flex justify-end gap-2">
           <button
-            class="rounded-md border border-surface-border px-3 py-1.5 text-sm text-slate-300 transition hover:bg-surface-sunken"
+            class="rounded-md border border-surface-border px-3 py-1.5 text-sm text-slate-700 transition hover:bg-surface-sunken"
             @click="emit('cancel')"
           >
             取消

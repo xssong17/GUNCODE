@@ -210,7 +210,7 @@ function msg(e: unknown) {
       <!-- 内容区 -->
       <div class="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden p-4">
         <!-- 加载中 -->
-        <div v-if="loading" class="flex h-full items-center justify-center text-sm text-slate-500">
+        <div v-if="loading" class="flex h-full items-center justify-center text-sm text-slate-600">
           正在加载…
         </div>
 
@@ -227,11 +227,11 @@ function msg(e: unknown) {
             class="flex h-full flex-col items-center justify-center gap-3 text-center"
           >
             <div class="text-4xl opacity-40">🔫</div>
-            <p class="text-sm text-slate-400">
+            <p class="text-sm text-slate-600">
               {{ loadouts.length === 0 ? '还没有任何改枪码' : '当前分类下没有带改枪码的枪械' }}
             </p>
             <button
-              class="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-slate-900 transition hover:brightness-110"
+              class="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-slate-300 transition hover:brightness-110"
               @click="openCreate"
             >
               添加第一条改枪码
@@ -253,11 +253,11 @@ function msg(e: unknown) {
         <!-- 空状态（选中具体枪但无方案） -->
         <div v-else-if="visible.length === 0" class="flex h-full flex-col items-center justify-center gap-3 text-center">
           <div class="text-4xl opacity-40">🔫</div>
-          <p class="text-sm text-slate-400">
+          <p class="text-sm text-slate-600">
             {{ loadouts.length === 0 ? '还没有任何改枪码' : '当前筛选条件下没有方案' }}
           </p>
           <button
-            class="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-slate-900 transition hover:brightness-110"
+            class="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-slate-300 transition hover:brightness-110"
             @click="openCreate"
           >
             添加第一条改枪码
@@ -281,7 +281,7 @@ function msg(e: unknown) {
       <!-- 数据集信息 -->
       <footer
         v-if="appInfo"
-        class="shrink-0 border-t border-surface-border bg-surface px-4 py-1.5 text-[11px] text-slate-600"
+        class="shrink-0 border-t border-surface-border bg-surface px-4 py-1.5 text-[11px] text-slate-500"
       >
         枪械 {{ appInfo.weaponCount }} 把 / 分类 {{ appInfo.categoryCount }} 个 / 方案 {{ appInfo.loadoutCount }} 条 ·
         数据集 {{ appInfo.datasetVersion }}

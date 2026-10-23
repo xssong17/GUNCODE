@@ -144,23 +144,23 @@ function submit() {
       <div class="flex max-h-[88vh] w-full max-w-xl flex-col overflow-hidden rounded-xl border border-surface-border bg-surface-raised shadow-2xl">
         <!-- 标题 -->
         <header class="flex items-center justify-between border-b border-surface-border px-5 py-3">
-          <h3 class="text-base font-semibold text-slate-100">
+          <h3 class="text-base font-semibold text-slate-900">
             {{ mode === 'edit' ? '编辑改枪码' : '新增改枪码' }}
-            <span v-if="currentWeapon" class="ml-1 text-sm font-normal text-slate-500">
+            <span v-if="currentWeapon" class="ml-1 text-sm font-normal text-slate-600">
               · {{ currentWeapon.name }}
             </span>
           </h3>
-          <button class="text-slate-500 transition hover:text-slate-200" @click="emit('close')">✕</button>
+          <button class="text-slate-600 transition hover:text-slate-800" @click="emit('close')">✕</button>
         </header>
 
         <!-- 表单 -->
         <div class="min-h-0 flex-1 space-y-3 overflow-y-auto px-5 py-4">
           <!-- 枪械 -->
           <label class="block">
-            <span class="mb-1 block text-xs text-slate-400">枪械</span>
+            <span class="mb-1 block text-xs text-slate-600">枪械</span>
             <select
               v-model.number="weaponId"
-              class="w-full rounded-md border border-surface-border bg-surface-sunken px-2 py-1.5 text-sm text-slate-200 focus:border-accent focus:outline-none"
+              class="w-full rounded-md border border-surface-border bg-surface-sunken px-2 py-1.5 text-sm text-slate-800 focus:border-accent focus:outline-none"
             >
               <option v-for="w in weapons" :key="w.id" :value="w.id">
                 {{ w.name }}（{{ w.categoryName }}）
@@ -170,12 +170,12 @@ function submit() {
 
           <!-- 标题 -->
           <label class="block">
-            <span class="mb-1 block text-xs text-slate-400">方案标题 *</span>
+            <span class="mb-1 block text-xs text-slate-600">方案标题 *</span>
             <input
               v-model="title"
               type="text"
               placeholder="如：中距离架枪"
-              class="w-full rounded-md border bg-surface-sunken px-2 py-1.5 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none"
+              class="w-full rounded-md border bg-surface-sunken px-2 py-1.5 text-sm text-slate-800 placeholder:text-slate-500 focus:outline-none"
               :class="titleError ? 'border-rose-500' : 'border-surface-border focus:border-accent'"
             />
             <span v-if="titleError" class="mt-1 block text-xs text-rose-400">{{ titleError }}</span>
@@ -183,7 +183,7 @@ function submit() {
 
           <!-- 模式 -->
           <div>
-            <span class="mb-1 block text-xs text-slate-400">适用模式</span>
+            <span class="mb-1 block text-xs text-slate-600">适用模式</span>
             <div class="flex gap-2">
               <button
                 v-for="m in modes"
@@ -192,29 +192,29 @@ function submit() {
                 :class="
                   mode === m.key
                     ? 'border-accent bg-accent-soft text-accent'
-                    : 'border-surface-border text-slate-400 hover:bg-surface-sunken'
+                    : 'border-surface-border text-slate-600 hover:bg-surface-sunken'
                 "
                 @click="mode = m.key; updatePreview()"
               >
                 {{ m.label }}
               </button>
             </div>
-            <p class="mt-1 text-[11px] leading-relaxed text-slate-600">
+            <p class="mt-1 text-[11px] leading-relaxed text-slate-500">
               烽火地带码需带「武器全名-烽火地带-」前缀才能导入游戏；全面战场为裸码。
             </p>
           </div>
 
           <!-- 改枪码 -->
           <label class="block">
-            <span class="mb-1 flex items-center justify-between text-xs text-slate-400">
+            <span class="mb-1 flex items-center justify-between text-xs text-slate-600">
               <span>改枪码 *</span>
-              <span v-if="parsing" class="text-slate-600">识别中…</span>
+              <span v-if="parsing" class="text-slate-500">识别中…</span>
             </span>
             <textarea
               v-model="code"
               rows="3"
               placeholder="粘贴游戏分享码，或手动输入"
-              class="w-full resize-y rounded-md border bg-surface-sunken px-2 py-1.5 font-mono text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none"
+              class="w-full resize-y rounded-md border bg-surface-sunken px-2 py-1.5 font-mono text-xs text-slate-800 placeholder:text-slate-500 focus:outline-none"
               :class="codeError ? 'border-rose-500' : 'border-surface-border focus:border-accent'"
               @paste="onPaste"
               @input="updatePreview"
@@ -224,44 +224,44 @@ function submit() {
 
           <!-- 导入预览 -->
           <div v-if="preview" class="rounded-md border border-surface-border bg-surface-sunken p-2">
-            <div class="mb-1 text-[11px] text-slate-500">导入游戏时会复制这段：</div>
-            <div class="break-all font-mono text-[11px] leading-relaxed text-emerald-300">{{ preview }}</div>
+            <div class="mb-1 text-[11px] text-slate-600">导入游戏时会复制这段：</div>
+            <div class="break-all font-mono text-[11px] leading-relaxed text-emerald-700">{{ preview }}</div>
           </div>
 
           <!-- 标签 -->
           <label class="block">
-            <span class="mb-1 block text-xs text-slate-400">标签（逗号分隔）</span>
+            <span class="mb-1 block text-xs text-slate-600">标签（逗号分隔）</span>
             <input
               v-model="tags"
               type="text"
               placeholder="中距, 架枪"
-              class="w-full rounded-md border border-surface-border bg-surface-sunken px-2 py-1.5 text-sm text-slate-200 placeholder:text-slate-600 focus:border-accent focus:outline-none"
+              class="w-full rounded-md border border-surface-border bg-surface-sunken px-2 py-1.5 text-sm text-slate-800 placeholder:text-slate-500 focus:border-accent focus:outline-none"
             />
           </label>
 
           <!-- 调校 -->
           <label class="block">
-            <span class="mb-1 block text-xs text-slate-400">调校参数（可选）</span>
+            <span class="mb-1 block text-xs text-slate-600">调校参数（可选）</span>
             <input
               v-model="tuning"
               type="text"
               placeholder="如：枪管上右 / 前握把拉满"
-              class="w-full rounded-md border border-surface-border bg-surface-sunken px-2 py-1.5 text-sm text-slate-200 placeholder:text-slate-600 focus:border-accent focus:outline-none"
+              class="w-full rounded-md border border-surface-border bg-surface-sunken px-2 py-1.5 text-sm text-slate-800 placeholder:text-slate-500 focus:border-accent focus:outline-none"
             />
           </label>
 
           <!-- 备注 -->
           <label class="block">
-            <span class="mb-1 block text-xs text-slate-400">备注</span>
+            <span class="mb-1 block text-xs text-slate-600">备注</span>
             <textarea
               v-model="note"
               rows="2"
-              class="w-full resize-y rounded-md border border-surface-border bg-surface-sunken px-2 py-1.5 text-sm text-slate-200 focus:border-accent focus:outline-none"
+              class="w-full resize-y rounded-md border border-surface-border bg-surface-sunken px-2 py-1.5 text-sm text-slate-800 focus:border-accent focus:outline-none"
             />
           </label>
 
           <!-- 收藏 -->
-          <label class="flex cursor-pointer select-none items-center gap-2 text-sm text-slate-400">
+          <label class="flex cursor-pointer select-none items-center gap-2 text-sm text-slate-600">
             <input v-model="favorite" type="checkbox" class="h-3.5 w-3.5 accent-amber-500" />
             收藏（收藏的方案会置顶显示）
           </label>
@@ -270,13 +270,13 @@ function submit() {
         <!-- 底部按钮 -->
         <footer class="flex justify-end gap-2 border-t border-surface-border px-5 py-3">
           <button
-            class="rounded-md border border-surface-border px-3 py-1.5 text-sm text-slate-300 transition hover:bg-surface-sunken"
+            class="rounded-md border border-surface-border px-3 py-1.5 text-sm text-slate-700 transition hover:bg-surface-sunken"
             @click="emit('close')"
           >
             取消
           </button>
           <button
-            class="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-slate-900 transition hover:brightness-110"
+            class="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-slate-300 transition hover:brightness-110"
             @click="submit"
           >
             {{ mode === 'edit' ? '保存修改' : '添加' }}
