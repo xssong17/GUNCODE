@@ -6,10 +6,11 @@ import CodeModal from '../components/CodeModal.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import FilterBar from '../components/FilterBar.vue'
 import LoadoutCard from '../components/LoadoutCard.vue'
+import WeaponCard from '../components/WeaponCard.vue'
 import WeaponSidebar from '../components/WeaponSidebar.vue'
 import { useGunCode } from '../composables/useGunCode'
 import { useToast } from '../composables/useToast'
-import type { LoadoutDTO, LoadoutInput, SortKey } from '../types'
+import type { LoadoutDTO, LoadoutInput, SortKey, Weapon } from '../types'
 
 const { categories, weapons, loadouts, loading, error, weaponCounts, weaponsByCategory, refresh, appInfo } =
   useGunCode()
@@ -31,6 +32,37 @@ const deleting = ref<LoadoutDTO | null>(null)
 onMounted(async () => {
   await refresh()
 })
+
+/** 是否处于「枪械卡片视图」：未选中具体某把枪（全部枪械或某分类）时展示有方案的枪械卡片 */
+const showWeaponGrid = computed(() => selectedWeaponId.value === 0)
+
+/** 有改枪码的枪械（按分类顺序排列），支持用关键字过滤枪名 / 游戏内全名 / 别名 */
+const weaponCards = computed<Weapon[]>(() => {
+  const kw = keyword.value.trim().toLowerCase()
+  const list: Weapon[] = []
+  for (const g of weaponsByCategory.value) {
+    if (selectedCategory.value && g.key !== selectedCategory.value) continue
+    for (const w of g.weapons) {
+      if ((weaponCounts.value.get(w.id) ?? 0) === 0) continue
+      if (kw) {
+        const hay = `${w.name} ${w.inGameName} ${w.aliases ?? ''}`.toLowerCase()
+        if (!hay.includes(kw)) continue
+      }
+      list.push(w)
+    }
+  }
+  return list
+})
+
+/** 全部有方案的枪械数（不过滤关键字，供 FilterBar 计数） */
+const totalWeaponCards = computed(
+  () => weapons.value.filter((w) => (weaponCounts.value.get(w.id) ?? 0) > 0).length,
+)
+
+/** 点击枪械卡片：进入该枪的方案列表 */
+function selectWeapon(id: number) {
+  selectedWeaponId.value = id
+}
 
 /** 当前筛选上下文描述 */
 const context = computed(() => {
@@ -166,8 +198,8 @@ function msg(e: unknown) {
         :keyword="keyword"
         :sort="sort"
         :only-favorite="onlyFavorite"
-        :total="loadouts.length"
-        :shown="visible.length"
+        :total="showWeaponGrid ? totalWeaponCards : loadouts.length"
+        :shown="showWeaponGrid ? weaponCards.length : visible.length"
         :context="context"
         @update:keyword="keyword = $event"
         @update:sort="sort = $event"
@@ -187,7 +219,38 @@ function msg(e: unknown) {
           加载失败：{{ error }}
         </div>
 
-        <!-- 空状态 -->
+        <!-- 枪械卡片视图（未选中具体枪：全部枪械 / 某分类） -->
+        <template v-else-if="showWeaponGrid">
+          <!-- 空状态：没有任何带方案的枪 -->
+          <div
+            v-if="weaponCards.length === 0"
+            class="flex h-full flex-col items-center justify-center gap-3 text-center"
+          >
+            <div class="text-4xl opacity-40">🔫</div>
+            <p class="text-sm text-slate-400">
+              {{ loadouts.length === 0 ? '还没有任何改枪码' : '当前分类下没有带改枪码的枪械' }}
+            </p>
+            <button
+              class="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-slate-900 transition hover:brightness-110"
+              @click="openCreate"
+            >
+              添加第一条改枪码
+            </button>
+          </div>
+
+          <!-- 枪械卡片网格 -->
+          <div v-else class="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4">
+            <WeaponCard
+              v-for="w in weaponCards"
+              :key="w.id"
+              :weapon="w"
+              :count="weaponCounts.get(w.id) ?? 0"
+              @select="selectWeapon(w.id)"
+            />
+          </div>
+        </template>
+
+        <!-- 空状态（选中具体枪但无方案） -->
         <div v-else-if="visible.length === 0" class="flex h-full flex-col items-center justify-center gap-3 text-center">
           <div class="text-4xl opacity-40">🔫</div>
           <p class="text-sm text-slate-400">
@@ -201,7 +264,7 @@ function msg(e: unknown) {
           </button>
         </div>
 
-        <!-- 卡片网格 -->
+        <!-- 方案卡片网格（选中具体某把枪） -->
         <div v-else class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
           <LoadoutCard
             v-for="l in visible"
