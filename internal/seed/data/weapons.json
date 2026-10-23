@@ -247,17 +247,6 @@
       "note": "有第三方改枪码页面，具体在售状态待游戏内确认"
     },
     {
-      "id": "ak24",
-      "name": "AK24",
-      "inGameName": "AK24突击步枪",
-      "category": "ar",
-      "aliases": [],
-      "caliber": null,
-      "status": "unverified",
-      "source": "db",
-      "note": ""
-    },
-    {
       "id": "mk47",
       "name": "MK47",
       "inGameName": "MK47突击步枪",
@@ -289,6 +278,39 @@
       "status": "unverified",
       "source": "db",
       "note": "仅有第三方库线索，可信度最低"
+    },
+    {
+      "id": "mcxlt",
+      "name": "MCX-LT",
+      "inGameName": "MCX-LT突击步枪",
+      "category": "ar",
+      "aliases": [],
+      "caliber": null,
+      "status": "available",
+      "source": "official",
+      "note": "官方确认真实存在，补录"
+    },
+    {
+      "id": "rm277",
+      "name": "RM277",
+      "inGameName": "RM277突击步枪",
+      "category": "ar",
+      "aliases": [],
+      "caliber": null,
+      "status": "available",
+      "source": "official",
+      "note": "官方确认真实存在，补录"
+    },
+    {
+      "id": "mdr",
+      "name": "MDR突击步枪",
+      "inGameName": "MDR突击步枪",
+      "category": "ar",
+      "aliases": ["MDR"],
+      "caliber": null,
+      "status": "available",
+      "source": "official",
+      "note": "官方确认真实存在，补录"
     },
 
     {
@@ -378,6 +400,17 @@
       "status": "unverified",
       "source": "db",
       "note": ""
+    },
+    {
+      "id": "sr9",
+      "name": "SR9",
+      "inGameName": "SR9射手步枪",
+      "category": "dmr",
+      "aliases": [],
+      "caliber": null,
+      "status": "available",
+      "source": "official",
+      "note": "官方确认真实存在，补录"
     },
 
     {
@@ -590,28 +623,6 @@
       "status": "available",
       "source": "db",
       "note": "有第三方改枪码页面；参数：30 发弹匣 / 763 RPM / 初速 450 m/s"
-    },
-    {
-      "id": "k15",
-      "name": "K15",
-      "inGameName": "K15冲锋枪",
-      "category": "smg",
-      "aliases": [],
-      "caliber": null,
-      "status": "unverified",
-      "source": "db",
-      "note": ""
-    },
-    {
-      "id": "ump45",
-      "name": "UMP45",
-      "inGameName": "UMP45冲锋枪",
-      "category": "smg",
-      "aliases": ["UMP-45"],
-      "caliber": null,
-      "status": "unverified",
-      "source": "db",
-      "note": ""
     },
 
     {
