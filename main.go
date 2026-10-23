@@ -18,6 +18,8 @@ func main() {
 	// Create application with options
 	err := wails.Run(&options.App{
 		Title: "GunCode 改枪码管理器",
+		// 隐藏系统自带的标题栏/边框，改由前端代码自绘标题栏与窗口控制按钮
+		Frameless: true,
 		// 这里的尺寸是逻辑像素，Windows 会按显示器缩放比例换算成物理像素
 		// （150% 缩放时 1180 逻辑像素 = 1770 物理像素）。
 		Width:     1180,
