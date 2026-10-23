@@ -30,29 +30,29 @@ const (
 // Category 枪械分类，如「突击步枪」。
 type Category struct {
 	ID        uint      `gorm:"primaryKey" json:"id"`
-	Key       string    `gorm:"uniqueIndex;size:32;not null" json:"key"`   // ar / dmr / sniper ...
-	Name      string    `gorm:"size:32;not null" json:"name"`             // 突击步枪
-	Order     int       `gorm:"column:sort_order;index" json:"order"`      // 展示顺序
+	Key       string    `gorm:"uniqueIndex;size:32;not null" json:"key"` // ar / dmr / sniper ...
+	Name      string    `gorm:"size:32;not null" json:"name"`            // 突击步枪
+	Order     int       `gorm:"column:sort_order;index" json:"order"`    // 展示顺序
 	CreatedAt time.Time `json:"createdAt"`
 }
 
 // Weapon 枪械。内置数据由 internal/seed/data/weapons.json 种子写入，用户也可自建。
 type Weapon struct {
-	ID     uint   `gorm:"primaryKey" json:"id"`
-	Key    string `gorm:"uniqueIndex;size:64;not null" json:"key"`     // 稳定英文标识，如 m4a1
-	Name   string `gorm:"size:64;not null;index" json:"name"`          // 型号简称，如 M4A1
+	ID   uint   `gorm:"primaryKey" json:"id"`
+	Key  string `gorm:"uniqueIndex;size:64;not null" json:"key"` // 稳定英文标识，如 m4a1
+	Name string `gorm:"size:64;not null;index" json:"name"`      // 型号简称，如 M4A1
 	// InGameName 游戏内武器全名（含品类后缀）。拼接烽火地带分享码前缀时必须用它，
 	// 不能用分类名拼——存在 M7战斗步枪 这类特例。
 	InGameName string `gorm:"size:96;not null" json:"inGameName"`
 
-	CategoryID uint   `gorm:"not null;index" json:"categoryId"`
+	CategoryID uint `gorm:"not null;index" json:"categoryId"`
 	// CategoryKey / CategoryName 为分类的冗余字段，便于筛选与前端直接展示，
 	// 避免每次都回查 categories 表。
 	CategoryKey  string `gorm:"size:32;not null;index" json:"categoryKey"`
 	CategoryName string `gorm:"size:32;not null" json:"categoryName"`
 
-	Aliases string `gorm:"size:255" json:"aliases"`  // 逗号分隔别名，搜索时一并匹配
-	Caliber string `gorm:"size:32" json:"caliber"`   // 口径 / 弹药，未核实为空
+	Aliases string `gorm:"size:255" json:"aliases"` // 逗号分隔别名，搜索时一并匹配
+	Caliber string `gorm:"size:32" json:"caliber"`  // 口径 / 弹药，未核实为空
 	Status  string `gorm:"size:16;default:available" json:"status"`
 	Source  string `gorm:"size:16;default:official" json:"source"`
 	Note    string `gorm:"type:text" json:"note"`
@@ -68,15 +68,15 @@ type Weapon struct {
 type Loadout struct {
 	ID       uint   `gorm:"primaryKey" json:"id"`
 	WeaponID uint   `gorm:"not null;index" json:"weaponId"`
-	Title    string `gorm:"size:128;not null" json:"title"`        // 方案标题
+	Title    string `gorm:"size:128;not null" json:"title"`            // 方案标题
 	Mode     string `gorm:"size:16;default:unknown;index" json:"mode"` // op / ww / unknown
 	// Code 改枪码原文。只允许 trim 首尾空白，其余字符必须原样保存——
 	// 分享码里的空格、冒号、中文、分号都是游戏导入所需的一部分。
-	Code   string `gorm:"type:text;not null" json:"code"`
-	Note   string `gorm:"type:text" json:"note"`   // 备注
-	Tuning string `gorm:"type:text" json:"tuning"` // 调校参数，如「枪管上右 / 前握把拉满」
-	Tags   string `gorm:"size:255" json:"tags"`    // 逗号分隔
-	Favorite bool `gorm:"default:false;index" json:"favorite"`
+	Code     string `gorm:"type:text;not null" json:"code"`
+	Note     string `gorm:"type:text" json:"note"`   // 备注
+	Tuning   string `gorm:"type:text" json:"tuning"` // 调校参数，如「枪管上右 / 前握把拉满」
+	Tags     string `gorm:"size:255" json:"tags"`    // 逗号分隔
+	Favorite bool   `gorm:"default:false;index" json:"favorite"`
 
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
@@ -172,4 +172,18 @@ func NormalizeMode(mode string) string {
 	default:
 		return ModeUnknown
 	}
+}
+
+// ParsedCode 是分享码识别结果。
+type ParsedCode struct {
+	Raw string `json:"raw"` // 原始粘贴内容
+	// Matched 是否成功匹配到枪械
+	Matched          bool   `json:"matched"`
+	WeaponKey        string `json:"weaponKey"`
+	WeaponName       string `json:"weaponName"`
+	WeaponInGameName string `json:"weaponInGameName"`
+	CategoryKey      string `json:"categoryKey"`
+	CategoryName     string `json:"categoryName"`
+	Mode             string `json:"mode"`    // op / ww / unknown
+	Payload          string `json:"payload"` // 去掉枪械与模式后的码主体
 }

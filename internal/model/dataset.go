@@ -9,11 +9,11 @@ type Dataset struct {
 
 // DatasetMeta 数据集的元信息。
 type DatasetMeta struct {
-	Game           string           `json:"game"`
-	DatasetVersion string           `json:"datasetVersion"`
-	Description    string           `json:"description"`
+	Game           string            `json:"game"`
+	DatasetVersion string            `json:"datasetVersion"`
+	Description    string            `json:"description"`
 	Categories     []DatasetCategory `json:"categories"`
-	Modes          []DatasetMode    `json:"modes"`
+	Modes          []DatasetMode     `json:"modes"`
 	Fields         map[string]string `json:"fields"`
 	Caveats        []string          `json:"caveats"`
 }
@@ -27,11 +27,11 @@ type DatasetCategory struct {
 
 // DatasetMode 数据集中定义的分享码模式。
 type DatasetMode struct {
-	ID                string `json:"id"`
-	Name              string `json:"name"`
-	CodePrefixRequired bool  `json:"codePrefixRequired"`
-	CodeTemplate      string `json:"codeTemplate"`
-	Note              string `json:"note"`
+	ID                 string `json:"id"`
+	Name               string `json:"name"`
+	CodePrefixRequired bool   `json:"codePrefixRequired"`
+	CodeTemplate       string `json:"codeTemplate"`
+	Note               string `json:"note"`
 }
 
 // DatasetWeapon 数据集中的单把枪械。
