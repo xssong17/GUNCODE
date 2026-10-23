@@ -95,13 +95,13 @@
     {
       "id": "scarh",
       "name": "SCAR-H",
-      "inGameName": "SCAR-H突击步枪",
+      "inGameName": "SCAR-H战斗步枪",
       "category": "ar",
       "aliases": ["SCAR"],
       "caliber": null,
       "status": "available",
       "source": "official",
-      "note": ""
+      "note": "游戏内全名为 SCAR-H战斗步枪（战斗步枪属步枪大类）"
     },
     {
       "id": "k416",
@@ -161,13 +161,13 @@
     {
       "id": "g3",
       "name": "G3",
-      "inGameName": "G3突击步枪",
+      "inGameName": "G3战斗步枪",
       "category": "ar",
       "aliases": [],
       "caliber": null,
       "status": "available",
       "source": "official",
-      "note": "部分第三方站误归为射手步枪；以官方突击步枪为准"
+      "note": "游戏内全名为 G3战斗步枪（战斗步枪属步枪大类）；曾误记为突击步枪"
     },
     {
       "id": "m7",
@@ -556,7 +556,7 @@
       "caliber": null,
       "status": "available",
       "source": "official",
-      "note": ""
+      "note": "军械库归冲锋枪类"
     },
     {
       "id": "yongshi",
