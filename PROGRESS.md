@@ -20,6 +20,13 @@
 > - SR-3M 国服军械库归冲锋枪、K15 确证存在 → 保留；UMP45 无法确证，保留并标 `unverified`
 > - 已重建 exe + seed 更新数据库（共 67 把）。**注意：修改 `weapons.json` 后必须重新 `wails build`，否则旧 exe 内嵌旧数据且启动时会把数据库覆盖回旧值。**
 
+> **图例与分类（2026-10-24，来源 dfttk.com）**：从第三方图鉴站 `dfttk.com/firefight/library` 获取武器数据：
+> - 数据源：`data/v3/catalog/weapons.json`（官方分类 categoryId + playerhub 官方图）+ 站点武器渲染图（58 把）
+> - **图例**：已下载 **58 张武器渲染图**到 `frontend/public/weapons/{key}.png`，`WeaponCard` 优先显示图、无图回退占位。仍有 9 把无图（AK24/SVCH/M82/K15/UMP45/FS-12/.357左轮 及数据集外 MCX-LT/SR9），待补。
+> - **分类更正**：官方 special 仅复合弓（1 把），杠杆步枪改归**射手步枪 dmr**（非特殊武器）；special 归位为 1。
+> - **发现**：数据集缺 `MCX-LT`（突击步枪）、`SR9`；官方 assaultRifle=24 vs 数据集 22、dmr=10 vs 9，待游戏内确认后补录。
+> - 已重建 exe + seed 更新数据库。
+
 ## 阶段总览
 | 阶段 | 名称 | 状态 | 完成日期 | 关键产出 |
 |---|---|---|---|---|

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 /** 枪械卡片：用于「全部枪械 / 某分类」视图下，展示每把有改枪码的枪。
  *  点击卡片进入该枪的方案列表。
- *  图样区当前为占位（方案 C），后续接入游戏武器图时替换为 <img>。
+ *  图样区：优先显示 frontend/public/weapons/{key}.png 的武器图；
+ *  无图（加载失败）时回退到分类配色占位。
  */
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { STATUS_LABEL } from '../types'
 import type { Weapon } from '../types'
 
@@ -17,11 +18,11 @@ const emit = defineEmits<{
   (e: 'select'): void
 }>()
 
-/** 是否已有武器图（方案 C 阶段为 false，后续接入游戏图后置为 true） */
-const hasArtwork = false
-
 /** 武器图地址（约定放在 frontend/public/weapons/{key}.png） */
 const imageUrl = computed(() => `/weapons/${props.weapon.key}.png`)
+
+/** 图片是否加载失败（无图时回退占位） */
+const imgFailed = ref(false)
 
 /** 分类占位配色（无图时显示分类色块 + 型号名） */
 const CATEGORY_BG: Record<string, string> = {
@@ -42,18 +43,19 @@ const bgClass = computed(() => CATEGORY_BG[props.weapon.categoryKey] ?? 'from-sl
     class="card group flex cursor-pointer select-none flex-col overflow-hidden transition-colors hover:border-accent/40"
     @click="emit('select')"
   >
-    <!-- 图样区：方案 C 为占位，后续接游戏武器图 -->
+    <!-- 图样区：武器图 / 加载失败回退占位 -->
     <div
       class="relative flex h-24 items-center justify-center overflow-hidden bg-gradient-to-br"
       :class="bgClass"
     >
       <img
-        v-if="hasArtwork"
         :src="imageUrl"
         :alt="weapon.name"
         class="h-full w-full object-contain transition group-hover:scale-105"
+        loading="lazy"
+        @error="imgFailed = true"
       />
-      <div v-else class="flex flex-col items-center">
+      <div v-if="imgFailed" class="absolute inset-0 flex flex-col items-center justify-center">
         <span class="text-xl font-bold tracking-wide text-slate-200/80">{{ weapon.name }}</span>
         <span class="mt-0.5 text-[10px] text-slate-400/70">{{ weapon.categoryName }}</span>
       </div>

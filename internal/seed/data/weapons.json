@@ -787,12 +787,12 @@
       "id": "lever",
       "name": "杠杆步枪",
       "inGameName": "杠杆步枪",
-      "category": "special",
-      "aliases": [],
+      "category": "dmr",
+      "aliases": ["马林杠杆步枪"],
       "caliber": null,
       "status": "unverified",
       "source": "db",
-      "note": ""
+      "note": "官方军械库无 special 分类（特殊武器仅复合弓）；按射手步枪归类，游戏内全名待核实"
     }
   ]
 }
