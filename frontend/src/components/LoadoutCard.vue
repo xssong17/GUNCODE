@@ -34,7 +34,14 @@ function modeClass(mode: string) {
 </script>
 
 <template>
-  <article class="card flex flex-col">
+  <article class="card relative flex cursor-pointer flex-col" @click="onCopy" title="点击卡片复制改枪码">
+    <!-- 复制成功浮标 -->
+    <span
+      v-if="copied"
+      class="pointer-events-none absolute left-1/2 top-2 z-10 -translate-x-1/2 rounded bg-emerald-600 px-2 py-0.5 text-[11px] font-medium text-white shadow"
+    >
+      已复制 ✓
+    </span>
     <!-- 头部：枪械名 + 模式 + 收藏 -->
     <header class="flex items-start justify-between gap-2">
       <div class="min-w-0">
@@ -50,7 +57,7 @@ function modeClass(mode: string) {
         class="shrink-0 text-base leading-none transition-colors"
         :class="loadout.favorite ? 'text-accent' : 'text-slate-600 hover:text-slate-400'"
         :title="loadout.favorite ? '取消收藏' : '收藏'"
-        @click="emit('toggle-favorite', loadout)"
+        @click.stop="emit('toggle-favorite', loadout)"
       >
         ★
       </button>
@@ -83,19 +90,19 @@ function modeClass(mode: string) {
       <button
         class="rounded-md px-2.5 py-1 text-xs font-medium transition"
         :class="copied ? 'bg-emerald-600 text-white' : 'bg-accent text-slate-900 hover:brightness-110'"
-        @click="onCopy"
+        @click.stop="onCopy"
       >
         {{ copied ? '已复制 ✓' : '复制' }}
       </button>
       <button
         class="rounded-md border border-surface-border px-2.5 py-1 text-xs text-slate-300 transition hover:bg-surface-sunken"
-        @click="emit('edit', loadout)"
+        @click.stop="emit('edit', loadout)"
       >
         编辑
       </button>
       <button
         class="ml-auto rounded-md px-2 py-1 text-xs text-slate-500 transition hover:bg-rose-500/15 hover:text-rose-300"
-        @click="emit('remove', loadout)"
+        @click.stop="emit('remove', loadout)"
       >
         删除
       </button>
