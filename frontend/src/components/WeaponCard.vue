@@ -24,18 +24,18 @@ const imageUrl = computed(() => `/weapons/${props.weapon.key}.png`)
 /** 图片是否加载失败（无图时回退占位） */
 const imgFailed = ref(false)
 
-/** 分类占位配色（无图时显示分类色块 + 型号名） */
+/** 分类占位配色（无图时显示分类色块 + 型号名）——浅白底，贴合"白底装备图"风格 */
 const CATEGORY_BG: Record<string, string> = {
-  ar: 'from-red-950/70 to-red-900/20',
-  dmr: 'from-amber-950/70 to-amber-900/20',
-  sniper: 'from-sky-950/70 to-sky-900/20',
-  lmg: 'from-emerald-950/70 to-emerald-900/20',
-  smg: 'from-violet-950/70 to-violet-900/20',
-  shotgun: 'from-orange-950/70 to-orange-900/20',
-  pistol: 'from-slate-800/70 to-slate-800/20',
-  special: 'from-fuchsia-950/70 to-fuchsia-900/20',
+  ar: 'from-red-200 to-red-50',
+  dmr: 'from-amber-200 to-amber-50',
+  sniper: 'from-sky-200 to-sky-50',
+  lmg: 'from-emerald-200 to-emerald-50',
+  smg: 'from-violet-200 to-violet-50',
+  shotgun: 'from-orange-200 to-orange-50',
+  pistol: 'from-slate-200 to-slate-100',
+  special: 'from-fuchsia-200 to-fuchsia-50',
 }
-const bgClass = computed(() => CATEGORY_BG[props.weapon.categoryKey] ?? 'from-slate-800/70 to-slate-800/20')
+const bgClass = computed(() => CATEGORY_BG[props.weapon.categoryKey] ?? 'from-slate-200 to-slate-100')
 </script>
 
 <template>
@@ -56,29 +56,30 @@ const bgClass = computed(() => CATEGORY_BG[props.weapon.categoryKey] ?? 'from-sl
         @error="imgFailed = true"
       />
       <div v-if="imgFailed" class="absolute inset-0 flex flex-col items-center justify-center">
-        <span class="text-xl font-bold tracking-wide text-slate-200/80">{{ weapon.name }}</span>
-        <span class="mt-0.5 text-[10px] text-slate-400/70">{{ weapon.categoryName }}</span>
+        <span class="text-xl font-bold tracking-wide text-slate-500">{{ weapon.name }}</span>
+        <span class="mt-0.5 text-[10px] text-slate-400">{{ weapon.categoryName }}</span>
       </div>
 
       <!-- 待核实角标 -->
       <span
         v-if="weapon.status === 'unverified'"
-        class="absolute right-1 top-1 rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] text-amber-300"
+        class="absolute right-1 top-1 rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] text-amber-700"
         :title="STATUS_LABEL[weapon.status]"
       >
         {{ STATUS_LABEL[weapon.status] }}
       </span>
     </div>
 
-    <!-- 信息区 -->
+    <!-- 信息区：名称 + 大数字改枪码数（参考"醒目数字"风格） -->
     <div class="flex items-center justify-between gap-2 px-3 pt-2">
       <span class="truncate text-sm font-semibold text-slate-100">{{ weapon.name }}</span>
-      <span class="shrink-0 rounded bg-accent-soft px-1.5 py-0.5 text-[11px] font-medium text-accent">
-        {{ count }} 套
+      <span class="shrink-0 font-display text-lg font-bold leading-none text-accent">
+        {{ count }}
       </span>
     </div>
-    <div class="truncate px-3 pb-2 pt-0.5 text-[11px] text-slate-400" :title="weapon.inGameName">
-      {{ weapon.inGameName }}
+    <div class="flex items-center justify-between px-3 pb-2 pt-0.5">
+      <span class="truncate text-[11px] text-slate-400" :title="weapon.inGameName">{{ weapon.inGameName }}</span>
+      <span class="shrink-0 text-[10px] text-slate-500">套</span>
     </div>
   </article>
 </template>

@@ -231,7 +231,7 @@ function msg(e: unknown) {
               {{ loadouts.length === 0 ? '还没有任何改枪码' : '当前分类下没有带改枪码的枪械' }}
             </p>
             <button
-              class="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-slate-300 transition hover:brightness-110"
+              class="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-slate-900 transition hover:brightness-110"
               @click="openCreate"
             >
               添加第一条改枪码
@@ -278,13 +278,15 @@ function msg(e: unknown) {
         </div>
       </div>
 
-      <!-- 数据集信息 -->
+      <!-- 数据集信息（数字用醒目橙色，参考"数据面板"风格） -->
       <footer
         v-if="appInfo"
-        class="shrink-0 border-t border-surface-border bg-surface px-4 py-1.5 text-[11px] text-slate-500"
+        class="shrink-0 border-t border-surface-border bg-surface px-4 py-1.5 text-[11px] text-slate-400"
       >
-        枪械 {{ appInfo.weaponCount }} 把 / 分类 {{ appInfo.categoryCount }} 个 / 方案 {{ appInfo.loadoutCount }} 条 ·
-        数据集 {{ appInfo.datasetVersion }}
+        <span class="font-display text-sm font-bold text-accent">{{ appInfo.weaponCount }}</span> 把枪械 ·
+        <span class="font-display text-sm font-bold text-accent">{{ appInfo.categoryCount }}</span> 个分类 ·
+        <span class="font-display text-sm font-bold text-accent">{{ appInfo.loadoutCount }}</span> 条方案 ·
+        数据集 <span class="font-display text-sm font-bold text-accent">{{ appInfo.datasetVersion }}</span>
       </footer>
     </section>
 
