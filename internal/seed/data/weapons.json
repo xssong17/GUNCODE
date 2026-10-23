@@ -615,6 +615,30 @@
     },
 
     {
+      "id": "mk4",
+      "name": "MK4",
+      "inGameName": "MK4冲锋枪",
+      "category": "smg",
+      "aliases": [],
+      "caliber": "4.6×30mm",
+      "status": "available",
+      "source": "db",
+      "note": "S7 赛季加入；默认三连发，换装深空镀铬枪管可全自动"
+    },
+
+    {
+      "id": "thompson",
+      "name": "汤姆逊",
+      "inGameName": "汤姆逊冲锋枪",
+      "category": "smg",
+      "aliases": ["汤姆森", "汤普森"],
+      "caliber": ".45 ACP",
+      "status": "available",
+      "source": "db",
+      "note": "S11 赛季加入，.45 口径高射速冲锋枪"
+    },
+
+    {
       "id": "s12k",
       "name": "S12K",
       "inGameName": "S12K霰弹枪",
