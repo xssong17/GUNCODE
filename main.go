@@ -17,7 +17,9 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:     "GunCode 改枪码管理器",
+		Title: "GunCode 改枪码管理器",
+		// 这里的尺寸是逻辑像素，Windows 会按显示器缩放比例换算成物理像素
+		// （150% 缩放时 1180 逻辑像素 = 1770 物理像素）。
 		Width:     1180,
 		Height:    760,
 		MinWidth:  1024,

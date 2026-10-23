@@ -4,11 +4,13 @@
 > 规范见 `PROMPT.md` 第 9 节。
 
 ## 当前状态
-- 阶段：S2 数据层（✅ 已完成）
-- 整体完成度：S0 ✅ / S1 ✅ / S2 ✅ / S3 ⬜ / S4 ⬜ / S5 ⬜ / S6 ⬜ / S7 ⬜
+- 阶段：S4 前端骨架（✅ 已完成）→ S5 核心交互（🔄 代码已完成，待全链路实盘核对）
+- 整体完成度：S0 ✅ / S1 ✅ / S2 ✅ / S3 ✅ / S4 ✅ / S5 🔄 / S6 ⬜ / S7 ⬜
 - 最后更新时间：2026-10-24
 - 当前阻塞项：无
-- 下一步动作：进入 S3 后端 API —— 在 `app.go` 暴露 `ListCategories`/`ListWeapons`/`ListLoadouts`/`CreateLoadout`/`UpdateLoadout`/`DeleteLoadout`/`ToggleFavorite`/`CopyCode`/`ParseShareCode`，并实现按模式补全烽火地带前缀的复制逻辑
+- 下一步动作：先实盘核对 S5 交互（启动 exe 验证增删改/一键复制/收藏，确认剪贴板内容可直接导入游戏），随后进入 S6 增强 —— 补 `ImportData`/`ExportData` 导入导出 + 粘贴识别已做，加快捷键
+
+> 说明：本文件曾滞后于实际代码。S3 已提交（`e3e355b`），S4/S5 前端代码已写但未提交、未同步文档；本次收尾清理了 HomeView 临时 DEBUG 代码、同步了进度并提交。详情见各阶段记录。
 
 ## 阶段总览
 | 阶段 | 名称 | 状态 | 完成日期 | 关键产出 |
@@ -16,13 +18,87 @@
 | S0 | 项目初始化与骨架 | ✅ 完成 | 2026-10-24 | Wails+Vue3+TS 骨架、Tailwind v3 暗色主题、目录结构、`gunCode.exe` |
 | S1 | 枪械分类与基础信息数据集 | ✅ 完成 | 2026-10-24 | `internal/seed/data/weapons.json`（8 类 / 65 把） |
 | S2 | 数据层（模型/SQLite/种子写入） | ✅ 完成 | 2026-10-24 | GORM 模型、纯 Go SQLite 驱动、幂等种子、仓储层、6 个单测 |
-| S3 | 后端 API 与 Wails 绑定 | ⬜ 未开始 | - | - |
-| S4 | 前端骨架（左侧栏/筛选/卡片网格） | ⬜ 未开始 | - | - |
-| S5 | 核心交互（增删改/一键复制/收藏） | ⬜ 未开始 | - | - |
+| S3 | 后端 API 与 Wails 绑定 | ✅ 完成 | 2026-10-24 | `app.go` 全量方法 + `service.BuildShareCode`/`ParseShareCode` + 绑定生成（提交 `e3e355b`） |
+| S4 | 前端骨架（左侧栏/筛选/卡片网格） | ✅ 完成 | 2026-10-24 | WeaponSidebar/FilterBar/LoadoutCard/CodeModal 等组件 + 真实数据渲染 |
+| S5 | 核心交互（增删改/一键复制/收藏） | 🔄 进行中 | - | 代码已实现，待全链路实盘核对；DPI 适配待多缩放复核 |
 | S6 | 增强（搜索/排序/导入导出/粘贴识别） | ⬜ 未开始 | - | - |
 | S7 | 打磨与打包 exe | ⬜ 未开始 | - | - |
 
 ## 详细记录
+
+### S5 核心交互（🔄 进行中，代码已完成待实盘核对）
+**目标**：新增/编辑/删除改枪码、一键复制（按模式补前缀）、收藏，粘贴分享码自动识别。
+
+**已完成（代码层面，本次收尾同步提交）**
+- [x] `HomeView` 主视图：筛选状态、过滤+排序、增删改/复制/收藏交互、空状态引导
+- [x] `CodeModal.vue` 增改表单：枪械/标题/模式/码/标签/调校/备注/收藏；粘贴码自动识别枪械与模式；实时预览「导入游戏时将复制的完整串」
+- [x] `LoadoutCard.vue` 卡片：枪械名+模式角标+收藏星标、标签、改枪码（可选中复制）、复制/编辑/删除
+- [x] `ConfirmDialog.vue` 删除二次确认（自定义弹窗，不用原生 confirm）
+- [x] `ToastHost.vue` + `useToast`：成功/错误反馈
+- [x] 一键复制走 Go 侧 `runtime.ClipboardSetText`（`CopyCode`），烽火地带模式自动补 `{inGameName}-烽火地带-` 前缀；用户原文永不改写
+- [x] 收藏置顶（`ToggleFavorite` + 排序里 favorite 优先）
+
+**待办**
+- [ ] **全链路实盘核对**：启动 exe，实际操作增删改/复制/收藏，把剪贴板内容与「能直接导入游戏」对照
+- [ ] S7 前复核：DPI 适配（见遗留）
+
+**验证命令与结果**
+- `go build ./...` / `go vet ./...` / `go test ./...` ✅
+- `cd frontend ; npm run build` ✅（vue-tsc + vite 均通过）
+
+**遗留问题 / 风险**
+- `dpi_windows.go` / `dpi_other.go`（`displayScale`/`scaleSize`）定义了但**未接入 main.go**（无调用点，属死代码）。当前 main.go 直接传逻辑像素 1180，150% 缩放下截图验证 UI 完整无裁剪。S7 打包前需在多种缩放（100%/200%）下复核，确认是否需要接入缩放换算。
+
+**下一步**
+- 实盘核对 S5，随后进入 S6（补 `ImportData`/`ExportData` 导入导出）
+
+### S4 前端骨架（✅ 已完成）
+**目标**：三栏布局 —— 左侧武器栏、顶部筛选条、卡片网格，从真实后端拉数据渲染。
+
+**已完成**
+- [x] `WeaponSidebar.vue`：左侧栏，按分类分组（可折叠），每把枪显示方案数量，「全部枪械/分类/单枪」三级选择高亮
+- [x] `FilterBar.vue`：搜索框、排序下拉、仅看收藏、当前筛选上下文角标、条数计数、新增入口
+- [x] `LoadoutCard.vue` / `CodeModal.vue` / `ConfirmDialog.vue` / `ToastHost.vue`（组件）
+- [x] `useGunCode` / `useToast` composables；`api/` 薄封装 + `types/`（与 Go DTO 对应）
+- [x] `HomeView.vue` 组装：加载/错误/空状态 + 卡片网格 + 底部数据集信息
+- [x] 真实数据拉取渲染 + 按分类/枪械筛选（截图验证）
+
+**设计决策**
+- 个人场景数据量小：`useGunCode` 一次性全量载入分类/枪械/方案，前端本地筛选，交互即时
+- 卡片网格 `grid-cols-[repeat(auto-fill,minmax(300px,1fr))]`，自适应宽度
+
+**验证命令与结果**
+- `npm run build` ✅；启动 exe 截图 `build/shot1~8.png`：150% 缩放下 UI 完整、卡片正常渲染，高 DPI 裁剪问题已消除
+- 临时 DEBUG 信息行与调试引用（`contentEl`/`gridEl`/`updateDebug`）已在本轮收尾移除
+
+**遗留问题 / 风险**
+- 见 S5 遗留：DPI 死代码待复核
+
+**下一步**
+- S5 交互（已在 S4 代码基础上继续完成）
+
+### S3 后端 API 与 Wails 绑定（✅ 已完成，提交 `e3e355b`）
+**目标**：`app.go` 全量方法 + 生成 Wails 前端绑定。
+
+**已完成**
+- [x] `app.go` 暴露：`GetAppInfo` / `ListCategories` / `ListWeapons` / `CreateCustomWeapon` / `ListLoadouts` / `GetLoadout` / `CreateLoadout` / `UpdateLoadout` / `DeleteLoadout` / `ToggleFavorite` / `CopyCode` / `ResolveShareCode` / `ParseShareCode`
+- [x] `service.BuildShareCode`：按模式补全烽火地带前缀（`op` 补 `{inGameName}-烽火地带-`、`ww` 裸码、`unknown` 原样）
+- [x] `service.ParseShareCode`：从粘贴文本解析武器/模式/码主体
+- [x] 剪贴板走 Go 侧 `runtime.ClipboardSetText`（不用前端 `navigator.clipboard`）
+- [x] 生成 Wails 绑定 `frontend/wailsjs/`
+
+**设计决策**
+- 复制只补前缀、永不改写用户原文（CLAUDE 约束 11）
+- `ParseShareCode` 返回 `ParsedCode` DTO，前端据此预填枪械与模式
+
+**验证命令与结果**
+- `go build ./...` / `go vet ./...` / `go test ./...` ✅；绑定生成成功
+
+**遗留问题 / 风险**
+- 导入导出 `ImportData`/`ExportData` 未实现，留到 S6
+
+**下一步**
+- S4 前端骨架（已接续完成）
 
 ### S1 枪械分类与基础信息数据集（✅ 已完成，先于 S0 产出）
 **目标**：先把三角洲行动的**枪械分类**与**每把枪的基础信息**固化为离线数据文件，作为后续所有开发的唯一数据源。
@@ -148,3 +224,4 @@
 - Tailwind 用 v3，不用 v4（v4 配置格式不同）；已固定 `tailwindcss@3.4.17`
 - Wails 模板的 `main.css` 里 `@font-face` 相对路径基准是 CSS 文件自身所在目录（`src/assets/`），字体在 `src/assets/fonts/`，故写 `./fonts/...`
 - PowerShell 5.1：不支持 `&&`，链式命令用 `;` 或 `if ($?) { ... }`
+- **高 DPI 窗口尺寸**：`main.go` 直接传逻辑像素（1180×760），Windows 按系统缩放自动换算物理像素；150% 缩放下 UI 完整。曾写 `dpi_windows.go`/`dpi_other.go`（`displayScale`/`scaleSize`）但未接入 main.go（死代码），S7 打包前需在 100%/200% 缩放下复核是否需要接入。

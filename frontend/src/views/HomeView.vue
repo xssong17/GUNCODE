@@ -1,47 +1,250 @@
-<script lang="ts" setup>
-// S0 骨架占位：S4 阶段在此搭建「左侧武器栏 + 筛选条 + 卡片网格」三栏布局
+<script setup lang="ts">
+/** 主视图：左侧枪械栏 + 顶部筛选条 + 卡片网格。 */
+import { computed, onMounted, ref } from 'vue'
+import * as api from '../api'
+import CodeModal from '../components/CodeModal.vue'
+import ConfirmDialog from '../components/ConfirmDialog.vue'
+import FilterBar from '../components/FilterBar.vue'
+import LoadoutCard from '../components/LoadoutCard.vue'
+import WeaponSidebar from '../components/WeaponSidebar.vue'
+import { useGunCode } from '../composables/useGunCode'
+import { useToast } from '../composables/useToast'
+import type { LoadoutDTO, LoadoutInput, SortKey } from '../types'
+
+const { categories, weapons, loadouts, loading, error, weaponCounts, weaponsByCategory, refresh, appInfo } =
+  useGunCode()
+const toast = useToast()
+
+// —— 筛选状态 ——
+const selectedCategory = ref('')
+const selectedWeaponId = ref(0)
+const keyword = ref('')
+const sort = ref<SortKey>('recent')
+const onlyFavorite = ref(false)
+
+// —— 弹窗状态 ——
+const modalOpen = ref(false)
+const modalMode = ref<'create' | 'edit'>('create')
+const editing = ref<LoadoutDTO | null>(null)
+const deleting = ref<LoadoutDTO | null>(null)
+
+onMounted(async () => {
+  await refresh()
+})
+
+/** 当前筛选上下文描述 */
+const context = computed(() => {
+  if (selectedWeaponId.value) {
+    return weapons.value.find((w) => w.id === selectedWeaponId.value)?.name ?? ''
+  }
+  if (selectedCategory.value) {
+    return categories.value.find((c) => c.key === selectedCategory.value)?.name ?? ''
+  }
+  return ''
+})
+
+/** 过滤 + 排序后的方案列表 */
+const visible = computed(() => {
+  const kw = keyword.value.trim().toLowerCase()
+  let list = loadouts.value.filter((l) => {
+    if (selectedWeaponId.value && l.weaponId !== selectedWeaponId.value) return false
+    if (!selectedWeaponId.value && selectedCategory.value && l.categoryKey !== selectedCategory.value) return false
+    if (onlyFavorite.value && !l.favorite) return false
+    if (!kw) return true
+    const hay = [
+      l.title,
+      l.note,
+      l.tuning,
+      l.code,
+      l.weaponName,
+      l.weaponInGameName,
+      l.categoryName,
+      ...l.tags,
+    ]
+      .join(' ')
+      .toLowerCase()
+    return hay.includes(kw)
+  })
+
+  list = [...list]
+  switch (sort.value) {
+    case 'created':
+      list.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+      break
+    case 'favorite':
+      list.sort((a, b) => Number(b.favorite) - Number(a.favorite) || b.updatedAt.localeCompare(a.updatedAt))
+      break
+    case 'title':
+      list.sort((a, b) => a.title.localeCompare(b.title, 'zh-CN'))
+      break
+    default:
+      list.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+  }
+  return list
+})
+
+// —— 交互 ——
+
+async function onCopy(l: LoadoutDTO) {
+  try {
+    await api.copyCode(l.code, l.mode, l.weaponInGameName)
+    toast.success(`已复制「${l.title}」，可直接粘贴到游戏导入框`)
+  } catch (e) {
+    toast.error(`复制失败：${msg(e)}`)
+  }
+}
+
+async function onToggleFavorite(l: LoadoutDTO) {
+  try {
+    await api.toggleFavorite(l.id, !l.favorite)
+    await refresh()
+  } catch (e) {
+    toast.error(`操作失败：${msg(e)}`)
+  }
+}
+
+function openCreate() {
+  modalMode.value = 'create'
+  editing.value = null
+  modalOpen.value = true
+}
+
+function openEdit(l: LoadoutDTO) {
+  modalMode.value = 'edit'
+  editing.value = l
+  modalOpen.value = true
+}
+
+async function onSubmit(input: LoadoutInput) {
+  try {
+    if (modalMode.value === 'edit' && editing.value) {
+      await api.updateLoadout(editing.value.id, input)
+      toast.success('方案已更新')
+    } else {
+      await api.createLoadout(input)
+      toast.success('改枪码已添加')
+    }
+    modalOpen.value = false
+    await refresh()
+  } catch (e) {
+    toast.error(`保存失败：${msg(e)}`)
+  }
+}
+
+async function onDelete() {
+  if (!deleting.value) return
+  try {
+    await api.deleteLoadout(deleting.value.id)
+    toast.success('方案已删除')
+    deleting.value = null
+    await refresh()
+  } catch (e) {
+    toast.error(`删除失败：${msg(e)}`)
+  }
+}
+
+function msg(e: unknown) {
+  return e instanceof Error ? e.message : String(e)
+}
 </script>
 
 <template>
-  <div class="flex h-full">
-    <!-- 左侧：枪械分类与武器列表 -->
-    <aside class="w-60 shrink-0 overflow-y-auto border-r border-surface-border bg-surface p-3">
-      <div class="text-xs font-semibold uppercase tracking-wider text-slate-500">枪械分类</div>
-      <div class="mt-3 space-y-1">
-        <div
-          v-for="c in ['突击步枪', '射手步枪', '狙击步枪', '轻机枪', '冲锋枪', '霰弹枪', '手枪', '特殊武器']"
-          :key="c"
-          class="rounded-md px-2 py-1.5 text-sm text-slate-400 transition-colors hover:bg-surface-raised hover:text-slate-200"
-        >
-          {{ c }}
+  <div class="flex h-full min-h-0">
+    <!-- 左侧枪械栏 -->
+    <WeaponSidebar
+      :groups="weaponsByCategory"
+      :weapon-counts="weaponCounts"
+      :selected-category="selectedCategory"
+      :selected-weapon-id="selectedWeaponId"
+      @select-category="selectedCategory = $event"
+      @select-weapon="selectedWeaponId = $event"
+    />
+
+    <!-- 右侧主体 -->
+    <section class="flex min-w-0 flex-1 flex-col">
+      <FilterBar
+        :keyword="keyword"
+        :sort="sort"
+        :only-favorite="onlyFavorite"
+        :total="loadouts.length"
+        :shown="visible.length"
+        :context="context"
+        @update:keyword="keyword = $event"
+        @update:sort="sort = $event"
+        @update:onlyFavorite="onlyFavorite = $event"
+        @add="openCreate"
+      />
+
+      <!-- 内容区 -->
+      <div class="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden p-4">
+        <!-- 加载中 -->
+        <div v-if="loading" class="flex h-full items-center justify-center text-sm text-slate-500">
+          正在加载…
+        </div>
+
+        <!-- 错误 -->
+        <div v-else-if="error" class="rounded-lg border border-rose-500/40 bg-rose-950/40 p-4 text-sm text-rose-200">
+          加载失败：{{ error }}
+        </div>
+
+        <!-- 空状态 -->
+        <div v-else-if="visible.length === 0" class="flex h-full flex-col items-center justify-center gap-3 text-center">
+          <div class="text-4xl opacity-40">🔫</div>
+          <p class="text-sm text-slate-400">
+            {{ loadouts.length === 0 ? '还没有任何改枪码' : '当前筛选条件下没有方案' }}
+          </p>
+          <button
+            class="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-slate-900 transition hover:brightness-110"
+            @click="openCreate"
+          >
+            添加第一条改枪码
+          </button>
+        </div>
+
+        <!-- 卡片网格 -->
+        <div v-else class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
+          <LoadoutCard
+            v-for="l in visible"
+            :key="l.id"
+            :loadout="l"
+            @copy="onCopy"
+            @edit="openEdit"
+            @remove="deleting = $event"
+            @toggle-favorite="onToggleFavorite"
+          />
         </div>
       </div>
-    </aside>
 
-    <!-- 右侧：卡片网格 -->
-    <section class="min-w-0 flex-1 overflow-y-auto p-4">
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <div class="card">
-          <div class="flex items-center justify-between">
-            <span class="text-sm font-semibold text-slate-200">M4A1</span>
-            <span class="text-xs text-accent">★</span>
-          </div>
-          <p class="mt-1 text-xs text-slate-500">中距离架枪（示例卡片）</p>
-          <div class="code-text mt-3">AKM突击步枪-烽火地带-6KJ5IFS0A021USGQ8AC2S</div>
-          <div class="mt-3 flex gap-2">
-            <button class="rounded-md bg-accent px-3 py-1 text-xs font-medium text-slate-900 hover:brightness-110">
-              复制
-            </button>
-            <button class="rounded-md border border-surface-border px-3 py-1 text-xs text-slate-300 hover:bg-surface-sunken">
-              编辑
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <p class="mt-6 text-center text-xs text-slate-600">
-        S0 骨架：Tailwind v3 + Vue3 主题已就绪，真实数据与交互在 S2~S6 接入
-      </p>
+      <!-- 数据集信息 -->
+      <footer
+        v-if="appInfo"
+        class="shrink-0 border-t border-surface-border bg-surface px-4 py-1.5 text-[11px] text-slate-600"
+      >
+        枪械 {{ appInfo.weaponCount }} 把 / 分类 {{ appInfo.categoryCount }} 个 / 方案 {{ appInfo.loadoutCount }} 条 ·
+        数据集 {{ appInfo.datasetVersion }}
+      </footer>
     </section>
+
+    <!-- 新增 / 编辑弹窗 -->
+    <CodeModal
+      :open="modalOpen"
+      :mode="modalMode"
+      :loadout="editing"
+      :weapons="weapons"
+      :default-weapon-id="selectedWeaponId"
+      @close="modalOpen = false"
+      @submit="onSubmit"
+    />
+
+    <!-- 删除确认 -->
+    <ConfirmDialog
+      :open="!!deleting"
+      title="删除改枪码"
+      :message="`确定要删除「${deleting?.title ?? ''}」吗？此操作不可撤销。`"
+      confirm-text="删除"
+      danger
+      @cancel="deleting = null"
+      @confirm="onDelete"
+    />
   </div>
 </template>

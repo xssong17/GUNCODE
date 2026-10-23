@@ -1,0 +1,104 @@
+<script setup lang="ts">
+/** 改枪方案卡片。 */
+import { ref } from 'vue'
+import { MODE_LABEL, MODE_OP, MODE_UNKNOWN } from '../types'
+import type { LoadoutDTO } from '../types'
+
+const props = defineProps<{
+  loadout: LoadoutDTO
+}>()
+
+const emit = defineEmits<{
+  (e: 'copy', loadout: LoadoutDTO): void
+  (e: 'edit', loadout: LoadoutDTO): void
+  (e: 'remove', loadout: LoadoutDTO): void
+  (e: 'toggle-favorite', loadout: LoadoutDTO): void
+}>()
+
+/** 复制成功后短暂显示「已复制」 */
+const copied = ref(false)
+let timer: number | undefined
+
+function onCopy() {
+  emit('copy', props.loadout)
+  copied.value = true
+  if (timer) window.clearTimeout(timer)
+  timer = window.setTimeout(() => (copied.value = false), 1500)
+}
+
+function modeClass(mode: string) {
+  if (mode === MODE_OP) return 'bg-sky-500/15 text-sky-300'
+  if (mode === MODE_UNKNOWN) return 'bg-slate-600/30 text-slate-400'
+  return 'bg-emerald-500/15 text-emerald-300'
+}
+</script>
+
+<template>
+  <article class="card flex flex-col">
+    <!-- 头部：枪械名 + 模式 + 收藏 -->
+    <header class="flex items-start justify-between gap-2">
+      <div class="min-w-0">
+        <div class="flex items-center gap-2">
+          <span class="truncate text-sm font-semibold text-slate-100">{{ loadout.weaponName }}</span>
+          <span class="shrink-0 rounded px-1.5 py-0.5 text-[10px]" :class="modeClass(loadout.mode)">
+            {{ MODE_LABEL[loadout.mode] ?? '未标注' }}
+          </span>
+        </div>
+        <h3 class="mt-1 truncate text-[13px] text-slate-300" :title="loadout.title">{{ loadout.title }}</h3>
+      </div>
+      <button
+        class="shrink-0 text-base leading-none transition-colors"
+        :class="loadout.favorite ? 'text-accent' : 'text-slate-600 hover:text-slate-400'"
+        :title="loadout.favorite ? '取消收藏' : '收藏'"
+        @click="emit('toggle-favorite', loadout)"
+      >
+        ★
+      </button>
+    </header>
+
+    <!-- 标签 -->
+    <div v-if="loadout.tags.length" class="mt-2 flex flex-wrap gap-1">
+      <span
+        v-for="tag in loadout.tags"
+        :key="tag"
+        class="rounded bg-surface-border/70 px-1.5 py-0.5 text-[10px] text-slate-400"
+      >
+        #{{ tag }}
+      </span>
+    </div>
+
+    <!-- 改枪码 -->
+    <div class="code-text mt-2.5 line-clamp-4" :title="loadout.code">{{ loadout.code }}</div>
+
+    <!-- 备注与调校 -->
+    <p v-if="loadout.note" class="mt-2 truncate text-[11px] text-slate-500" :title="loadout.note">
+      {{ loadout.note }}
+    </p>
+    <p v-if="loadout.tuning" class="mt-1 truncate text-[11px] text-slate-600" :title="loadout.tuning">
+      调校：{{ loadout.tuning }}
+    </p>
+
+    <!-- 操作 -->
+    <footer class="mt-3 flex items-center gap-2 border-t border-surface-border pt-2.5">
+      <button
+        class="rounded-md px-2.5 py-1 text-xs font-medium transition"
+        :class="copied ? 'bg-emerald-600 text-white' : 'bg-accent text-slate-900 hover:brightness-110'"
+        @click="onCopy"
+      >
+        {{ copied ? '已复制 ✓' : '复制' }}
+      </button>
+      <button
+        class="rounded-md border border-surface-border px-2.5 py-1 text-xs text-slate-300 transition hover:bg-surface-sunken"
+        @click="emit('edit', loadout)"
+      >
+        编辑
+      </button>
+      <button
+        class="ml-auto rounded-md px-2 py-1 text-xs text-slate-500 transition hover:bg-rose-500/15 hover:text-rose-300"
+        @click="emit('remove', loadout)"
+      >
+        删除
+      </button>
+    </footer>
+  </article>
+</template>
