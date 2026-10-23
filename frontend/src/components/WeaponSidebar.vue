@@ -21,8 +21,8 @@ const emit = defineEmits<{
   (e: 'select-weapon', id: number): void
 }>()
 
-/** 折叠的分类（默认全部展开） */
-const collapsed = ref<Set<string>>(new Set())
+/** 折叠的分类（默认全部收起，点击分类头展开） */
+const collapsed = ref<Set<string>>(new Set(props.groups.map(g => g.key)))
 
 function toggleCollapse(key: string) {
   const next = new Set(collapsed.value)
@@ -32,6 +32,11 @@ function toggleCollapse(key: string) {
     next.add(key)
   }
   collapsed.value = next
+}
+
+/** 缩略图加载失败时隐藏（部分武器无图） */
+function onImgError(e: Event) {
+  ;(e.target as HTMLImageElement).style.display = 'none'
 }
 </script>
 
@@ -66,7 +71,7 @@ function toggleCollapse(key: string) {
                 ? 'bg-accent-soft text-accent'
                 : 'text-slate-300 hover:bg-surface-raised'
             "
-            @click="emit('select-category', group.key); emit('select-weapon', 0)"
+            @click="toggleCollapse(group.key); emit('select-category', group.key); emit('select-weapon', 0)"
           >
             <span>{{ group.name }}</span>
             <span class="text-xs text-slate-500">{{ group.weapons.length }}</span>
@@ -84,17 +89,24 @@ function toggleCollapse(key: string) {
           <button
             v-for="w in group.weapons"
             :key="w.id"
-            class="flex w-full items-center justify-between rounded-md px-2.5 py-1 text-[13px] transition-colors"
+            class="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors"
             :class="
               selectedWeaponId === w.id
                 ? 'bg-accent-soft text-accent'
-                : 'text-slate-400 hover:bg-surface-raised hover:text-slate-200'
+                : 'text-slate-300 hover:bg-surface-raised hover:text-slate-100'
             "
             @click="emit('select-weapon', w.id)"
           >
+            <img
+              :src="`/weapons/${w.key}.png`"
+              alt=""
+              class="h-7 w-7 shrink-0 rounded object-contain"
+              loading="lazy"
+              @error="onImgError"
+            />
             <span class="truncate">{{ w.name }}</span>
             <span
-              class="ml-2 shrink-0 rounded px-1.5 text-[10px]"
+              class="ml-auto shrink-0 rounded px-1.5 text-[10px]"
               :class="
                 (weaponCounts.get(w.id) ?? 0) > 0
                   ? 'bg-surface-border text-slate-300'

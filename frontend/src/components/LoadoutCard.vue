@@ -34,7 +34,11 @@ function modeClass(mode: string) {
 </script>
 
 <template>
-  <article class="card relative flex cursor-pointer flex-col" @click="onCopy" title="点击卡片复制改枪码">
+  <article
+    class="card group relative flex cursor-pointer flex-col transition-all hover:border-accent/60 hover:shadow-lg hover:shadow-black/25"
+    @click="onCopy"
+    title="点击卡片复制改枪码"
+  >
     <!-- 复制成功浮标 -->
     <span
       v-if="copied"
@@ -42,6 +46,14 @@ function modeClass(mode: string) {
     >
       已复制 ✓
     </span>
+    <!-- hover 提示可复制 -->
+    <div
+      class="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pb-1.5 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+    >
+      <span class="rounded-full bg-accent px-2.5 py-0.5 text-[10px] font-medium text-slate-900 shadow">
+        点击卡片复制
+      </span>
+    </div>
     <!-- 头部：枪械名 + 模式 + 收藏 -->
     <header class="flex items-start justify-between gap-2">
       <div class="min-w-0">
