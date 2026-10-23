@@ -21,7 +21,7 @@
 | 后端 | Go 1.23 |
 | 前端 | Vue 3 + TypeScript + Vite |
 | 样式 | Tailwind CSS **v3**（暗色主题） |
-| 数据库 | SQLite via GORM + `modernc.org/sqlite`（纯 Go，免 CGO） |
+| 数据库 | SQLite via GORM + `github.com/glebarez/sqlite`（纯 Go，免 CGO） |
 
 ## 快速开始
 
@@ -34,9 +34,12 @@ wails build
 
 # 前端单独构建 / 类型检查
 npm --prefix frontend run build
+
+# 检查本地数据库内容（分类 / 枪械 / 方案数量与完整性）
+go run ./cmd/dbcheck
 ```
 
-数据库文件位于 `%APPDATA%\GunCode\guncode.db`（`os.UserConfigDir()`）。
+数据库文件位于 `%APPDATA%\GunCode\guncode.db`（`os.UserConfigDir()`），首次启动自动建库并写入枪械数据集。
 
 ## 目录结构
 

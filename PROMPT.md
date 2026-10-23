@@ -42,7 +42,7 @@
 | 前端 | **Vue 3 + TypeScript + Vite** | 用 `wails init -t vue-ts` 初始化 |
 | 样式 | **Tailwind CSS v3**（不要用 v4，配置格式不同易踩坑） | 暗色主题为主，卡片式布局 |
 | 状态管理 | Vue 3 `reactive` / `composables` | 数据量小，无需引入 Pinia |
-| 数据库 | **SQLite**：`gorm.io/gorm` + `gorm.io/driver/sqlite` + `modernc.org/sqlite` | **必须用 `modernc.org/sqlite`（纯 Go，免 CGO）**，不要用 `mattn/go-sqlite3`（需要 gcc，Windows 上易编译失败） |
+| 数据库 | **SQLite**：`gorm.io/gorm` + **`github.com/glebarez/sqlite`**（纯 Go 驱动，底层 `modernc.org/sqlite`） | **不要用 `gorm.io/driver/sqlite`**（它依赖 `mattn/go-sqlite3`，需要 gcc，Windows 上编译失败）；也不要用 `mattn/go-sqlite3` 本身 |
 | 剪贴板 | Wails Go 侧 `runtime.ClipboardSetText(ctx, text)` | 后端调用，最可靠 |
 | 数据库文件位置 | `os.UserConfigDir()` / `%APPDATA%/GunCode/guncode.db` | 不要写在 exe 同级目录（Program Files 无写权限） |
 

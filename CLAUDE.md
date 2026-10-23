@@ -28,7 +28,7 @@ Windows 桌面客户端（**GunCode**），用于存储《三角洲行动》(Del
 | 前端 | Vue 3 + TypeScript + Vite（`wails init -t vue-ts`） |
 | 样式 | **Tailwind CSS v3**（**不要用 v4**，配置格式不同） |
 | 状态 | Vue 3 `reactive` + composables，不引入 Pinia |
-| 数据库 | SQLite：`gorm.io/gorm` + `gorm.io/driver/sqlite` + **`modernc.org/sqlite`** |
+| 数据库 | SQLite：`gorm.io/gorm` + **`github.com/glebarez/sqlite`**（纯 Go 驱动，底层 `modernc.org/sqlite`） |
 | 剪贴板 | Go 侧 `runtime.ClipboardSetText(ctx, text)` |
 
 **禁止引入**：Electron、后端 HTTP 服务、MySQL/Redis、需要 CGO 的库、重量级 UI 框架（Element Plus / Ant Design Vue 等，除非先说明理由）。
@@ -37,7 +37,7 @@ Windows 桌面客户端（**GunCode**），用于存储《三角洲行动》(Del
 
 ## 3. 关键实现约束（踩坑预防，务必遵守）
 
-1. **免 CGO**：必须用 `modernc.org/sqlite`（纯 Go）。**不要**用 `mattn/go-sqlite3`（本机无 gcc，Windows 编译失败）。
+1. **免 CGO**：数据库驱动用 `github.com/glebarez/sqlite`（纯 Go，底层 `modernc.org/sqlite`）。**不要**用 `gorm.io/driver/sqlite` 或 `mattn/go-sqlite3`（依赖 CGO，本机无 gcc 会编译失败）。
 2. **数据库路径**：用 `os.UserConfigDir()` → `%APPDATA%/GunCode/guncode.db`。不要写在 exe 同级目录（Program Files 无写权限）。
 3. **剪贴板**：一律走 Go 侧 `runtime.ClipboardSetText`。**不要**用前端 `navigator.clipboard`（WebView2 权限不稳定）。
 4. **改枪码原样存储**：`Loadout.Code` 是 `text`，保存时只允许 trim 首尾空白，**不得**解析/重排/转义其中内容（分享码含空格、冒号、斜杠、中文、分号）。

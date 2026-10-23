@@ -4,18 +4,18 @@
 > 规范见 `PROMPT.md` 第 9 节。
 
 ## 当前状态
-- 阶段：S0 项目初始化与骨架（✅ 已完成）
-- 整体完成度：S0 ✅ / S1 ✅ / S2 ⬜ / S3 ⬜ / S4 ⬜ / S5 ⬜ / S6 ⬜ / S7 ⬜
+- 阶段：S2 数据层（✅ 已完成）
+- 整体完成度：S0 ✅ / S1 ✅ / S2 ✅ / S3 ⬜ / S4 ⬜ / S5 ⬜ / S6 ⬜ / S7 ⬜
 - 最后更新时间：2026-10-24
-- 当前阻塞项：无（git 已安装并初始化仓库，阶段提交流程可用）
-- 下一步动作：进入 S2 数据层 —— GORM 模型（Weapon/Category/Loadout，含 `InGameName`/`Mode`）、SQLite 初始化（`os.UserConfigDir()`）、`go:embed` 嵌入 `weapons.json` 并种子写入、仓储层
+- 当前阻塞项：无
+- 下一步动作：进入 S3 后端 API —— 在 `app.go` 暴露 `ListCategories`/`ListWeapons`/`ListLoadouts`/`CreateLoadout`/`UpdateLoadout`/`DeleteLoadout`/`ToggleFavorite`/`CopyCode`/`ParseShareCode`，并实现按模式补全烽火地带前缀的复制逻辑
 
 ## 阶段总览
 | 阶段 | 名称 | 状态 | 完成日期 | 关键产出 |
 |---|---|---|---|---|
 | S0 | 项目初始化与骨架 | ✅ 完成 | 2026-10-24 | Wails+Vue3+TS 骨架、Tailwind v3 暗色主题、目录结构、`gunCode.exe` |
 | S1 | 枪械分类与基础信息数据集 | ✅ 完成 | 2026-10-24 | `internal/seed/data/weapons.json`（8 类 / 65 把） |
-| S2 | 数据层（模型/SQLite/种子写入） | ⬜ 未开始 | - | - |
+| S2 | 数据层（模型/SQLite/种子写入） | ✅ 完成 | 2026-10-24 | GORM 模型、纯 Go SQLite 驱动、幂等种子、仓储层、6 个单测 |
 | S3 | 后端 API 与 Wails 绑定 | ⬜ 未开始 | - | - |
 | S4 | 前端骨架（左侧栏/筛选/卡片网格） | ⬜ 未开始 | - | - |
 | S5 | 核心交互（增删改/一键复制/收藏） | ⬜ 未开始 | - | - |
@@ -58,6 +58,44 @@
 **下一步**
 - 进入 S0 初始化工程，之后 S2 直接消费本数据集
 
+### S2 数据层（✅ 已完成）
+**目标**：GORM 模型（Weapon/Category/Loadout，含 `InGameName`/`Mode`）、SQLite 初始化（`os.UserConfigDir()`）、`go:embed` 嵌入 `weapons.json` 并种子写入、仓储层。
+
+**已完成**
+- [x] `internal/model/model.go`：`Category` / `Weapon` / `Loadout` 实体 + `LoadoutDTO` / `LoadoutInput` + 模式与状态常量 + `SplitTags`/`JoinTags`/`NormalizeMode`
+- [x] `internal/model/dataset.go`：与 `weapons.json` 对应的数据集结构
+- [x] `internal/seed/seed.go`：`//go:embed data/weapons.json`，`Dataset()` 单次解析缓存 + `Raw()` + `Version()`
+- [x] `internal/store/db.go`：`DefaultPath()`（`%APPDATA%\GunCode\guncode.db`）、`Open()`（建目录 + AutoMigrate）、`OpenDefault()`
+- [x] `internal/store/seed.go`：**按 key 幂等 upsert** —— 分类/枪械只更新元信息，绝不触碰用户的 `loadouts`
+- [x] `internal/store/weapon.go`：分类/枪械查询、`GetWeaponByKey`、`CreateCustomWeapon`（用户自建新枪）
+- [x] `internal/store/loadout.go`：增删改查、收藏、按枪械/分类/关键词/仅收藏筛选（JOIN weapons 单表查询）
+- [x] `cmd/dbcheck/main.go`：检查本地数据库内容与完整性的小工具
+- [x] `app.go` 接入：`startup` 打开数据库并种子写入，`shutdown` 关闭连接；`main.go` 挂 `OnShutdown`
+- [x] 单元测试 `internal/store/store_test.go`（6 个用例）
+
+**设计决策**
+- **驱动换成 `github.com/glebarez/sqlite`**：原计划的 `gorm.io/driver/sqlite` 底层是 `mattn/go-sqlite3`（需 CGO，本机无 gcc 会编译失败）；glebarez 是纯 Go 驱动，底层 `modernc.org/sqlite`。
+- **不显式升级 `modernc.org/sqlite` 到 latest**：latest 要求 Go ≥ 1.26，本机 Go 1.23.5；随 glebarez 引入的 v1.23.1 即可。
+- **`Category.Order` 列名改为 `sort_order`**：`order` 是 SQL 保留字，upsert 时 `excluded.order` 会报错。
+- **关键词搜索改为 JOIN 单表查询**：原先 SQL 预筛（只搜方案字段）+ Go 端二次筛选（只搜枪械字段）是 AND 关系，导致「按枪械名搜不到方案」；现统一在 SQL 里对方案字段 + 枪械字段一起 LIKE。
+- **DTO 而非实体回前端**：`LoadoutDTO` 携带 `weaponInGameName`/`categoryName` 等冗余字段，避免前端二次请求。
+- **标签存逗号串、对外用数组**：`Loadout.Tags` 存储为逗号分隔，DTO 里转成 `[]string`。
+
+**验证命令与结果**
+- `go build ./...` ✅ `go vet ./...` ✅
+- `go test ./...` ✅ **ok guncode/internal/store**（6 用例：种子写入/幂等/不伤用户数据/CRUD+搜索+收藏/校验/数据集完整性）
+- `wails build` ✅ → `build/bin/gunCode.exe`
+- 启动后实盘检查（`go run ./cmd/dbcheck`）：
+  `C:\Users\XOS\AppData\Roaming\GunCode\guncode.db` → **分类 8 个 / 枪械 65 把 / 方案 0 条**，分类计数 ar 22、dmr 8、sniper 5、lmg 4、smg 12、shotgun 5、pistol 7、special 2；**游戏内全名缺失 0 条**，待核实 13 把
+
+**遗留问题 / 风险**
+- 13 把 `status=unverified` 枪械仍需在游戏内核实（沿用 S1 遗留项）
+- `caliber` 字段多数为空，待补
+- 尚未验证「删除枪械」场景下 `loadouts` 的级联行为（当前 UI 不提供删枪，故未做）
+
+**下一步**
+- 进入 S3 后端 API 与 Wails 绑定
+
 ### S0 项目初始化与骨架（✅ 已完成）
 **目标**：`wails init -n guncode -t vue-ts` 生成工程；接入 Tailwind CSS v3；建立目录结构；产出可运行的 `gunCode.exe`。
 
@@ -96,7 +134,10 @@
 
 ## 环境与踩坑记录
 - 环境：Windows 11 / Go 1.23.5 / Wails v2.9.2 / Node 24.16.0 / npm 11.13.0 / WebView2 已安装 / upx、nsis 可用
-- SQLite 必须用 `modernc.org/sqlite`（纯 Go，免 CGO）；`mattn/go-sqlite3` 本机无 gcc 会编译失败
+- SQLite 必须用 `github.com/glebarez/sqlite`（纯 Go 驱动，底层 `modernc.org/sqlite`）；**不要**用 `gorm.io/driver/sqlite` 或 `mattn/go-sqlite3`（CGO，本机无 gcc 编译失败）
+- `modernc.org/sqlite` 不要升到 latest（要求 Go ≥ 1.26，本机 Go 1.23.5）；随 glebarez 引入的 v1.23.1 够用
+- GORM upsert 的 `clause.AssignmentColumns` 写的是**列名不是字段名**（`sort_order` 而非 `order`）
+- GORM `Scan` 到自定义 struct 时，字段按 snake_case 列名映射（`weapon_key` → `WeaponKey`）
 - 数据库文件放在 `%APPDATA%/GunCode/guncode.db`（`os.UserConfigDir()`），不要放 exe 同级目录
 - 剪贴板走 Go 侧 `runtime.ClipboardSetText`，不用 `navigator.clipboard`（WebView2 权限不稳定）
 - Tailwind 用 v3，不用 v4（v4 配置格式不同）
