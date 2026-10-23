@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/nunito-v16-latin-regular.woff2') format('woff2');
+}
+
+@layer base {
+  html,
+  body,
+  #app {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-surface-sunken text-slate-200 antialiased;
+    font-family: 'Nunito', 'Microsoft YaHei UI', 'Microsoft YaHei', system-ui, sans-serif;
+    overflow: hidden; /* 桌面应用：整体不滚动，内部区域自行滚动 */
+  }
+
+  /* 滚动条（Windows 深色） */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-surface-border;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-600;
+  }
+}
+
+@layer components {
+  /* 卡片：改枪码方案卡片的基础样式 */
+  .card {
+    @apply rounded-xl border border-surface-border bg-surface-raised p-4 shadow-sm
+           transition-colors hover:border-slate-500;
+  }
+
+  /* 改枪码文本：等宽、可换行、完整展示 */
+  .code-text {
+    @apply font-mono text-xs leading-relaxed break-all text-slate-300
+           select-text rounded-md bg-surface-sunken p-2;
+  }
+}

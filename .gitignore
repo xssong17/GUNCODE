@@ -1,0 +1,13 @@
+build/bin
+node_modules
+frontend/dist
+
+# 本地数据库（运行时生成，位于 %APPDATA%/GunCode/）
+*.db
+*.db-shm
+*.db-wal
+
+# 构建产物 / 临时文件
+*.exe
+.DS_Store
+Thumbs.db
