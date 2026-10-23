@@ -7,7 +7,7 @@
 - 阶段：S0 项目初始化与骨架（✅ 已完成）
 - 整体完成度：S0 ✅ / S1 ✅ / S2 ⬜ / S3 ⬜ / S4 ⬜ / S5 ⬜ / S6 ⬜ / S7 ⬜
 - 最后更新时间：2026-10-24
-- 当前阻塞项：无（**注意：本机未安装 git**，阶段提交流程待确认处理方式）
+- 当前阻塞项：无（git 已安装并初始化仓库，阶段提交流程可用）
 - 下一步动作：进入 S2 数据层 —— GORM 模型（Weapon/Category/Loadout，含 `InGameName`/`Mode`）、SQLite 初始化（`os.UserConfigDir()`）、`go:embed` 嵌入 `weapons.json` 并种子写入、仓储层
 
 ## 阶段总览
@@ -72,6 +72,8 @@
 - [x] 删除模板遗留 `style.css`、`components/HelloWorld.vue`
 - [x] `.gitignore` 补 `*.db` / `*.db-shm` / `*.db-wal` / `*.exe`
 - [x] `README.md` 重写：功能、技术栈、目录结构、**枪械数据集说明 + 数据来源与核对记录**（关闭 S1 遗留项）
+- [x] 安装 Git for Windows 2.55.0.5（winget），`git init -b main`，加 `.gitattributes`（eol=lf）
+- [x] 分两次提交：`feat(S1): 枪械分类与基础信息数据集…` / `chore(S0): 初始化 Wails + Vue3 + TS + Tailwind v3 工程骨架与暗色主题`
 
 **设计决策**
 - 保留 Wails 模板自带的 Vite3 / vue-tsc1.8 / TS4.6 版本不动，避免升级踩坑；Tailwind 单独固定 v3
@@ -99,7 +101,9 @@
 - 剪贴板走 Go 侧 `runtime.ClipboardSetText`，不用 `navigator.clipboard`（WebView2 权限不稳定）
 - Tailwind 用 v3，不用 v4（v4 配置格式不同）
 - `delta-code.cn`、`mobile.moegirl.org.cn` 无法用 WebFetch 抓取（域名安全校验不通过），只能通过搜索结果获取信息
-- **本机未安装 git**：`wails init -g` 会失败（`git.exe not found`），`winget` 可用，需要时应先装 Git for Windows
+- **本机原先未安装 git**，S0 期间已通过 `winget install Git.Git` 安装 **Git 2.55.0.5**；`git.exe` 位于 `C:\Program Files\Git\cmd`（新开终端才会自动进 PATH）
+- git 仓库已在 `E:\ai_yard\gunCode` 初始化（分支 `main`），本地身份 `GunCode Dev <dev@guncode.local>`；已加 `.gitattributes` 统一 `eol=lf`，并设 `core.autocrlf=false`
+- 已有提交：`bce555f feat(S1): ...` → `d4e0878 chore(S0): ...`
 - Tailwind 用 v3，不用 v4（v4 配置格式不同）；已固定 `tailwindcss@3.4.17`
 - Wails 模板的 `main.css` 里 `@font-face` 相对路径基准是 CSS 文件自身所在目录（`src/assets/`），字体在 `src/assets/fonts/`，故写 `./fonts/...`
 - PowerShell 5.1：不支持 `&&`，链式命令用 `;` 或 `if ($?) { ... }`

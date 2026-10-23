@@ -161,5 +161,7 @@ guncode/
 ## 9. 本机环境速查
 
 - Windows 11 / Go 1.23.5 / Wails v2.9.2 / Node 24.16.0 / npm 11.13.0 / WebView2 已安装
+- Git for Windows **2.55.0.5**（`C:\Program Files\Git\cmd`，新终端才自动进 PATH；本会话可用 `$env:PATH += ";C:\Program Files\Git\cmd"`）
+- 仓库：`E:\ai_yard\gunCode`，分支 `main`，本地身份 `GunCode Dev <dev@guncode.local>`；`.gitattributes` 统一 `eol=lf`，`core.autocrlf=false`
 - 打包可选依赖 `upx`、`nsis` 均可用
 - 数据库默认位置：`%APPDATA%/GunCode/guncode.db`
