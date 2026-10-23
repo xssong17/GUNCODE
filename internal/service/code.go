@@ -40,6 +40,12 @@ func BuildShareCode(mode, inGameName, code string) string {
 		if strings.HasPrefix(code, prefix) {
 			return code
 		}
+		// 兜底：若码已带「-烽火地带-」标记，说明它已是烽火地带的完整码
+		// （仅枪名前缀可能与当前 inGameName 有出入，如赛季改名）。
+		// 此时不再补前缀，原样返回，避免生成双前缀。
+		if strings.Contains(code, opSeparator) {
+			return code
+		}
 		return prefix + code
 
 	case model.ModeWW:

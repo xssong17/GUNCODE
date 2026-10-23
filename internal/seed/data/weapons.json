@@ -450,7 +450,7 @@
     {
       "id": "pkm",
       "name": "PKM",
-      "inGameName": "PKM轻机枪",
+      "inGameName": "PKM通用机枪",
       "category": "lmg",
       "aliases": [],
       "caliber": null,
@@ -461,7 +461,7 @@
     {
       "id": "m250",
       "name": "M250",
-      "inGameName": "M250轻机枪",
+      "inGameName": "M250通用机枪",
       "category": "lmg",
       "aliases": ["XM250"],
       "caliber": null,
@@ -472,7 +472,7 @@
     {
       "id": "qjb201",
       "name": "QJB-201",
-      "inGameName": "QJB-201轻机枪",
+      "inGameName": "QJB201轻机枪",
       "category": "lmg",
       "aliases": ["QJB201", "QJB"],
       "caliber": null,

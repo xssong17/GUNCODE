@@ -15,6 +15,7 @@ func testWeapons() []model.Weapon {
 		{Key: "m7", Name: "M7", InGameName: "M7战斗步枪", CategoryKey: "ar", CategoryName: "突击步枪"},
 		{Key: "s12k", Name: "S12K", InGameName: "S12K霰弹枪", CategoryKey: "shotgun", CategoryName: "霰弹枪"},
 		{Key: "r93", Name: "R93", InGameName: "R93狙击步枪", CategoryKey: "sniper", CategoryName: "狙击步枪"},
+		{Key: "pkm", Name: "PKM", InGameName: "PKM通用机枪", CategoryKey: "lmg", CategoryName: "轻机枪"},
 	}
 }
 
@@ -27,6 +28,8 @@ func TestBuildShareCodeOp(t *testing.T) {
 	}{
 		{"裸码需补前缀", "AKM突击步枪", "6KJ5IFS0A021USGQ8AC2S", "AKM突击步枪-烽火地带-6KJ5IFS0A021USGQ8AC2S"},
 		{"已有前缀不重复补", "AKM突击步枪", "AKM突击步枪-烽火地带-6KJ5IFS0A021USGQ8AC2S", "AKM突击步枪-烽火地带-6KJ5IFS0A021USGQ8AC2S"},
+		{"前缀与 inGame 不一致但已是烽火码不重复补", "PKM轻机枪", "PKM通用机枪-烽火地带-6LMHJE80EMQOVLD6DHRMP", "PKM通用机枪-烽火地带-6LMHJE80EMQOVLD6DHRMP"},
+		{"PKM 用通用机枪全名", "PKM通用机枪", "6LMHJE80EMQOVLD6DHRMP", "PKM通用机枪-烽火地带-6LMHJE80EMQOVLD6DHRMP"},
 		{"M7 用战斗步枪全名", "M7战斗步枪", "ABC123", "M7战斗步枪-烽火地带-ABC123"},
 		{"无全名时原样返回", "", "ABC123", "ABC123"},
 	}
@@ -93,6 +96,11 @@ func TestParseShareCode(t *testing.T) {
 			name:    "AK 别名不应抢走 AK-12",
 			input:   "AK-12突击步枪-烽火地带-XYZ",
 			matched: true, key: "ak12", mode: model.ModeOp, payload: "XYZ",
+		},
+		{
+			name:    "PKM 通用机枪完整烽火地带码",
+			input:   "PKM通用机枪-烽火地带-6LMHJE80EMQOVLD6DHRMP",
+			matched: true, key: "pkm", mode: model.ModeOp, payload: "6LMHJE80EMQOVLD6DHRMP",
 		},
 		{
 			name:    "别名 AK 匹配 AKM",
