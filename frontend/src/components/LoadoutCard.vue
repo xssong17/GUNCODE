@@ -102,8 +102,8 @@ function isPrice(tag: string) {
       </span>
     </div>
 
-    <!-- 改枪码（占满剩余空间，保证卡片等高、底部对齐） -->
-    <div class="code-text mt-2.5 line-clamp-4 min-h-[70px] flex-1" :title="loadout.code">{{ loadout.code }}</div>
+    <!-- 改枪码（固定 4 行高度） -->
+    <div class="code-text mt-2.5 line-clamp-4" :title="loadout.code">{{ loadout.code }}</div>
 
     <!-- 备注与调校 -->
     <p v-if="loadout.note" class="mt-2 truncate text-[11px] text-slate-400" :title="loadout.note">
