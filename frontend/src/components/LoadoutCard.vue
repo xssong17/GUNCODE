@@ -31,6 +31,11 @@ function modeClass(mode: string) {
   if (mode === MODE_UNKNOWN) return 'bg-slate-600/30 text-slate-400'
   return 'bg-emerald-500/15 text-emerald-300'
 }
+
+/** 价格标签（数字 + w，如 10w / 35w）单独用图标+橙色展示 */
+function isPrice(tag: string) {
+  return /^\d+\s*w$/i.test(tag)
+}
 </script>
 
 <template>
@@ -75,14 +80,15 @@ function modeClass(mode: string) {
       </button>
     </header>
 
-    <!-- 标签 -->
+    <!-- 标签（价格标签橙色+💰图标，普通标签灰+#） -->
     <div v-if="loadout.tags.length" class="mt-2 flex flex-wrap gap-1">
       <span
         v-for="tag in loadout.tags"
         :key="tag"
-        class="rounded bg-surface-border/70 px-1.5 py-0.5 text-[10px] text-slate-400"
+        class="rounded px-1.5 py-0.5 text-[10px]"
+        :class="isPrice(tag) ? 'bg-accent-soft text-accent' : 'bg-surface-border/70 text-slate-400'"
       >
-        #{{ tag }}
+        {{ isPrice(tag) ? '💰' : '#' }}{{ tag }}
       </span>
     </div>
 
