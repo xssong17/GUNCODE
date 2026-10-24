@@ -59,7 +59,7 @@ function isPrice(tag: string) {
         点击卡片复制
       </span>
     </div>
-    <!-- 头部：枪械名 + 模式 + 收藏 -->
+    <!-- 头部：枪械名 + 模式 + 操作（编辑/删除/收藏，SVG 图标） -->
     <header class="flex items-start justify-between gap-2">
       <div class="min-w-0">
         <div class="flex items-center gap-2">
@@ -70,14 +70,30 @@ function isPrice(tag: string) {
         </div>
         <h3 class="mt-1 truncate text-[13px] text-slate-300" :title="loadout.title">{{ loadout.title }}</h3>
       </div>
-      <button
-        class="shrink-0 flex h-6 w-6 items-center justify-center rounded text-base leading-none transition-colors"
-        :class="loadout.favorite ? 'bg-accent-soft text-accent' : 'text-slate-500 hover:text-slate-300'"
-        :title="loadout.favorite ? '取消收藏' : '收藏'"
-        @click.stop="emit('toggle-favorite', loadout)"
-      >
-        ★
-      </button>
+      <div class="flex shrink-0 items-center gap-0.5">
+        <button
+          class="flex h-6 w-6 items-center justify-center rounded text-slate-400 transition hover:bg-surface-sunken hover:text-accent"
+          title="编辑"
+          @click.stop="emit('edit', loadout)"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+        </button>
+        <button
+          class="flex h-6 w-6 items-center justify-center rounded text-slate-400 transition hover:bg-rose-500/15 hover:text-rose-400"
+          title="删除"
+          @click.stop="emit('remove', loadout)"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+        </button>
+        <button
+          class="flex h-6 w-6 items-center justify-center rounded transition"
+          :class="loadout.favorite ? 'text-accent' : 'text-slate-500 hover:text-slate-300'"
+          :title="loadout.favorite ? '取消收藏' : '收藏'"
+          @click.stop="emit('toggle-favorite', loadout)"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" :fill="loadout.favorite ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </button>
+      </div>
     </header>
 
     <!-- 标签（价格标签橙色+💰图标，普通标签灰+#） -->
@@ -102,23 +118,5 @@ function isPrice(tag: string) {
     <p v-if="loadout.tuning" class="mt-1 truncate text-[11px] text-slate-500" :title="loadout.tuning">
       调校：{{ loadout.tuning }}
     </p>
-
-    <!-- 操作：编辑/删除（复制=点击整卡） -->
-    <footer class="mt-3 flex items-center justify-end gap-1 border-t border-surface-border pt-2.5">
-      <button
-        class="flex h-7 w-7 items-center justify-center rounded text-sm text-slate-400 transition hover:bg-surface-sunken hover:text-accent"
-        title="编辑"
-        @click.stop="emit('edit', loadout)"
-      >
-        ✏️
-      </button>
-      <button
-        class="flex h-7 w-7 items-center justify-center rounded text-sm text-slate-400 transition hover:bg-rose-500/15 hover:text-rose-400"
-        title="删除"
-        @click.stop="emit('remove', loadout)"
-      >
-        🗑️
-      </button>
-    </footer>
   </article>
 </template>
