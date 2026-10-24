@@ -10,6 +10,7 @@ import WeaponCard from '../components/WeaponCard.vue'
 import WeaponSidebar from '../components/WeaponSidebar.vue'
 import { useGunCode } from '../composables/useGunCode'
 import { useToast } from '../composables/useToast'
+import { MODE_OP, MODE_WW } from '../types'
 import type { LoadoutDTO, LoadoutInput, SortKey, Weapon } from '../types'
 
 const { categories, weapons, loadouts, loading, error, weaponCounts, weaponsByCategory, refresh, appInfo } =
@@ -139,6 +140,15 @@ const weaponScopedTags = computed(() => {
     price: entries.filter(([t]) => isPriceTag(t)).slice(0, 6).map(([t]) => t),
   }
 })
+
+// —— 方案按模式分组（区分烽火地带 / 全面战场）——
+const selectedMode = ref('')
+function toggleMode(m: string) {
+  selectedMode.value = selectedMode.value === m ? '' : m
+}
+const opLoadouts = computed(() => visible.value.filter((l) => l.mode === MODE_OP))
+const wwLoadouts = computed(() => visible.value.filter((l) => l.mode === MODE_WW))
+const otherLoadouts = computed(() => visible.value.filter((l) => l.mode !== MODE_OP && l.mode !== MODE_WW))
 const selectedTag = ref('')
 function toggleTag(t: string) {
   selectedTag.value = selectedTag.value === t ? '' : t
@@ -232,6 +242,7 @@ const visible = computed(() => {
     if (!selectedWeaponId.value && selectedCategory.value && l.categoryKey !== selectedCategory.value) return false
     if (onlyFavorite.value && !l.favorite) return false
     if (selectedTag.value && !l.tags.includes(selectedTag.value)) return false
+    if (selectedMode.value && l.mode !== selectedMode.value) return false
     if (!kw) return true
     const hay = [
       l.title,
@@ -491,11 +502,21 @@ function msg(e: unknown) {
             </div>
           </div>
 
-          <!-- 快捷标签/价格筛选（当前枪） -->
-          <div
-            v-if="weaponScopedTags.normal.length || weaponScopedTags.price.length"
-            class="mb-4 flex flex-col gap-1.5"
-          >
+          <!-- 快捷筛选：模式 + 标签/价格（当前枪） -->
+          <div class="mb-4 flex flex-col gap-1.5">
+            <div class="flex flex-wrap items-center gap-1.5">
+              <span class="text-[11px] text-slate-500">🎮 模式：</span>
+              <button
+                class="rounded-md border px-2 py-0.5 text-[11px] transition"
+                :class="selectedMode === 'op' ? 'border-accent bg-accent-soft text-accent' : 'border-surface-border text-slate-400 hover:border-accent/50 hover:text-slate-200'"
+                @click="toggleMode('op')"
+              >🔥 烽火地带</button>
+              <button
+                class="rounded-md border px-2 py-0.5 text-[11px] transition"
+                :class="selectedMode === 'ww' ? 'border-accent bg-accent-soft text-accent' : 'border-surface-border text-slate-400 hover:border-accent/50 hover:text-slate-200'"
+                @click="toggleMode('ww')"
+              >⚔️ 全面战场</button>
+            </div>
             <div v-if="weaponScopedTags.normal.length" class="flex flex-wrap items-center gap-1.5">
               <span class="text-[11px] text-slate-500">🏷️ 标签：</span>
               <button
@@ -532,18 +553,64 @@ function msg(e: unknown) {
             </button>
           </div>
 
-          <!-- 方案卡片网格（选中具体某把枪） -->
-          <div v-else class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
-            <LoadoutCard
-              v-for="l in visible"
-              :key="l.id"
-              :loadout="l"
-              :show-weapon-name="false"
-              @copy="onCopy"
-              @edit="openEdit"
-              @remove="deleting = $event"
-              @toggle-favorite="onToggleFavorite"
-            />
+          <!-- 方案按模式分组显示（区分烽火地带 / 全面战场） -->
+          <div v-else class="flex flex-col gap-5">
+            <section v-if="opLoadouts.length">
+              <div class="mb-2 flex items-center gap-2">
+                <span class="text-sm font-semibold text-sky-300">🔥 烽火地带</span>
+                <span class="text-[11px] text-slate-500">{{ opLoadouts.length }} 套</span>
+              </div>
+              <div class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
+                <LoadoutCard
+                  v-for="l in opLoadouts"
+                  :key="l.id"
+                  :loadout="l"
+                  :show-weapon-name="false"
+                  @copy="onCopy"
+                  @edit="openEdit"
+                  @remove="deleting = $event"
+                  @toggle-favorite="onToggleFavorite"
+                />
+              </div>
+            </section>
+
+            <section v-if="wwLoadouts.length">
+              <div class="mb-2 flex items-center gap-2">
+                <span class="text-sm font-semibold text-emerald-300">⚔️ 全面战场</span>
+                <span class="text-[11px] text-slate-500">{{ wwLoadouts.length }} 套</span>
+              </div>
+              <div class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
+                <LoadoutCard
+                  v-for="l in wwLoadouts"
+                  :key="l.id"
+                  :loadout="l"
+                  :show-weapon-name="false"
+                  @copy="onCopy"
+                  @edit="openEdit"
+                  @remove="deleting = $event"
+                  @toggle-favorite="onToggleFavorite"
+                />
+              </div>
+            </section>
+
+            <section v-if="otherLoadouts.length">
+              <div class="mb-2 flex items-center gap-2">
+                <span class="text-sm font-semibold text-slate-300">未标注</span>
+                <span class="text-[11px] text-slate-500">{{ otherLoadouts.length }} 套</span>
+              </div>
+              <div class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
+                <LoadoutCard
+                  v-for="l in otherLoadouts"
+                  :key="l.id"
+                  :loadout="l"
+                  :show-weapon-name="false"
+                  @copy="onCopy"
+                  @edit="openEdit"
+                  @remove="deleting = $event"
+                  @toggle-favorite="onToggleFavorite"
+                />
+              </div>
+            </section>
           </div>
         </template>
       </div>
