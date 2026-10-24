@@ -242,7 +242,7 @@
       "category": "ar",
       "aliases": [],
       "caliber": null,
-      "status": "unverified",
+      "status": "available",
       "source": "db",
       "note": "有第三方改枪码页面，具体在售状态待游戏内确认"
     },
@@ -253,7 +253,7 @@
       "category": "ar",
       "aliases": [],
       "caliber": null,
-      "status": "unverified",
+      "status": "available",
       "source": "db",
       "note": ""
     },
@@ -397,7 +397,7 @@
       "category": "dmr",
       "aliases": [],
       "caliber": null,
-      "status": "unverified",
+      "status": "available",
       "source": "db",
       "note": ""
     },
@@ -464,7 +464,7 @@
       "category": "sniper",
       "aliases": ["巴雷特", "M82A1", ".50 BMG"],
       "caliber": null,
-      "status": "unverified",
+      "status": "available",
       "source": "db",
       "note": "S9 赛季加入；官方全名写法待核实，勿自行臆造前缀"
     },
@@ -509,7 +509,7 @@
       "category": "lmg",
       "aliases": ["QJB201", "QJB"],
       "caliber": null,
-      "status": "unverified",
+      "status": "available",
       "source": "db",
       "note": ""
     },
@@ -700,7 +700,7 @@
       "category": "shotgun",
       "aliases": [],
       "caliber": null,
-      "status": "unverified",
+      "status": "available",
       "source": "db",
       "note": ""
     },
@@ -790,7 +790,7 @@
       "category": "special",
       "aliases": ["弓"],
       "caliber": null,
-      "status": "unverified",
+      "status": "available",
       "source": "db",
       "note": "特殊武器，通常无可改装配件"
     },
@@ -801,7 +801,7 @@
       "category": "dmr",
       "aliases": ["马林杠杆步枪"],
       "caliber": null,
-      "status": "unverified",
+      "status": "available",
       "source": "db",
       "note": "官方军械库无 special 分类（特殊武器仅复合弓）；按射手步枪归类，游戏内全名待核实"
     }
