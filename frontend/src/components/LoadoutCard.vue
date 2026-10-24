@@ -71,8 +71,8 @@ function isPrice(tag: string) {
         <h3 class="mt-1 truncate text-[13px] text-slate-300" :title="loadout.title">{{ loadout.title }}</h3>
       </div>
       <button
-        class="shrink-0 text-base leading-none transition-colors"
-        :class="loadout.favorite ? 'text-accent' : 'text-slate-500 hover:text-slate-400'"
+        class="shrink-0 flex h-6 w-6 items-center justify-center rounded text-base leading-none transition-colors"
+        :class="loadout.favorite ? 'bg-accent-soft text-accent' : 'text-slate-500 hover:text-slate-300'"
         :title="loadout.favorite ? '取消收藏' : '收藏'"
         @click.stop="emit('toggle-favorite', loadout)"
       >

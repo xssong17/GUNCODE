@@ -96,6 +96,13 @@ const hotPriceTags = computed(() =>
     .slice(0, 6)
     .map(([t]) => t),
 )
+/** 已有方案的枪械分类（供快捷「类型」筛选行） */
+const hotCategories = computed(() =>
+  weaponsByCategory.value.filter((g) => g.weapons.some((w) => (weaponCounts.value.get(w.id) ?? 0) > 0)),
+)
+function toggleCategory(key: string) {
+  selectedCategory.value = selectedCategory.value === key ? '' : key
+}
 const selectedTag = ref('')
 function toggleTag(t: string) {
   selectedTag.value = selectedTag.value === t ? '' : t
@@ -132,6 +139,7 @@ const weaponCards = computed<Weapon[]>(() => {
     if (selectedCategory.value && g.key !== selectedCategory.value) continue
     for (const w of g.weapons) {
       if ((weaponCounts.value.get(w.id) ?? 0) === 0) continue
+      if (onlyFavorite.value && (weaponFavCount.value.get(w.id) ?? 0) === 0) continue
       if (kw) {
         const tags = [...(weaponTags.value.get(w.id) ?? [])].join(' ')
         const hay = `${w.name} ${w.inGameName} ${w.aliases ?? ''} ${tags}`.toLowerCase()
@@ -354,8 +362,21 @@ function msg(e: unknown) {
 
         <!-- 枪械卡片视图（未选中具体枪：全部枪械 / 某分类） -->
         <template v-else-if="showWeaponGrid">
-          <!-- 快捷筛选标签：全部枪械视图，价格标签单独一行 -->
-          <div v-if="hotTags.length || hotPriceTags.length" class="mb-4 flex flex-col gap-1.5">
+          <!-- 快捷筛选：类型 + 标签（价格单行） -->
+          <div
+            v-if="hotCategories.length || hotTags.length || hotPriceTags.length"
+            class="mb-4 flex flex-col gap-1.5"
+          >
+            <div v-if="hotCategories.length" class="flex flex-wrap items-center gap-1.5">
+              <span class="text-[11px] text-slate-500">🔫 类型：</span>
+              <button
+                v-for="g in hotCategories"
+                :key="g.key"
+                class="rounded-md border px-2 py-0.5 text-[11px] transition"
+                :class="selectedCategory === g.key ? 'border-accent bg-accent-soft text-accent' : 'border-surface-border text-slate-400 hover:border-accent/50 hover:text-slate-200'"
+                @click="toggleCategory(g.key)"
+              >{{ g.name }}</button>
+            </div>
             <div v-if="hotTags.length" class="flex flex-wrap items-center gap-1.5">
               <span class="text-[11px] text-slate-500">🏷️ 标签：</span>
               <button
@@ -402,6 +423,7 @@ function msg(e: unknown) {
               :key="w.id"
               :weapon="w"
               :count="weaponCounts.get(w.id) ?? 0"
+              :favorited="(weaponFavCount.get(w.id) ?? 0) > 0"
               @select="selectWeapon(w.id)"
             />
           </div>

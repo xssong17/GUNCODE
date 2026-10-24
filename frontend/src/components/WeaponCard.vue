@@ -12,6 +12,8 @@ const props = defineProps<{
   weapon: Weapon
   /** 该枪的改枪码方案数量 */
   count: number
+  /** 该枪是否存在收藏方案 */
+  favorited?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -55,6 +57,12 @@ const bgClass = computed(() => CATEGORY_BG[props.weapon.categoryKey] ?? 'from-sl
         loading="lazy"
         @error="imgFailed = true"
       />
+      <!-- 收藏角标：该枪有收藏方案 -->
+      <span
+        v-if="favorited"
+        class="absolute left-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent-soft text-xs text-accent shadow"
+        title="有收藏方案"
+      >★</span>
       <div v-if="imgFailed" class="absolute inset-0 flex flex-col items-center justify-center">
         <span class="text-xl font-bold tracking-wide text-slate-500">{{ weapon.name }}</span>
         <span class="mt-0.5 text-[10px] text-slate-400">{{ weapon.categoryName }}</span>
