@@ -101,6 +101,20 @@ function hasTag(t: string) {
   return tags.value.split(/[,，]/).map((x) => x.trim()).includes(t)
 }
 
+/** 单标签输入：输入后点 + 或回车添加 */
+const tagInput = ref('')
+const tagList = computed(() => tags.value.split(/[,，]/).map((x) => x.trim()).filter(Boolean))
+function addTag() {
+  const t = tagInput.value.trim()
+  if (!t) return
+  pushTag(t)
+  tagInput.value = ''
+}
+function removeTag(t: string) {
+  const cur = tagList.value.filter((x) => x !== t)
+  tags.value = cur.join(', ')
+}
+
 /** 枪械选择器容器引用：点击其外部时收起下拉（不必非要选中才收起） */
 const weaponPickerRef = ref<HTMLElement | null>(null)
 function onDocClick(e: MouseEvent) {
@@ -358,15 +372,34 @@ function submit() {
           <!-- 标签（含可选价格标签） -->
           <label class="block">
             <span class="mb-1 flex items-center justify-between text-xs text-slate-400">
-              <span>🏷️ 标签（逗号分隔）</span>
+              <span>🏷️ 标签</span>
               <span class="text-slate-500">可选价格标签</span>
             </span>
-            <input
-              v-model="tags"
-              type="text"
-              placeholder="中距, 架枪, 10w"
-              class="w-full rounded-md border border-surface-border bg-surface-sunken px-2 py-1.5 text-sm text-slate-200 placeholder:text-slate-500 focus:border-accent focus:outline-none"
-            />
+            <div class="flex gap-1.5">
+              <input
+                v-model="tagInput"
+                type="text"
+                placeholder="输入标签，点 + 或回车添加"
+                class="flex-1 rounded-md border border-surface-border bg-surface-sunken px-2 py-1.5 text-sm text-slate-200 placeholder:text-slate-500 focus:border-accent focus:outline-none"
+                @keydown.enter.prevent="addTag"
+              />
+              <button
+                class="shrink-0 rounded-md border border-accent/50 bg-accent-soft px-3 text-lg leading-none text-accent transition hover:bg-accent hover:text-slate-900"
+                title="添加标签"
+                @click="addTag"
+              >+</button>
+            </div>
+            <!-- 已添加标签 -->
+            <div v-if="tagList.length" class="mt-1.5 flex flex-wrap items-center gap-1.5">
+              <span
+                v-for="t in tagList"
+                :key="t"
+                class="inline-flex items-center gap-1 rounded border border-surface-border bg-surface-sunken px-1.5 py-0.5 text-[11px] text-slate-300"
+              >
+                {{ t }}
+                <button class="text-slate-500 transition hover:text-rose-400" title="删除标签" @click="removeTag(t)">×</button>
+              </span>
+            </div>
             <!-- 价格标签快捷添加（单选，带图标） -->
             <div class="mt-1.5 flex flex-wrap items-center gap-1.5">
               <span class="text-[11px] text-slate-500">价格：</span>
