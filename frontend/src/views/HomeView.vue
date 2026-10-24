@@ -110,7 +110,8 @@ const weaponCards = computed<Weapon[]>(() => {
     for (const w of g.weapons) {
       if ((weaponCounts.value.get(w.id) ?? 0) === 0) continue
       if (kw) {
-        const hay = `${w.name} ${w.inGameName} ${w.aliases ?? ''}`.toLowerCase()
+        const tags = [...(weaponTags.value.get(w.id) ?? [])].join(' ')
+        const hay = `${w.name} ${w.inGameName} ${w.aliases ?? ''} ${tags}`.toLowerCase()
         if (!hay.includes(kw)) continue
       }
       if (selectedTag.value && !weaponTags.value.get(w.id)?.has(selectedTag.value)) continue
