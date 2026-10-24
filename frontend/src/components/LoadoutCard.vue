@@ -51,14 +51,6 @@ function isPrice(tag: string) {
     >
       已复制 ✓
     </span>
-    <!-- hover 提示可复制 -->
-    <div
-      class="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pb-1.5 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
-    >
-      <span class="rounded-full bg-accent px-2.5 py-0.5 text-[10px] font-medium text-slate-300 shadow">
-        点击卡片复制
-      </span>
-    </div>
     <!-- 头部：枪械名 + 模式 + 操作（编辑/删除/收藏，SVG 图标） -->
     <header class="flex items-start justify-between gap-2">
       <div class="min-w-0">
