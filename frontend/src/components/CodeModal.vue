@@ -203,6 +203,37 @@ function submit() {
 
         <!-- 表单 -->
         <div class="min-h-0 flex-1 space-y-3 overflow-y-auto px-5 py-4">
+          <!-- 改枪码：主输入置顶，粘贴即识别（参考购物网站地址自动识别交互） -->
+          <label class="block">
+            <span class="mb-1 flex items-center justify-between text-xs text-slate-400">
+              <span>改枪码 * <span class="text-slate-500">（粘贴分享码自动识别枪械与模式）</span></span>
+              <span v-if="parsing" class="text-slate-500">识别中…</span>
+            </span>
+            <textarea
+              v-model="code"
+              rows="4"
+              placeholder="粘贴游戏分享码，如：ASh-12战斗步枪-烽火地带-6LMG4C405TSE92LSNK30S&#10;识别完成后，只需核对下方自动填好的信息"
+              class="w-full resize-y rounded-lg border bg-surface-sunken px-3 py-2 font-mono text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none"
+              :class="codeError ? 'border-rose-500' : 'border-surface-border focus:border-accent'"
+              @paste="onPaste"
+              @input="updatePreview"
+            />
+            <span v-if="codeError" class="mt-1 block text-xs text-rose-400">{{ codeError }}</span>
+            <span
+              v-else-if="parseHint"
+              class="mt-1 block text-xs"
+              :class="parseHint.type === 'ok' ? 'text-emerald-400' : 'text-amber-400'"
+            >
+              {{ parseHint.text }}
+            </span>
+          </label>
+
+          <!-- 导入预览：识别结果反馈 -->
+          <div v-if="preview" class="rounded-md border border-accent/40 bg-accent-soft/40 p-2">
+            <div class="mb-1 text-[11px] text-slate-400">导入游戏时会复制这段：</div>
+            <div class="break-all font-mono text-[11px] leading-relaxed text-emerald-300">{{ preview }}</div>
+          </div>
+
           <!-- 枪械：可搜索选择器，粘贴分享码自动识别优先 -->
           <label class="block">
             <span class="mb-1 block text-xs text-slate-400">
@@ -285,37 +316,6 @@ function submit() {
             <p class="mt-1 text-[11px] leading-relaxed text-slate-500">
               烽火地带码需带「武器全名-烽火地带-」前缀才能导入游戏；全面战场为裸码。
             </p>
-          </div>
-
-          <!-- 改枪码 -->
-          <label class="block">
-            <span class="mb-1 flex items-center justify-between text-xs text-slate-400">
-              <span>改枪码 *</span>
-              <span v-if="parsing" class="text-slate-500">识别中…</span>
-            </span>
-            <textarea
-              v-model="code"
-              rows="3"
-              placeholder="粘贴游戏分享码，或手动输入"
-              class="w-full resize-y rounded-md border bg-surface-sunken px-2 py-1.5 font-mono text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none"
-              :class="codeError ? 'border-rose-500' : 'border-surface-border focus:border-accent'"
-              @paste="onPaste"
-              @input="updatePreview"
-            />
-            <span v-if="codeError" class="mt-1 block text-xs text-rose-400">{{ codeError }}</span>
-            <span
-              v-else-if="parseHint"
-              class="mt-1 block text-xs"
-              :class="parseHint.type === 'ok' ? 'text-emerald-400' : 'text-amber-400'"
-            >
-              {{ parseHint.text }}
-            </span>
-          </label>
-
-          <!-- 导入预览 -->
-          <div v-if="preview" class="rounded-md border border-surface-border bg-surface-sunken p-2">
-            <div class="mb-1 text-[11px] text-slate-400">导入游戏时会复制这段：</div>
-            <div class="break-all font-mono text-[11px] leading-relaxed text-emerald-300">{{ preview }}</div>
           </div>
 
           <!-- 标签 -->
