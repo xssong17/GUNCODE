@@ -15,6 +15,10 @@ const { appInfo } = useGunCode()
 const homeViewRef = ref<InstanceType<typeof HomeView> | null>(null)
 async function onExport() { await homeViewRef.value?.onExport() }
 async function onImport() { await homeViewRef.value?.onImport() }
+
+/** 标题栏下拉菜单与「关于」弹窗 */
+const menuOpen = ref(false)
+const aboutOpen = ref(false)
 </script>
 
 <template>
@@ -32,21 +36,34 @@ async function onImport() { await homeViewRef.value?.onImport() }
       </div>
 
       <div class="ml-auto flex h-full items-center" style="--wails-draggable: no-drag">
-        <span class="mr-3 text-[11px] text-slate-500">作者 书包呀 · 数据 v{{ appInfo?.datasetVersion ?? '—' }}</span>
         <span class="mr-2 rounded border border-accent/40 px-2 py-0.5 text-[10px] tracking-wider text-accent">
           三角洲行动
         </span>
-        <div class="mr-1 flex h-full items-center gap-1">
+        <div class="relative mr-1 flex h-full items-center">
           <button
-            class="flex h-8 items-center rounded border border-surface-border px-2.5 text-xs text-slate-300 transition hover:bg-surface-raised hover:text-slate-100"
-            title="把所有改枪方案导出为 JSON 备份"
-            @click="onExport"
-          >导出</button>
-          <button
-            class="flex h-8 items-center rounded border border-surface-border px-2.5 text-xs text-slate-300 transition hover:bg-surface-raised hover:text-slate-100"
-            title="从 JSON 备份导入改枪方案"
-            @click="onImport"
-          >导入</button>
+            class="flex h-full w-10 items-center justify-center text-lg text-slate-400 transition hover:bg-surface-raised hover:text-slate-100"
+            title="菜单"
+            @click.stop="menuOpen = !menuOpen"
+          >⋮</button>
+          <div
+            v-if="menuOpen"
+            class="absolute right-0 top-full z-50 mt-1 w-44 overflow-hidden rounded-md border border-surface-border bg-surface-raised py-1 shadow-xl"
+            @click.stop
+          >
+            <button
+              class="flex w-full items-center px-3 py-2 text-left text-sm text-slate-200 transition hover:bg-surface-sunken"
+              @click="menuOpen = false; onExport()"
+            >导出备份</button>
+            <button
+              class="flex w-full items-center px-3 py-2 text-left text-sm text-slate-200 transition hover:bg-surface-sunken"
+              @click="menuOpen = false; onImport()"
+            >导入备份</button>
+            <div class="my-1 h-px bg-surface-border"></div>
+            <button
+              class="flex w-full items-center px-3 py-2 text-left text-sm text-slate-200 transition hover:bg-surface-sunken"
+              @click="menuOpen = false; aboutOpen = true"
+            >关于</button>
+          </div>
         </div>
         <div class="flex h-full items-stretch">
           <button
@@ -73,5 +90,46 @@ async function onImport() { await homeViewRef.value?.onImport() }
     </main>
 
     <ToastHost />
+
+    <!-- 标题栏菜单外部点击关闭 -->
+    <div v-if="menuOpen" class="fixed inset-0 z-40" @click="menuOpen = false"></div>
+
+    <!-- 关于弹窗 -->
+    <div
+      v-if="aboutOpen"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      @click="aboutOpen = false"
+    >
+      <div class="w-80 rounded-lg border border-surface-border bg-surface p-5 shadow-xl" @click.stop>
+        <div class="mb-3 flex items-center gap-2">
+          <span class="text-accent text-xl leading-none">▲</span>
+          <h2 class="text-base font-bold text-slate-100">GunCode</h2>
+        </div>
+        <p class="text-sm text-slate-400">三角洲行动 · 改枪码管理器</p>
+        <div class="my-3 h-px bg-surface-border"></div>
+        <dl class="space-y-1.5 text-sm">
+          <div class="flex justify-between">
+            <dt class="text-slate-400">作者</dt>
+            <dd class="text-slate-100">书包呀</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-slate-400">数据版本</dt>
+            <dd class="text-slate-100">v{{ appInfo?.datasetVersion ?? '—' }}</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-slate-400">枪械总数</dt>
+            <dd class="text-slate-100">{{ appInfo?.weaponCount ?? '—' }}</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-slate-400">方案总数</dt>
+            <dd class="text-slate-100">{{ appInfo?.loadoutCount ?? '—' }}</dd>
+          </div>
+        </dl>
+        <button
+          class="mt-4 w-full rounded-md bg-accent py-2 text-sm font-medium text-slate-900 transition hover:brightness-110"
+          @click="aboutOpen = false"
+        >关闭</button>
+      </div>
+    </div>
   </div>
 </template>
