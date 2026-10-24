@@ -4,6 +4,7 @@ import ToastHost from './components/ToastHost.vue'
 import HomeView from './views/HomeView.vue'
 import ChangelogModal from './components/ChangelogModal.vue'
 import { useGunCode } from './composables/useGunCode'
+import { GIT_VERSION } from './generated/buildInfo'
 
 /** 无边框窗口的运行时控制（wails runtime 注入在 window.runtime） */
 const rt = () => (window as any).runtime
@@ -109,31 +110,70 @@ const APP_VERSION = '1.0.0'
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
       @click="aboutOpen = false"
     >
-      <div class="w-80 rounded-lg border border-surface-border bg-surface p-5 shadow-xl" @click.stop>
-        <div class="mb-3 flex items-center gap-2">
-          <span class="text-accent text-xl leading-none">▲</span>
-          <h2 class="text-base font-bold text-slate-100">GunCode</h2>
+      <div class="flex max-h-[85vh] w-[22rem] flex-col rounded-lg border border-surface-border bg-surface shadow-xl" @click.stop>
+        <div class="flex items-center justify-between border-b border-surface-border px-5 py-3.5">
+          <div class="flex items-center gap-2">
+            <span class="text-accent text-xl leading-none">▲</span>
+            <h2 class="text-base font-bold text-slate-100">GunCode</h2>
+          </div>
+          <button
+            class="-mt-1 text-lg text-slate-500 transition hover:text-slate-200"
+            title="关闭"
+            @click="aboutOpen = false"
+          >✕</button>
         </div>
-        <p class="text-sm text-slate-400">三角洲行动 · 改枪码管理器</p>
-        <div class="my-3 h-px bg-surface-border"></div>
-        <dl class="space-y-1.5 text-sm">
-          <div class="flex justify-between">
-            <dt class="text-slate-400">作者</dt>
-            <dd class="text-slate-100">书包呀</dd>
+
+        <div class="flex-1 overflow-y-auto px-5 py-4">
+          <p class="text-sm text-slate-300">三角洲行动 · 改枪码管理器</p>
+
+          <div class="my-3 h-px bg-surface-border"></div>
+          <dl class="space-y-1.5 text-sm">
+            <div class="flex justify-between">
+              <dt class="text-slate-400">作者</dt>
+              <dd class="text-slate-100">书包呀</dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-slate-400">版本</dt>
+              <dd class="text-slate-100">v{{ APP_VERSION }}</dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-slate-400">构建版本</dt>
+              <dd class="text-slate-100">{{ GIT_VERSION }}</dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-slate-400">数据版本</dt>
+              <dd class="text-slate-100">{{ appInfo?.datasetVersion ?? '—' }}</dd>
+            </div>
+          </dl>
+
+          <div class="my-3 h-px bg-surface-border"></div>
+          <div class="space-y-3">
+            <div>
+              <div class="mb-1 text-xs font-semibold text-slate-200">免费声明</div>
+              <p class="text-xs leading-relaxed text-slate-400">
+                本软件完全免费，无任何盈利性质，不含广告、付费或诱导功能，仅作为个人整理改枪码的辅助工具。
+              </p>
+            </div>
+            <div>
+              <div class="mb-1 text-xs font-semibold text-slate-200">图像资源声明</div>
+              <p class="text-xs leading-relaxed text-slate-400">
+                本工具展示的枪械图样来源于《三角洲行动》官方或第三方图鉴站点，其著作权、商标权归原权利方所有，本工具仅作展示与整理，不主张任何权利。如有异议请联系处理。
+              </p>
+            </div>
+            <div>
+              <div class="mb-1 text-xs font-semibold text-slate-200">数据来源声明</div>
+              <p class="text-xs leading-relaxed text-slate-400">
+                武器分类与图样数据参考 dfttk.com 与 deltaforcetools.gg，如有出入请以游戏内实际为准。
+              </p>
+            </div>
+            <div>
+              <div class="mb-1 text-xs font-semibold text-slate-200">免责声明</div>
+              <p class="text-xs leading-relaxed text-slate-400">
+                本工具非《三角洲行动》官方产品，与游戏开发商无任何关联；改枪码仅供个人参考，请以游戏内实际效果为准。
+              </p>
+            </div>
           </div>
-          <div class="flex justify-between">
-            <dt class="text-slate-400">版本</dt>
-            <dd class="text-slate-100">v{{ APP_VERSION }}</dd>
-          </div>
-          <div class="flex justify-between">
-            <dt class="text-slate-400">数据版本</dt>
-            <dd class="text-slate-100">{{ appInfo?.datasetVersion ?? '—' }}</dd>
-          </div>
-        </dl>
-        <button
-          class="mt-4 w-full rounded-md bg-accent py-2 text-sm font-medium text-slate-900 transition hover:brightness-110"
-          @click="aboutOpen = false"
-        >关闭</button>
+        </div>
       </div>
     </div>
 

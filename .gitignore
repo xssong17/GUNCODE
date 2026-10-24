@@ -2,6 +2,9 @@ build/bin
 node_modules
 frontend/dist
 
+# 构建时自动生成的 git 版本信息（勿提交）
+frontend/src/generated
+
 # 本地数据库（运行时生成，位于 %APPDATA%/GunCode/）
 *.db
 *.db-shm
