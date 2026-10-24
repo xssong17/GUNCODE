@@ -1,7 +1,7 @@
 {
   "meta": {
     "game": "三角洲行动 (Delta Force)",
-    "datasetVersion": "2026-10-24",
+    "datasetVersion": "20261024",
     "description": "枪械分类与基础信息数据集。本文件是本应用枪械库的唯一数据源，Go 种子代码据此初始化数据库。",
     "categories": [
       { "id": "ar", "name": "突击步枪", "order": 1 },

@@ -20,8 +20,11 @@ async function onImport() { await homeViewRef.value?.onImport() }
 const menuOpen = ref(false)
 const aboutOpen = ref(false)
 
-/** 应用版本号（手动维护，随发布递增） */
+/** 应用版本号（手动维护，随发布递增；涉及大的功能/UI改动时自增） */
 const APP_VERSION = '1.0.0'
+/** 当前版本说明（展示在「关于」） */
+const VERSION_NOTES =
+  'v1.0.0 首个可用版本：改枪码粘贴识别与导入、JSON 备份导入导出、价格标签、快捷筛选/排序、收藏置顶、卡片点击复制。'
 </script>
 
 <template>
@@ -123,15 +126,12 @@ const APP_VERSION = '1.0.0'
             <dt class="text-slate-400">数据版本</dt>
             <dd class="text-slate-100">{{ appInfo?.datasetVersion ?? '—' }}</dd>
           </div>
-          <div class="flex justify-between">
-            <dt class="text-slate-400">枪械总数</dt>
-            <dd class="text-slate-100">{{ appInfo?.weaponCount ?? '—' }}</dd>
-          </div>
-          <div class="flex justify-between">
-            <dt class="text-slate-400">方案总数</dt>
-            <dd class="text-slate-100">{{ appInfo?.loadoutCount ?? '—' }}</dd>
-          </div>
         </dl>
+        <div class="my-3 h-px bg-surface-border"></div>
+        <div>
+          <div class="mb-1 text-xs text-slate-400">版本说明</div>
+          <p class="text-[12px] leading-relaxed text-slate-400">{{ VERSION_NOTES }}</p>
+        </div>
         <button
           class="mt-4 w-full rounded-md bg-accent py-2 text-sm font-medium text-slate-900 transition hover:brightness-110"
           @click="aboutOpen = false"
