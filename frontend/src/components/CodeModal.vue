@@ -73,6 +73,29 @@ function clearWeapon() {
   updatePreview()
 }
 
+// —— 可选价格标签（快捷添加到 tags）——
+const pricePresets = ['10w', '20w', '40w', '60w']
+const priceInput = ref('')
+/** 把某个标签追加到 tags（逗号分隔，去重） */
+function pushTag(t: string) {
+  const cur = tags.value.split(/[,，]/).map((x) => x.trim()).filter(Boolean)
+  if (t && !cur.includes(t)) cur.push(t)
+  tags.value = cur.join(', ')
+}
+function addPriceTag(p: string) {
+  pushTag(p)
+}
+function addCustomPrice() {
+  const t = priceInput.value.trim()
+  if (t) {
+    pushTag(t)
+    priceInput.value = ''
+  }
+}
+function hasTag(t: string) {
+  return tags.value.split(/[,，]/).map((x) => x.trim()).includes(t)
+}
+
 /** 枪械选择器容器引用：点击其外部时收起下拉（不必非要选中才收起） */
 const weaponPickerRef = ref<HTMLElement | null>(null)
 function onDocClick(e: MouseEvent) {
@@ -327,15 +350,36 @@ function submit() {
             </p>
           </div>
 
-          <!-- 标签 -->
+          <!-- 标签（含可选价格标签） -->
           <label class="block">
-            <span class="mb-1 block text-xs text-slate-400">标签（逗号分隔）</span>
+            <span class="mb-1 flex items-center justify-between text-xs text-slate-400">
+              <span>标签（逗号分隔）</span>
+              <span class="text-slate-500">可选价格标签</span>
+            </span>
             <input
               v-model="tags"
               type="text"
-              placeholder="中距, 架枪"
+              placeholder="中距, 架枪, 10w"
               class="w-full rounded-md border border-surface-border bg-surface-sunken px-2 py-1.5 text-sm text-slate-200 placeholder:text-slate-500 focus:border-accent focus:outline-none"
             />
+            <!-- 价格标签快捷添加 -->
+            <div class="mt-1.5 flex flex-wrap items-center gap-1.5">
+              <span class="text-[11px] text-slate-500">价格：</span>
+              <button
+                v-for="p in pricePresets"
+                :key="p"
+                class="rounded border border-surface-border px-1.5 py-0.5 text-[11px] transition hover:border-accent/60 hover:text-accent"
+                :class="hasTag(p) ? 'border-accent text-accent' : 'text-slate-400'"
+                @click="addPriceTag(p)"
+              >{{ p }}</button>
+              <input
+                v-model="priceInput"
+                type="text"
+                placeholder="自定义，如 35w"
+                class="w-24 rounded border border-surface-border bg-surface-sunken px-1.5 py-0.5 text-[11px] text-slate-200 placeholder:text-slate-500 focus:border-accent focus:outline-none"
+                @keydown.enter="addCustomPrice"
+              />
+            </div>
           </label>
 
           <!-- 调校 -->
