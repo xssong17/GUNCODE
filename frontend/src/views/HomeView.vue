@@ -504,12 +504,12 @@ function msg(e: unknown) {
                 class="rounded-md border px-2 py-0.5 text-[11px] transition"
                 :class="selectedMode === 'op' ? 'border-accent bg-accent-soft text-accent' : 'border-surface-border text-slate-400 hover:border-accent/50 hover:text-slate-200'"
                 @click="toggleMode('op')"
-              >🔥 烽火地带</button>
+              >烽火地带</button>
               <button
                 class="rounded-md border px-2 py-0.5 text-[11px] transition"
                 :class="selectedMode === 'ww' ? 'border-accent bg-accent-soft text-accent' : 'border-surface-border text-slate-400 hover:border-accent/50 hover:text-slate-200'"
                 @click="toggleMode('ww')"
-              >⚔️ 全面战场</button>
+              >全面战场</button>
             </div>
             <div v-if="weaponScopedTags.normal.length" class="flex flex-wrap items-center gap-1.5">
               <span class="flex items-center gap-1 text-[11px] text-slate-500">🏷️ 标签：</span>

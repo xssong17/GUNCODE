@@ -390,17 +390,6 @@ function submit() {
             </div>
           </label>
 
-          <!-- 调校 -->
-          <label class="block">
-            <span class="mb-1 block text-xs text-slate-400">⚙️ 调校参数（可选）</span>
-            <input
-              v-model="tuning"
-              type="text"
-              placeholder="如：枪管上右 / 前握把拉满"
-              class="w-full rounded-md border border-surface-border bg-surface-sunken px-2 py-1.5 text-sm text-slate-200 placeholder:text-slate-500 focus:border-accent focus:outline-none"
-            />
-          </label>
-
           <!-- 备注 -->
           <label class="block">
             <span class="mb-1 block text-xs text-slate-400">📝 备注</span>
