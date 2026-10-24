@@ -19,6 +19,8 @@ export function GetLoadout(arg1:number):Promise<model.LoadoutDTO>;
 
 export function ImportData():Promise<model.ImportResult>;
 
+export function ImportTextLines(arg1:Array<string>):Promise<model.ImportResult>;
+
 export function ListCategories():Promise<Array<model.Category>>;
 
 export function ListLoadouts(arg1:number,arg2:string,arg3:string,arg4:boolean):Promise<Array<model.LoadoutDTO>>;

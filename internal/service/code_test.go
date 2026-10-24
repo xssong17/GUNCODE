@@ -107,6 +107,16 @@ func TestParseShareCode(t *testing.T) {
 			input:   "AK-烽火地带-XYZ",
 			matched: true, key: "akm", mode: model.ModeOp, payload: "XYZ",
 		},
+		{
+			name:    "枪名前带用户备注仍能识别",
+			input:   "KC17 37W AKM突击步枪-烽火地带-6KJ5IFS0A021USGQ8AC2S",
+			matched: true, key: "akm", mode: model.ModeOp, payload: "6KJ5IFS0A021USGQ8AC2S",
+		},
+		{
+			name:    "识别枪但未标注模式",
+			input:   "AKM突击步枪-6KJ5IFS0A021USGQ8AC2S",
+			matched: true, key: "akm", mode: model.ModeUnknown, payload: "6KJ5IFS0A021USGQ8AC2S",
+		},
 	}
 
 	for _, c := range cases {

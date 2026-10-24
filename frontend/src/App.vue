@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import ToastHost from './components/ToastHost.vue'
 import HomeView from './views/HomeView.vue'
 import ChangelogModal from './components/ChangelogModal.vue'
+import ImportTextModal from './components/ImportTextModal.vue'
 import { useGunCode } from './composables/useGunCode'
 import { GIT_VERSION } from './generated/buildInfo'
 
@@ -18,13 +19,19 @@ const homeViewRef = ref<InstanceType<typeof HomeView> | null>(null)
 async function onExport() { await homeViewRef.value?.onExport() }
 async function onImport() { await homeViewRef.value?.onImport() }
 
+/** 批量文本导入完成：交给 HomeView 刷新与反馈 */
+function onTextImported(r: { imported: number; skipped: number }) {
+  homeViewRef.value?.onImportTextResult?.(r)
+}
+
 /** 标题栏下拉菜单与「关于」弹窗 */
 const menuOpen = ref(false)
 const aboutOpen = ref(false)
 const changelogOpen = ref(false)
+const importTextOpen = ref(false)
 
 /** 应用版本号（手动维护，随发布递增；涉及大的功能/UI改动时自增） */
-const APP_VERSION = '1.0.0'
+const APP_VERSION = '1.2.0'
 </script>
 
 <template>
@@ -64,6 +71,10 @@ const APP_VERSION = '1.0.0'
               class="flex w-full items-center px-3 py-2 text-left text-sm text-slate-200 transition hover:bg-surface-sunken"
               @click="menuOpen = false; onImport()"
             >导入备份</button>
+            <button
+              class="flex w-full items-center px-3 py-2 text-left text-sm text-slate-200 transition hover:bg-surface-sunken"
+              @click="menuOpen = false; importTextOpen = true"
+            >批量导入文本</button>
             <div class="my-1 h-px bg-surface-border"></div>
             <button
               class="flex w-full items-center px-3 py-2 text-left text-sm text-slate-200 transition hover:bg-surface-sunken"
@@ -150,7 +161,7 @@ const APP_VERSION = '1.0.0'
           <div>
             <div class="mb-1 text-xs font-semibold text-slate-200">免责声明</div>
             <p class="text-xs leading-relaxed text-slate-400">
-              本工具完全免费、无任何盈利性质，非《三角洲行动》官方产品，与游戏开发商无任何关联。工具内展示的图样、名称与数据均来源于官方或第三方公开渠道，其著作权、商标权归原权利方所有，本工具仅作个人参考与整理，不主张任何权利。改枪码仅供参考，请以游戏内实际效果为准；如有版权异议请联系处理。
+              本工具完全免费、无任何盈利性质，非《三角洲行动》官方产品，与游戏开发商无任何关联。工具内图样、名称与数据均来源于官方或第三方公开渠道，著作权、商标权归原权利方所有。改枪码仅供参考，请以游戏内实际效果为准；如有版权异议请联系处理。
             </p>
           </div>
         </div>
@@ -159,5 +170,11 @@ const APP_VERSION = '1.0.0'
 
     <!-- 版本说明（更新日志） -->
     <ChangelogModal :open="changelogOpen" @close="changelogOpen = false" />
+
+    <ImportTextModal
+      :open="importTextOpen"
+      @close="importTextOpen = false"
+      @imported="onTextImported"
+    />
   </div>
 </template>

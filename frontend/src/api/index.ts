@@ -91,3 +91,8 @@ export async function exportData(): Promise<string> {
 export async function importData(): Promise<ImportResult> {
   return App.ImportData() as Promise<ImportResult>
 }
+
+/** 从多行文本批量导入改枪方案（每行一个改枪码）。返回导入/跳过条数。 */
+export async function importTextLines(lines: string[]): Promise<ImportResult> {
+  return App.ImportTextLines(lines) as Promise<ImportResult>
+}

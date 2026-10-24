@@ -35,7 +35,9 @@ const titleError = ref('')
 const codeError = ref('')
 const preview = ref('')
 const parsing = ref(false)
-/** 粘贴识别结果反馈（ok=成功 / warn=需注意） */
+/** 输入防抖识别定时器 */
+let parseTimer: ReturnType<typeof setTimeout> | null = null
+/** 输入/粘贴识别结果反馈（ok=成功 / warn=需注意） */
 const parseHint = ref<{ type: 'ok' | 'warn'; text: string } | null>(null)
 
 const modes = [
@@ -72,10 +74,17 @@ function clearWeapon() {
   weaponError.value = ''
   updatePreview()
 }
+/** 枪械搜索框输入：更新搜索词并展开候选 */
+function onWeaponInput(e: Event) {
+  weaponQuery.value = (e.target as HTMLInputElement).value
+  weaponOpen.value = true
+}
 
 // —— 可选价格标签（快捷添加到 tags，价格单选）——
-const pricePresets = ['10w', '20w', '40w', '60w']
-const priceInput = ref('')
+/** 价格预设：10w ~ 100w，每 10w 一个 */
+const pricePresets = Array.from({ length: 10 }, (_, i) => `${(i + 1) * 10}w`)
+/** 价格滑块（单位：万），替代手动输入 */
+const priceSlider = ref(0)
 /** 是否为价格标签（数字 + w，如 10w / 35w / 100w） */
 function isPriceTag(t: string) {
   return pricePresets.includes(t) || /^\d+\s*w$/i.test(t)
@@ -90,12 +99,10 @@ function pushTag(t: string) {
 function addPriceTag(p: string) {
   pushTag(p)
 }
-function addCustomPrice() {
-  const t = priceInput.value.trim()
-  if (t) {
-    pushTag(t)
-    priceInput.value = ''
-  }
+/** 滑块选择价格（单位万），>0 时生成价格标签（单选） */
+function onPriceSlider() {
+  const v = Math.round(priceSlider.value)
+  if (v > 0) pushTag(`${v}w`)
 }
 function hasTag(t: string) {
   return tags.value.split(/[,，]/).map((x) => x.trim()).includes(t)
@@ -123,7 +130,10 @@ function onDocClick(e: MouseEvent) {
   }
 }
 onMounted(() => document.addEventListener('mousedown', onDocClick))
-onUnmounted(() => document.removeEventListener('mousedown', onDocClick))
+onUnmounted(() => {
+  if (parseTimer) clearTimeout(parseTimer)
+  document.removeEventListener('mousedown', onDocClick)
+})
 
 watch(
   () => props.open,
@@ -145,6 +155,8 @@ watch(
       note.value = l.note
       tuning.value = l.tuning
       tags.value = l.tags.join(', ')
+      const pt = l.tags.find((t) => /^\d+\s*w$/i.test(t))
+      priceSlider.value = pt ? parseInt(pt) : 0
       favorite.value = l.favorite
     } else {
       // 全部枪械视图下（defaultWeaponId=0）默认不选枪，靠粘贴分享码自动识别或搜索选择，
@@ -159,6 +171,7 @@ watch(
       note.value = ''
       tuning.value = ''
       tags.value = ''
+      priceSlider.value = 0
       favorite.value = false
     }
     updatePreview()
@@ -179,11 +192,20 @@ async function updatePreview() {
   }
 }
 
-/** 粘贴分享码后自动识别枪械与模式 */
-async function onPaste() {
-  await new Promise((r) => setTimeout(r, 0))
+/** 输入框内容变化时：实时预览 + 防抖自动识别（手动输入、删除、粘贴都会触发 @input） */
+function onCodeInput() {
+  updatePreview()
+  if (parseTimer) clearTimeout(parseTimer)
   const text = code.value.trim()
-  if (!text) return
+  if (!text) {
+    parseHint.value = null
+    return
+  }
+  parseTimer = setTimeout(() => runParse(text), 350)
+}
+
+/** 识别改枪码中的枪械与模式 */
+async function runParse(text: string) {
   parsing.value = true
   try {
     const parsed = await api.parseShareCode(text)
@@ -257,7 +279,7 @@ function submit() {
           <!-- 改枪码：主输入置顶，粘贴即识别（参考购物网站地址自动识别交互） -->
           <label class="block">
             <span class="mb-1 flex items-center justify-between text-xs text-slate-400">
-              <span>📋 改枪码 * <span class="text-slate-500">（粘贴分享码自动识别枪械与模式）</span></span>
+              <span>📋 改枪码 * <span class="text-slate-500">（输入即自动识别枪械与模式）</span></span>
               <span v-if="parsing" class="text-slate-500">识别中…</span>
             </span>
             <textarea
@@ -266,8 +288,7 @@ function submit() {
               placeholder="粘贴游戏分享码，如：ASh-12战斗步枪-烽火地带-6LMG4C405TSE92LSNK30S&#10;识别完成后，只需核对下方自动填好的信息"
               class="w-full resize-y rounded-lg border bg-surface-sunken px-3 py-2 font-mono text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none"
               :class="codeError ? 'border-rose-500' : 'border-surface-border focus:border-accent'"
-              @paste="onPaste"
-              @input="updatePreview"
+              @input="onCodeInput"
             />
             <span v-if="codeError" class="mt-1 block text-xs text-rose-400">{{ codeError }}</span>
             <span
@@ -293,21 +314,21 @@ function submit() {
             </span>
             <div class="relative">
               <input
-                v-model="weaponQuery"
+                :value="currentWeapon && !weaponOpen ? currentWeapon.name : weaponQuery"
                 type="text"
-                placeholder="搜索枪械型号 / 分类…"
+                :placeholder="currentWeapon && !weaponOpen ? '' : '搜索枪械型号 / 分类…'"
                 class="w-full rounded-md border bg-surface-sunken px-2 py-1.5 pr-8 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none"
                 :class="weaponError ? 'border-rose-500' : 'border-surface-border focus:border-accent'"
                 @focus="weaponOpen = true"
-                @input="weaponOpen = true"
+                @input="onWeaponInput"
                 @keydown.esc="weaponOpen = false"
               />
               <span
                 v-if="currentWeapon && !weaponOpen"
-                class="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer rounded bg-accent-soft px-1.5 py-0.5 text-xs text-accent transition hover:brightness-110"
+                class="absolute right-2 top-1/2 flex h-5 w-5 -translate-y-1/2 cursor-pointer items-center justify-center rounded text-slate-400 transition hover:bg-surface-sunken hover:text-rose-400"
                 title="清除已选枪械"
                 @click="clearWeapon"
-              >{{ currentWeapon.name }} ✕</span>
+              >✕</span>
             </div>
 
             <!-- 下拉候选 -->
@@ -410,16 +431,20 @@ function submit() {
                 :class="hasTag(p) ? 'border-accent text-accent' : 'text-slate-400'"
                 @click="addPriceTag(p)"
               >💰{{ p }}</button>
-              <div class="relative">
-                <span class="pointer-events-none absolute left-1.5 top-1/2 -translate-y-1/2 text-[10px] text-slate-500">💰</span>
-                <input
-                  v-model="priceInput"
-                  type="text"
-                  placeholder="自定义 35w"
-                  class="w-28 rounded border border-surface-border bg-surface-sunken py-0.5 pl-6 pr-1.5 text-[11px] text-slate-200 placeholder:text-slate-500 focus:border-accent focus:outline-none"
-                  @keydown.enter="addCustomPrice"
-                />
-              </div>
+            </div>
+            <div class="mt-1.5 flex items-center gap-2">
+              <span class="shrink-0 text-[11px] text-slate-500">自定义价格</span>
+              <input
+                v-model.number="priceSlider"
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                title="拖动选择价格（单位：万）"
+                class="h-4 min-w-0 flex-1 cursor-pointer accent-[#f0a31a]"
+                @input="onPriceSlider"
+              />
+              <span class="w-10 shrink-0 text-[11px] text-accent">{{ priceSlider > 0 ? priceSlider + 'w' : '未选' }}</span>
             </div>
           </label>
 

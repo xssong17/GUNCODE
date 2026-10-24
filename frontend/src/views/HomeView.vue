@@ -64,6 +64,13 @@ const showWeaponGrid = computed(() => selectedWeaponId.value === 0)
 
 // —— 全部枪械视图的快捷筛选标签 ——
 const isPriceTag = (t: string) => /^\d+\s*w$/i.test(t)
+/** 方案的价格（万）；无价格标签视为无穷大，升序时排最后 */
+const priceOf = (l: LoadoutDTO) => {
+  const t = l.tags.find(isPriceTag)
+  return t ? parseInt(t) : Number.POSITIVE_INFINITY
+}
+/** 价格标签转数值（万），用于快捷标签按数值降序 */
+const priceNum = (t: string) => parseInt(t) || 0
 /** weaponId → 该枪所有方案的去重标签 */
 const weaponTags = computed(() => {
   const m = new Map<number, Set<string>>()
@@ -113,7 +120,7 @@ const hotTags = computed(() =>
 const hotPriceTags = computed(() =>
   [...tagStats.value.entries()]
     .filter(([t]) => isPriceTag(t))
-    .sort((a, b) => b[1] - a[1])
+    .sort((a, b) => priceNum(b[0]) - priceNum(a[0]))
     .slice(0, 6)
     .map(([t]) => t),
 )
@@ -137,7 +144,7 @@ const weaponScopedTags = computed(() => {
   const entries = [...stats.entries()].sort((a, b) => b[1] - a[1])
   return {
     normal: entries.filter(([t]) => !isPriceTag(t)).slice(0, 8).map(([t]) => t),
-    price: entries.filter(([t]) => isPriceTag(t)).slice(0, 6).map(([t]) => t),
+    price: entries.filter(([t]) => isPriceTag(t)).sort((a, b) => priceNum(b[0]) - priceNum(a[0])).slice(0, 6).map(([t]) => t),
   }
 })
 
@@ -270,6 +277,9 @@ const visible = computed(() => {
     case 'title':
       list.sort((a, b) => a.title.localeCompare(b.title, 'zh-CN'))
       break
+    case 'price':
+      list.sort((a, b) => priceOf(a) - priceOf(b) || a.title.localeCompare(b.title, 'zh-CN'))
+      break
     default:
       list.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
   }
@@ -310,6 +320,16 @@ async function onImport() {
   } catch (e) {
     toast.error(`导入失败：${msg(e)}`)
   }
+}
+
+/** 批量文本导入完成：反馈 + 刷新列表 */
+async function onImportTextResult(r: { imported: number; skipped: number }) {
+  if (r.imported > 0) {
+    toast.success(`已导入 ${r.imported} 条改枪码${r.skipped ? `（跳过 ${r.skipped} 条已存在）` : ''}`)
+  } else if (r.skipped > 0) {
+    toast.info(`没有新增：${r.skipped} 条已存在或无法匹配到对应枪械`)
+  }
+  await refresh()
 }
 
 async function onToggleFavorite(l: LoadoutDTO) {
@@ -366,7 +386,7 @@ function msg(e: unknown) {
 }
 
 /** 暴露给 App 标题栏的导出/导入（按钮已移到标题栏） */
-defineExpose({ onExport, onImport })
+defineExpose({ onExport, onImport, refresh, onImportTextResult })
 
 </script>
 

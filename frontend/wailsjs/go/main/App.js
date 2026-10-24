@@ -34,6 +34,10 @@ export function ImportData() {
   return window['go']['main']['App']['ImportData']();
 }
 
+export function ImportTextLines(arg1) {
+  return window['go']['main']['App']['ImportTextLines'](arg1);
+}
+
 export function ListCategories() {
   return window['go']['main']['App']['ListCategories']();
 }

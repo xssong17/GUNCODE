@@ -113,4 +113,4 @@ export const STATUS_LABEL: Record<string, string> = {
 }
 
 /** 排序方式 */
-export type SortKey = 'recent' | 'created' | 'favorite' | 'title'
+export type SortKey = 'recent' | 'created' | 'favorite' | 'title' | 'price'

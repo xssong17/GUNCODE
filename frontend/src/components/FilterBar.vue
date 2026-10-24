@@ -27,6 +27,7 @@ const sorts: { key: SortKey; label: string }[] = [
   { key: 'created', label: '最近添加' },
   { key: 'favorite', label: '收藏优先' },
   { key: 'title', label: '按标题' },
+  { key: 'price', label: '价格升序' },
 ]
 
 /** 搜索框元素引用（供 Ctrl+F 快捷键聚焦） */

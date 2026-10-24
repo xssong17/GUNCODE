@@ -1,4 +1,4 @@
-Unicode true
+﻿Unicode true
 
 ####
 ## Please note: Template replacements don't work in this file. They are provided with default defines like
@@ -32,6 +32,12 @@ Unicode true
 ####
 ## Include the wails tools
 ####
+# 覆盖默认 ProjectInfo：安装包/产品名统一为 GUNCODE（版本 1.0.0，作者书包呀）
+!define INFO_PROJECTNAME    "GUNCODE"
+!define INFO_PRODUCTNAME    "GUNCODE"
+!define INFO_PRODUCTVERSION "1.0.0"
+!define INFO_COMPANYNAME    "GUNCODE"
+!define INFO_COPYRIGHT      "本软件完全免费、无盈利性质；图标与素材版权归原权利方所有。"
 !include "wails_tools.nsh"
 
 # The version information for this two must consist of 4 parts
@@ -72,7 +78,7 @@ ManifestDPIAware true
 
 Name "${INFO_PRODUCTNAME}"
 OutFile "..\..\bin\${INFO_PROJECTNAME}-${ARCH}-installer.exe" # Name of the installer's file.
-InstallDir "$PROGRAMFILES64\${INFO_COMPANYNAME}\${INFO_PRODUCTNAME}" # Default installing folder ($PROGRAMFILES is Program Files folder).
+InstallDir "$PROGRAMFILES64\${INFO_PRODUCTNAME}" # Default installing folder ($PROGRAMFILES is Program Files folder).
 ShowInstDetails show # This will always show the installation details.
 
 Function .onInit

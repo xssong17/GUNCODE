@@ -96,7 +96,7 @@ function isPrice(tag: string) {
         v-for="tag in loadout.tags"
         :key="tag"
         class="rounded px-1.5 py-0.5 text-[10px]"
-        :class="isPrice(tag) ? 'bg-accent-soft text-accent' : 'bg-surface-border/70 text-slate-400'"
+        :class="isPrice(tag) ? 'bg-accent-soft text-accent' : 'bg-slate-600/40 text-slate-200 ring-1 ring-white/10'"
       >
         {{ isPrice(tag) ? '💰' : '#' }}{{ tag }}
       </span>

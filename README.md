@@ -2,15 +2,18 @@
 
 《三角洲行动》(Delta Force) 个人改枪码 / 配枪方案的本地管理器。卡片式浏览、一键复制、离线可用。
 
-> 开发状态：S0 完成（工程骨架 + Tailwind 主题）。功能分阶段推进，进度见 [PROGRESS.md](PROGRESS.md)。
+> 当前版本 **1.2.0**（S0–S7 全部完成，处于 1.x 连续迭代）。功能进度见 [PROGRESS.md](PROGRESS.md)。
 
 ## 功能
 
-- **枪械库**：内置三角洲行动 8 大分类 / 65 把枪械（离线数据集，可自建补充）
-- **卡片浏览**：按分类 / 枪械筛选，卡片式展示该枪械下的所有改枪方案
-- **一键复制**：点击复制即可直接粘进游戏「仓库 → 改装 → 方案导入」
-- **方案管理**：新增 / 编辑 / 删除、标签、备注、收藏置顶
-- **搜索排序**：按标题 / 标签 / 备注 / 枪械名模糊搜索，可按时间、收藏排序
+- **枪械库**：内置三角洲行动 8 大分类 / 68 把枪械（离线数据集，含官方武器图，可自建补充）
+- **卡片浏览**：按分类 / 枪械筛选，卡片式展示该枪械下的所有改枪方案；点击卡片即复制
+- **一键复制**：点击卡片即可复制，按模式自动补前缀，直接粘进游戏「仓库 → 改装 → 方案导入」
+- **输入即识别**：新增改枪码时输入 / 粘贴自动识别枪械与模式，实时预览「导入游戏时将复制的完整串」
+- **批量导入**：大输入框逐行粘贴多行改枪码，逐行校验（可识别 / 未标注 / 无法识别），勾选导入
+- **方案管理**：新增 / 编辑 / 删除、标签、价格标签、备注、收藏置顶
+- **搜索排序**：按标题 / 标签 / 备注 / 枪械名模糊搜索；按时间 / 收藏 / 标题 / **价格**排序
+- **快捷键**：`Ctrl+F` 聚焦搜索、`Ctrl+N` 新建、`Ctrl+Q` 退出、`Esc` 关闭弹窗
 - **备份迁移**：一键导出 / 导入 JSON
 
 ## 技术栈
@@ -20,7 +23,7 @@
 | 桌面框架 | Wails v2.9.2（Go + WebView2） |
 | 后端 | Go 1.23 |
 | 前端 | Vue 3 + TypeScript + Vite |
-| 样式 | Tailwind CSS **v3**（暗色主题） |
+| 样式 | Tailwind CSS **v3**（暖军绿灰 + 琥珀橙主题） |
 | 数据库 | SQLite via GORM + `github.com/glebarez/sqlite`（纯 Go，免 CGO） |
 
 ## 快速开始
@@ -29,8 +32,13 @@
 # 开发模式（热重载）
 wails dev
 
-# 构建可执行文件 → build/bin/gunCode.exe
+# 构建可执行文件 → build/bin/GUNCODE.exe
 wails build
+
+# 构建 + 生成 NSIS 安装包 → build/bin/GUNCODE-amd64-installer.exe
+# （注意：makensis 不在 PATH，需先把 NSIS 目录加入 PATH）
+$env:Path = 'C:\Program Files (x86)\NSIS;' + $env:Path
+wails build --nsis
 
 # 前端单独构建 / 类型检查
 npm --prefix frontend run build
@@ -45,7 +53,7 @@ go run ./cmd/dbcheck
 
 ```
 guncode/
-├─ main.go                    # Wails 入口
+├─ main.go                    # Wails 入口（无边框自绘标题栏）
 ├─ app.go                     # 对外暴露的方法（Go ⇄ 前端桥）
 ├─ internal/
 │  ├─ model/                  # GORM 实体与 DTO
@@ -53,23 +61,22 @@ guncode/
 │  ├─ seed/
 │  │  ├─ data/weapons.json    # ★ 枪械分类与基础信息数据集（唯一数据源）
 │  │  └─ seed_weapons.go      # 首次启动写入数据库
-│  └─ service/                # 业务逻辑
+│  └─ service/                # 业务逻辑（改枪码解析 / 拼装）
 ├─ frontend/src/
-│  ├─ components/             # WeaponSidebar / FilterBar / LoadoutCard / CodeModal / Toast
-│  ├─ composables/            # useWeapons / useLoadouts / useToast / useClipboard
+│  ├─ components/             # WeaponSidebar / FilterBar / LoadoutCard / CodeModal / ImportTextModal …
+│  ├─ composables/            # useGunCode / useToast / useClipboard
 │  ├─ views/                  # HomeView
+│  ├─ public/weapons/         # 武器图（官方 playerhub 图，{key}.png）
 │  ├─ types/                  # 与 Go 结构体对应的 TS 类型
 │  └─ api/                    # window.go.main.App.* 的薄封装
-├─ PROMPT.md                  # 需求与阶段规范
-├─ CLAUDE.md                  # AI 开发上下文与约束
-└─ PROGRESS.md                # 阶段进度记录
+├─ build/windows/             # 窗口图标 / NSIS 安装脚本
+├─ cmd/dbcheck/               # 数据库检查小工具
+└─ PROGRESS.md                # 阶段进度与版本迭代记录
 ```
-
----
 
 ## 枪械数据集说明
 
-`internal/seed/data/weapons.json` 是本项目**枪械信息的唯一数据源**（8 分类 / 65 把枪）。
+`internal/seed/data/weapons.json` 是本项目**枪械信息的唯一数据源**（8 分类 / 68 把枪，与官方武器总数对齐）。
 
 ### 字段
 
@@ -82,8 +89,10 @@ guncode/
 | `aliases` | 别名，搜索时一并匹配 |
 | `caliber` | 口径 / 弹药，未核实为 `null` |
 | `status` | `available` 确认存在 / `unverified` 待核实 / `removed` 疑似下架 |
-| `source` | `official` 官方公告 / `db` 第三方站 / `user` 用户自建 |
+| `source` | `official` 官方 / `db` 第三方站 / `user` 用户自建 |
 | `note` | 备注 |
+
+分类计数：`ar 24 / dmr 10 / smg 12 / shotgun 5 / lmg 4 / sniper 5 / pistol 7 / special 1`。
 
 ### 为什么必须有 `inGameName`
 
@@ -97,51 +106,30 @@ guncode/
 烽火地带的前缀**缺一不可**，否则游戏内导入失败。而全名的品类后缀存在特例，**不能用类别名拼**：
 
 - `M7战斗步枪`（不是「M7突击步枪」）
+- `G3战斗步枪`、`SCAR-H战斗步枪`（战斗步枪，属步枪大类）
 - `R93狙击步枪`、`AKM突击步枪`、`S12K霰弹枪`
 - `野牛冲锋枪`、`勇士冲锋枪`、`腾龙突击步枪`（官方中文名）
 
 ### 数据来源与核对记录
 
-| 来源 | 用途 | 可信度 | 核对状态 |
-|---|---|---|---|
-| 腾讯官方《三角洲行动》开服公告 / 全球 PC 不删档公告 | 公测 47 把 + PC 版新增（腾龙 / M250 / M1911）的分类与命名 | 高 | 已录入，`source=official` |
-| 第三方武器库与改枪码聚合站（delta-code.cn、deltagamehub.com 等） | 后续赛季新增武器与参数补充 | 中（时效性强，部分条目可能已下架） | 已录入，`source=db` + `status=unverified` |
-| 游戏内【军械库 / 武器手册】 | 最终事实来源 | 最高 | **待人工逐条核对** |
+| 来源 | 用途 | 可信度 |
+|---|---|---|
+| 腾讯官方《三角洲行动》公告与官方武器全表（`dfttk /data/v3/locales/zh-CN/items.json`） | 武器 id→中文名全表、分类、官方图（playerhub） | 高 |
+| 第三方图鉴站 `dfttk.com/firefight/library`、`deltaforcetools.gg` | 图例、分类交叉验证 | 中 |
+| 游戏内【军械库 / 武器手册】 | 最终事实来源 | 最高（个别冲突以游戏实际为准） |
 
-**已知未核实项**（`status=unverified`，发布前建议在游戏内确认）：
+**核对结论（2026-10-24）**：
+- **删除 3 把臆造枪**（官方表无、游戏里没有）：`K15`、`UMP45`、`AK24`
+- **补录 4 把真枪**：`MCX-LT` / `RM277` / `MDR突击步枪`（突击步枪）、`SR9`（射手步枪）
+- 数据集 **68 把 = 官方武器总数**，分类完全对齐
+- 武器图 **68 张 = 全部 68 把枪**（官方 playerhub 图，存于 `frontend/public/weapons/`）
+- 更正全名：`PKM→PKM通用机枪`、`M250→M250通用机枪`、`QJB-201→QJB201轻机枪`、`G3→G3战斗步枪`、`SCAR-H→SCAR-H战斗步枪`
+- 确认：`SR-3M` 冲锋枪、`腾龙突击步枪`（国服名，台服「191式」）；特殊武器 = 复合弓 + 杠杆步枪（杠杆步枪归射手步枪 dmr）
 
-K437、AK24、MK47、KC17、AR57、SVCH、M82巴雷特、QJB-201、K15、UMP45、FS-12、复合弓、杠杆步枪。
-
-**已知需人工补全的字段**：`caliber` 多数为 `null`；`M82巴雷特` 的游戏内全名写法待确认（暂记 `M82巴雷特反器材步枪`）。
-
-**2026-10-24 名称修订**（依据多个第三方改枪码来源交叉验证，分享码前缀即游戏内全名）：
-- `PKM` 全名由 `PKM轻机枪` 修订为 **`PKM通用机枪`**（原 `source=official` 误记）
-- `M250` 全名由 `M250轻机枪` 修订为 **`M250通用机枪`**
-- `QJB-201` 全名由 `QJB-201轻机枪` 修订为 **`QJB201轻机枪`**（游戏内无连字符）
-- `M249` 确认为 `M249轻机枪`，无误。
-
-**2026-10-24 分类与补录**（冲锋枪 / 特殊武器核对）：
-- **补录 2 把冲锋枪**：`MK4`（S7 新枪，`MK4冲锋枪`）、`汤姆逊`（S11 新枪，`汤姆逊冲锋枪`）
-- 特殊武器确认 = `复合弓` + `杠杆步枪`（火箭筒 / 信号枪等属兵种道具，不在军械库改枪列表）
-- `SR-3M` 国服军械库归为冲锋枪（名义紧凑型突击步枪）；`K15` 确证存在 —— 均保留
-- `UMP45` 暂无法确证，保留并标 `status=unverified`，建议游戏内核对
-
-**2026-10-24 图例与分类（来源 dfttk.com/firefight/library 数据图鉴）**：
-- **武器图**：58 张武器渲染图存于 `frontend/public/weapons/{key}.png`（卡片图样）；另 9 把待补（AK24/SVCH/M82巴雷特/K15/UMP45/FS-12/.357左轮，及数据集外 MCX-LT/SR9）
-- **分类更正**：官方军械库 `special` 仅 `复合弓`；`杠杆步枪`（马林杠杆步枪）改归**射手步枪 dmr**
-- **待补录（游戏内确认后）**：`MCX-LT`（突击步枪）、`SR9`；官方 AR=24 vs 数据集 22、DMR=10 vs 9
-
-**已知第三方资料错误（已规避）**：把 AS Val 归为冲锋枪 / 把巴雷特写作 `M82A1` / 把「勇士」「腾龙」音译为英文 —— 一律以官方中文名与本数据集为准。
-
-**数据快照**：`meta.datasetVersion = 2026-10-24`。三角洲随赛季增删武器，赛季更新后请核对游戏内军械库，更新 `datasetVersion` 与各条 `status`，并在本节追加核对记录。
-
-> 说明：核对期间官方站点与第三方武器库均无法直接抓取（网络策略限制），本次依据官方公告转述与多个第三方来源交叉验证得出。
+**数据版本**：`meta.datasetVersion = 20261024`。三角洲随赛季增删武器，赛季更新后请核对游戏内军械库，更新 `datasetVersion` 与各条 `status`。
 
 ---
 
-## 开发约定
+## 免责声明
 
-- 按 `PROMPT.md` 的 S0~S7 阶段推进，**每完成一个阶段更新 `PROGRESS.md` 并提交 git**。
-- 枪械名称 / 分类 / 别名一律读 `weapons.json`，**不要在代码里硬编码**。
-- 改枪码原文**原样存储、原样复制**，任何结构化处理都不得破坏它。
-- 详见 [CLAUDE.md](CLAUDE.md)。
+本软件为 **《三角洲行动》玩家自制的免费工具**，无盈利性质，非官方产品，与腾讯 / 琳琅天上无任何关联。软件内使用的武器名称、图片、游戏素材等版权均归原权利方所有，仅供个人学习与整理参考。请以游戏内实际内容为准；如涉版权异议请联系作者处理。

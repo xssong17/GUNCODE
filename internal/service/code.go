@@ -82,10 +82,19 @@ func ParseShareCode(text string, weapons []model.Weapon) model.ParsedCode {
 	}
 
 	for _, c := range buildCandidates(weapons) {
-		if !strings.HasPrefix(raw, c.prefix) {
+		// 支持枪名前带用户自定义前缀 / 备注（如 "KC17 37W KC17突击步枪-…"），
+		// 在整行中定位枪械名，而不是仅限行首。
+		idx := strings.Index(raw, c.prefix)
+		if idx < 0 {
 			continue
 		}
-		return fillParsed(result, c.weapon, raw[len(c.prefix):])
+		rest := raw[idx+len(c.prefix):]
+		// 枪械名后必须紧跟模式分隔（"-烽火地带-" / "-全面战场-"）或"-码"，
+		// 否则视为把码里的枪名子串误当识别点，跳过继续找更合适的候选。
+		if !strings.HasPrefix(rest, "-") {
+			continue
+		}
+		return fillParsed(result, c.weapon, rest)
 	}
 	return result
 }

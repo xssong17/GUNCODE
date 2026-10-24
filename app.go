@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -248,6 +249,41 @@ func (a *App) ImportData() (model.ImportResult, error) {
 	}
 
 	imported, skipped, err := store.ImportLoadouts(a.db, exp.Loadouts)
+	if err != nil {
+		return model.ImportResult{}, err
+	}
+	return model.ImportResult{Imported: imported, Skipped: skipped}, nil
+}
+
+// ImportTextLines 从多行文本批量导入改枪方案（每行一个改枪码）。
+//
+// 逐行识别枪械与模式：能识别到库中枪械的行才会导入，
+// 无法识别（裸码无枪名 / 枪械不在库）的行自动跳过。
+// 已存在的同枪同码方案会跳过，不会重复导入。
+func (a *App) ImportTextLines(lines []string) (model.ImportResult, error) {
+	weapons, err := store.ListWeapons(a.db)
+	if err != nil {
+		return model.ImportResult{}, err
+	}
+	items := make([]model.ExportedLoadout, 0, len(lines))
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+		parsed := service.ParseShareCode(line, weapons)
+		// 无法识别到枪械 / 未标注模式（op/ww 不确定）的行跳过，不导入
+		if !parsed.Matched || parsed.Mode == model.ModeUnknown {
+			continue
+		}
+		items = append(items, model.ExportedLoadout{
+			WeaponKey: parsed.WeaponKey,
+			Title:     parsed.WeaponName + " 配枪",
+			Mode:      parsed.Mode,
+			Code:      parsed.Payload,
+		})
+	}
+	imported, skipped, err := store.ImportLoadouts(a.db, items)
 	if err != nil {
 		return model.ImportResult{}, err
 	}

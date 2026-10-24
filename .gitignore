@@ -5,6 +5,16 @@ frontend/dist
 # 构建时自动生成的 git 版本信息（勿提交）
 frontend/src/generated
 
+# AI 开发内部规范与提示词（本地开发用，不开源到 GitHub）
+CLAUDE.md
+PROMPT.md
+
+# 图标制作中间素材 / 备份
+build/windows/candidates/
+*.ico.bak
+*.ico.complete
+*.ico.zhishu
+
 # 本地数据库（运行时生成，位于 %APPDATA%/GunCode/）
 *.db
 *.db-shm

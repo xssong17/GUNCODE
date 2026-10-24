@@ -4,23 +4,27 @@
 > 规范见 `PROMPT.md` 第 9 节。
 
 ## 当前状态
-- 阶段：S0-S5 ✅ 完成并实盘验收通过；**UI 样式改造 ✅ 完成（用户已确认，参考「鼠鼠卡战备」风格）**；**无边框自绘标题栏 ✅ 完成**；**S6 ✅ 完成（导入导出 / 快捷键 / 粘贴识别强化，代码+单测已过，待实盘复核）**；**S6+ 标题栏⋮菜单 +「关于」弹窗 + 标签加号交互 ✅**；S7 ⬜ 未开始
-- 整体完成度：S0 ✅ / S1 ✅ / S2 ✅ / S3 ✅ / S4 ✅ / S5 ✅ / S6 ✅ / S7 ⬜
-- 最后更新时间：2026-10-24
+- 阶段：**S0–S7 全部完成 ✅**，现处于 **1.x 连续迭代**。S7 打磨与打包已收尾：模块1 技术债（高DPI 100%复核通过 + 删除 dpi 死代码）✅；模块2 S6 验收（`go test ./...` 全过、前后端实现齐全）✅；模块3.2 NSIS 安装包 ✅（`build/bin/GUNCODE-amd64-installer.exe`，安装路径 `Program Files\GUNCODE` 无重复）；模块3.1 UPX 跳过（用户确认开发期不压缩）。
+- 最新版本：**1.2.0**（批量导入文本、输入即自动识别、识别精度修复、价格滑块、价格预设 10w~100w、价格升序排序、快捷价格降序）
+- 整体完成度：S0 ✅ / S1 ✅ / S2 ✅ / S3 ✅ / S4 ✅ / S5 ✅ / S6 ✅ / S7 ✅
+- 最后更新时间：2026-10-25
 - 当前阻塞项：无
 - 下一步动作：
-  1. **S7 打磨与打包**：复核 `dpi_windows.go` 死代码、高 DPI 多缩放（100%/200%）验证、UPX/NSIS 打包、实盘复核 S6（导出/导入文件对话框、Ctrl+F/N/Q/Esc 快捷键、粘贴识别提示）
-  2. 可选：UI 细节微调（自绘标题栏按钮风格、卡片 hover、白底装备图效果）
+  1. **按用户后续需求继续迭代**；涉及大的功能/UI 改动按约定自增 `APP_VERSION` 并同步更新版本说明（`ChangelogModal.vue`）。S6（导出/导入、快捷键、输入自动识别）已由用户实盘确认全部完成。
+
+> **客户端图标定稿（2026-10-24，已完成并应用）**：多轮迭代（AI 生成 18 版候选全被否 → 改为用户自供素材拼装）后，最终用「猛攻鼠鼠」表情包（shushu.fan/shumeme）+ 从用户 `C:\Users\XOS\Downloads\下载.jpg` 抠出的第 1 把（带改装配件步枪）与第 3 把（高倍镜狙击枪）直接用 PIL 像素拼装（不加 AI）。构图：猫脸放大居中、左步枪/右狙击枪斜上 45° 对称；右枪经垂直翻转使瞄准镜朝上。背景抠成透明（`composite11_transparent.png`），转多尺寸 ico（256~16）应用，`wails build` 重建 exe；旧版备份 `build/windows/icon.ico.zhishu` / `icon.ico.complete`。全部脚本与素材在 `build/windows/candidates/`（`compose*.py` / `gun1-cutout.png` / `gun3-cutout.png` / `b-menggong.webp` / `composite11*.png`）。已提交。
+> **说明**：任务栏/菜单栏图标小是 Windows 固定尺寸限制；曾尝试「特写版（猫脸放大聚焦）」「小尺寸高对比锐化位图」均被否，最终以「保留完整构图 + 透明背景」定稿，并清空图标缓存（`IconCache.db` + `iconcache_*.db`）+ 重启 explorer 解决快捷方式旧图标缓存问题。
 
 ## 版本约定（同步给后续 AI，2026-10-24 起强制执行）
 
-- **应用版本 `APP_VERSION`**（`frontend/src/App.vue`）：涉及**大的功能 / UI 改动**时**必须自增**（当前 `1.0.0`）；仅小的样式、文案、图标微调可不变更。
+- **二进制命名约定（2026-10-24 起）**：编译输出统一为 **`GUNCODE.exe`**（`wails.json` 的 `outputfilename` 已从 `gunCode` 改为 `GUNCODE`）。桌面/分发快捷方式一律指向 `build/bin/GUNCODE.exe`。后续 AI 修改该文件时不得回退为小写 `gunCode`。
+- **应用版本 `APP_VERSION`**（`frontend/src/App.vue`）：涉及**大的功能 / UI 改动**时**必须自增**（当前 `1.2.0`）；仅小的样式、文案、图标微调可不变更。
 - **数据版本 `datasetVersion`**（`internal/seed/data/weapons.json` meta）：格式固定 **YYYYMMDD**（当前 `20261024`）；每次改动武器数据集（增删枪 / 改分类 / 补图）都要更新为当天日期，并 `wails build` + seed。
 - 版本与说明展示于标题栏 `⋮` 菜单 → 「关于」弹窗；改版本号时须同步更新 `VERSION_NOTES` 版本说明文案。
 - 关于弹窗仅展示：作者「书包呀」、应用版本、数据版本、版本说明（不含枪械/方案总数）。
 
 
-> **S6 增强（2026-10-24，代码+单测已过，待实盘复核）**：
+> **S6 增强（2026-10-24，代码+单测已过，实盘复核通过 ✅ 用户 2026-10-24 确认全部完成）**：
 > - **① 导入/导出**：Go 侧新增 `ExportData`/`ImportData`（文件对话框 Save/Open），把所有改枪方案导出为 JSON 备份、可整体导入恢复；以 `weaponKey` 跨库匹配枪械、**同枪同码去重跳过**。`model.ExportFile`/`ExportedLoadout`/`ImportResult`，`store.ImportLoadouts`，前端 FilterBar 加「导出/导入」按钮，新增单测 `TestImportLoadouts` ✅
 > - **③ 快捷键**：全局监听（HomeView）——`Ctrl+F` 聚焦搜索、`Ctrl+N` 新建、`Ctrl+Q` 退出（runtime.Quit）、`Esc` 关闭弹窗/取消删除。FilterBar `defineExpose({focusSearch})` 供聚焦
 > - **② 粘贴识别强化**：CodeModal 识别失败/成功均给明确提示（成功绿「已识别：枪名·模式」/ 失败琥珀「未识别到枪械，请手动选择」），不再静默
@@ -76,8 +80,8 @@
 | S3 | 后端 API 与 Wails 绑定 | ✅ 完成 | 2026-10-24 | `app.go` 全量方法 + `service.BuildShareCode`/`ParseShareCode` + 绑定生成（提交 `e3e355b`） |
 | S4 | 前端骨架（左侧栏/筛选/卡片网格） | ✅ 完成 | 2026-10-24 | WeaponSidebar/FilterBar/LoadoutCard/CodeModal 等组件 + 真实数据渲染 |
 | S5 | 核心交互（增删改/一键复制/收藏） | ✅ 完成 | 2026-10-24 | 代码+实盘验收通过；数据/图样已与官方对齐；卡片点击即复制、侧栏折叠+缩略图 |
-| S6 | 增强（导入导出/快捷键/粘贴识别） | ✅ 完成 | 2026-10-24 | ExportData/ImportData 备份迁移、Ctrl+F/N/Q/Esc 快捷键、粘贴识别反馈；单测 TestImportLoadouts |
-| S7 | 打磨与打包 exe | ⬜ 未开始 | - | - |
+| S6 | 增强（导入导出/快捷键/粘贴识别） | ✅ 完成 | 2026-10-24 | ExportData/ImportData 备份迁移、Ctrl+F/N/Q/Esc 快捷键、粘贴识别反馈；单测 TestImportLoadouts；**已实盘复核通过** |
+| S7 | 打磨与打包 exe | ✅ 完成 | 2026-10-24 | 高DPI复核+dpi死代码删除✅、S6逻辑验收✅、NSIS安装包 `GUNCODE-amd64-installer.exe`✅、UPX跳过 |
 
 ## 详细记录
 
@@ -264,7 +268,7 @@
 - 进入 S2 数据层
 
 ## 环境与踩坑记录
-- 环境：Windows 11 / Go 1.23.5 / Wails v2.9.2 / Node 24.16.0 / npm 11.13.0 / WebView2 已安装 / upx、nsis 可用
+- 环境：Windows 11 / Go 1.23.5 / Wails v2.9.2 / Node 24.16.0 / npm 11.13.0 / WebView2 已安装 / **upx、nsis 已通过 winget 安装**（此前 PROGRESS 误记为"可用"，实为未装；现 upx 位于 `C:\Users\XOS\AppData\Local\Microsoft\WinGet\Links\upx.exe`，nsis 的 makensis 位于 `C:\Program Files (x86)\NSIS\makensis.exe`，**makensis 不在 PATH，需 `$env:Path` 加 NSIS 目录或全路径调用**）
 - SQLite 必须用 `github.com/glebarez/sqlite`（纯 Go 驱动，底层 `modernc.org/sqlite`）；**不要**用 `gorm.io/driver/sqlite` 或 `mattn/go-sqlite3`（CGO，本机无 gcc 编译失败）
 - `modernc.org/sqlite` 不要升到 latest（要求 Go ≥ 1.26，本机 Go 1.23.5）；随 glebarez 引入的 v1.23.1 够用
 - GORM upsert 的 `clause.AssignmentColumns` 写的是**列名不是字段名**（`sort_order` 而非 `order`）
@@ -279,4 +283,14 @@
 - Tailwind 用 v3，不用 v4（v4 配置格式不同）；已固定 `tailwindcss@3.4.17`
 - Wails 模板的 `main.css` 里 `@font-face` 相对路径基准是 CSS 文件自身所在目录（`src/assets/`），字体在 `src/assets/fonts/`，故写 `./fonts/...`
 - PowerShell 5.1：不支持 `&&`，链式命令用 `;` 或 `if ($?) { ... }`
-- **高 DPI 窗口尺寸**：`main.go` 直接传逻辑像素（1180×760），Windows 按系统缩放自动换算物理像素；150% 缩放下 UI 完整。曾写 `dpi_windows.go`/`dpi_other.go`（`displayScale`/`scaleSize`）但未接入 main.go（死代码），S7 打包前需在 100%/200% 缩放下复核是否需要接入。
+- **高 DPI 窗口尺寸**：`main.go` 直接传逻辑像素（1180×760），Windows 按系统缩放自动换算物理像素；100% 实盘验证 UI 完整（截图 `candidates\dpi-window-100.png`）。曾写 `dpi_windows.go`/`dpi_other.go`（`displayScale`/`scaleSize`）但未接入 main.go，**S7 已复核后删除**（Wails 用逻辑像素，换算逻辑不适用且无调用）；200% 实盘需注销登录才生效，成本高，基于 100%/150% 已证完整 + Wails 逻辑像素机制判定正常，未强行切换。
+- **NSIS 安装包（2026-10-24，S7 已生成）**：`build\bin\GUNCODE-amd64-installer.exe`（12MB）。`build/windows/installer/project.nsi` 顶部手动 define `INFO_PROJECTNAME/INFO_PRODUCTNAME=GUNCODE`、`INFO_PRODUCTVERSION=1.0.0`、`INFO_COMPANYNAME=书包呀`、`INFO_COPYRIGHT`（免费/无盈利/版权归原权利方）；**该文件必须保存为 UTF-8 带 BOM**，否则 makensis 报 `Bad text encoding`（中文）。构建命令：`$env:Path` 加 `C:\Program Files (x86)\NSIS` 后 `wails build --nsis`。
+- **S7 收尾**：UPX 跳过（用户确认开发期不压缩）；桌面两个旧 `gunCode.exe` 快捷方式**用户表示不用管**；**关于弹窗「免责声明」精简去重**（去掉与"仅供参考"重复的"本工具仅作个人参考与整理，不主张任何权利"表述，保留：免费无盈利/非官方/版权归原权利方/仅供参考以游戏为准/版权异议联系），**版本与构建版本保持两行**；S6 GUI 实盘逐项点按建议用户手动过一遍。
+- **改枪码输入即自动识别（2026-10-24，1.1.0）**：改枪码输入框由 `@paste` 改为 `@input` 触发，**350ms 防抖自动识别**枪械与模式（手动输入/删除/粘贴都触发），空输入清提示；`runParse` 抽为可复用函数、`parseTimer` 卸载清理。已重建 exe+安装包，版本自增 1.1.0 并更新版本说明。
+- **批量导入改枪码（2026-10-24，1.2.0）**：菜单新增「批量导入文本」（适配记事本习惯，非文件导入）。`ImportTextModal.vue`：大输入框粘贴多行改枪码，逐行实时校验（`api.parseShareCode`）——绿✓可识别（显示枪械·模式）/ 红✕无法识别，底部统计「共 N 行·可识别 M·无法识别 K」，一键导入可识别行。Go 侧 `ImportTextLines` 逐行 `service.ParseShareCode` → 组装 `ExportedLoadout` → `store.ImportLoadouts` 同枪同码去重。入口在标题栏⋮菜单，导入后 HomeView 自动刷新。版本自增 1.2.0 并更新版本说明。
+
+- **识别精度修复（2026-10-24，1.2.0）**：用户贴 ``KC17 37W KC17突击步枪-烽火地带-码`` 被误判"未标注"。`service.ParseShareCode` 改为**整行 `strings.Index` 定位枪名**（容忍前置备注），且枪名后必须紧跟 `-` 才接受（避免码内子串误匹配）；`ImportTextLines` 过滤 `!Matched || Mode==ModeUnknown`（未标注模式不可导入）。前端 `ImportTextModal.vue` 行状态三档：绿=可导入 / 琥珀=模式未标注（勾选置灰不可导） / 红=无法识别；底部统计「共 N · 可识别 M · 已勾选 K · 无法识别 B」。已补回归单测（带前置备注识别、识别枪但未标注模式）。
+- **价格选择滑块（2026-10-24，1.2.0）**：新增/编辑改枪码的价格标签改由**滑块**选择（单位万，0~100、step 1，`accent-[#f0a31a]`），拖动即生成 ``{n}w`` 价格标签（单选替换旧价格）；滑块独立一行加长（`flex-1`），右侧实时显示当前值/「未选」；保留常用快捷按钮；编辑模式自动回显已有价格到滑块。移除原「自定义 35w」文本输入框。
+- **价格预设扩容（2026-10-24，1.2.0）**：快捷价格预设由 10w/20w/40w/60w 扩为 **10w~100w 每 10w 一个**（`Array.from({length:10},...)`，10 个按钮，自动换行）。
+- **价格升序排序（2026-10-24，1.2.0）**：排序下拉（FilterBar）新增「价格升序」；`SortKey` 加 `'price'`；HomeView `priceOf()` 取方案价格标签（无价格=Infinity 排最后），同价按标题。
+- **快捷价格标签降序（2026-10-25，1.2.0）**：全局 `hotPriceTags` 与选中枪 `weaponScopedTags.price` 由「按出现次数降序」改为**按价格数值降序**（`priceNum()`），如 42w→40w→33w→20w→11w→7w。
