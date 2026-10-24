@@ -103,26 +103,21 @@ function isPrice(tag: string) {
       调校：{{ loadout.tuning }}
     </p>
 
-    <!-- 操作 -->
-    <footer class="mt-3 flex items-center gap-2 border-t border-surface-border pt-2.5">
+    <!-- 操作：编辑/删除（复制=点击整卡） -->
+    <footer class="mt-3 flex items-center justify-end gap-1 border-t border-surface-border pt-2.5">
       <button
-        class="rounded-md px-2.5 py-1 text-xs font-medium transition"
-        :class="copied ? 'bg-emerald-600 text-white' : 'bg-accent text-slate-900 hover:brightness-110'"
-        @click.stop="onCopy"
-      >
-        {{ copied ? '已复制 ✓' : '复制' }}
-      </button>
-      <button
-        class="rounded-md border border-surface-border px-2.5 py-1 text-xs text-slate-300 transition hover:bg-surface-sunken"
+        class="flex h-7 w-7 items-center justify-center rounded text-sm text-slate-400 transition hover:bg-surface-sunken hover:text-accent"
+        title="编辑"
         @click.stop="emit('edit', loadout)"
       >
-        编辑
+        ✏️
       </button>
       <button
-        class="ml-auto rounded-md px-2 py-1 text-xs text-slate-400 transition hover:bg-rose-500/15 hover:text-rose-400"
+        class="flex h-7 w-7 items-center justify-center rounded text-sm text-slate-400 transition hover:bg-rose-500/15 hover:text-rose-400"
+        title="删除"
         @click.stop="emit('remove', loadout)"
       >
-        删除
+        🗑️
       </button>
     </footer>
   </article>
