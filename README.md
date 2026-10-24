@@ -16,6 +16,30 @@
 - **快捷键**：`Ctrl+F` 聚焦搜索、`Ctrl+N` 新建、`Ctrl+Q` 退出、`Esc` 关闭弹窗
 - **备份迁移**：一键导出 / 导入 JSON
 
+## 功能演示
+
+**主界面浏览与使用**
+
+![主界面浏览与使用](docs/screenshots/main-browse.gif)
+
+**新增改枪码**（输入即识别 + 价格滑块/预设）
+
+![新增改枪码](docs/screenshots/add-loadout.gif)
+
+**批量导入改枪码**（逐行识别校验 + 勾选导入）
+
+![批量导入](docs/screenshots/bulk-import.gif)
+
+## 界面一览
+
+![主界面](docs/screenshots/01-main.png)
+
+![单枪方案视图](docs/screenshots/02-weapon-detail.png)
+
+![新增改枪码弹窗](docs/screenshots/03-add-loadout.png)
+
+![批量导入弹窗](docs/screenshots/04-bulk-import.png)
+
 ## 技术栈
 
 | 层 | 选型 |
