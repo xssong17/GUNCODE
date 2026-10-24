@@ -416,9 +416,7 @@ function msg(e: unknown) {
             class="mb-4 flex flex-col gap-1.5"
           >
             <div v-if="hotCategories.length" class="flex flex-wrap items-center gap-1.5">
-              <span class="flex items-center gap-1 text-[11px] text-slate-500">
-                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>类型：
-              </span>
+              <span class="flex items-center gap-1 text-[11px] text-slate-500">🔫 类型：</span>
               <button
                 v-for="g in hotCategories"
                 :key="g.key"
@@ -438,9 +436,7 @@ function msg(e: unknown) {
               >#{{ t }}</button>
             </div>
             <div v-if="hotPriceTags.length" class="flex flex-wrap items-center gap-1.5">
-              <span class="flex items-center gap-1 text-[11px] text-slate-500">
-                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>价格：
-              </span>
+              <span class="flex items-center gap-1 text-[11px] text-slate-500">💰 价格：</span>
               <button
                 v-for="t in hotPriceTags"
                 :key="t"
@@ -456,7 +452,7 @@ function msg(e: unknown) {
             v-if="weaponCards.length === 0"
             class="flex h-full flex-col items-center justify-center gap-3 text-center"
           >
-            <svg class="h-14 w-14 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            <div class="text-4xl opacity-40">🔫</div>
             <p class="text-sm text-slate-400">
               {{ loadouts.length === 0 ? '还没有任何改枪码' : selectedTag ? '当前标签下没有带改枪码的枪械' : '当前分类下没有带改枪码的枪械' }}
             </p>
@@ -503,9 +499,7 @@ function msg(e: unknown) {
           <!-- 快捷筛选：模式 + 标签/价格（当前枪） -->
           <div class="mb-4 flex flex-col gap-1.5">
             <div class="flex flex-wrap items-center gap-1.5">
-              <span class="flex items-center gap-1 text-[11px] text-slate-500">
-                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>模式：
-              </span>
+              <span class="flex items-center gap-1 text-[11px] text-slate-500">🎮 模式：</span>
               <button
                 class="rounded-md border px-2 py-0.5 text-[11px] transition"
                 :class="selectedMode === 'op' ? 'border-accent bg-accent-soft text-accent' : 'border-surface-border text-slate-400 hover:border-accent/50 hover:text-slate-200'"
@@ -528,9 +522,7 @@ function msg(e: unknown) {
               >#{{ t }}</button>
             </div>
             <div v-if="weaponScopedTags.price.length" class="flex flex-wrap items-center gap-1.5">
-              <span class="flex items-center gap-1 text-[11px] text-slate-500">
-                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>价格：
-              </span>
+              <span class="flex items-center gap-1 text-[11px] text-slate-500">💰 价格：</span>
               <button
                 v-for="t in weaponScopedTags.price"
                 :key="t"
@@ -543,7 +535,7 @@ function msg(e: unknown) {
 
           <!-- 空状态（选中具体枪但无方案） -->
           <div v-if="visible.length === 0" class="flex h-full flex-col items-center justify-center gap-3 text-center">
-            <svg class="h-14 w-14 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            <div class="text-4xl opacity-40">🔫</div>
             <p class="text-sm text-slate-400">
               {{ loadouts.length === 0 ? '还没有任何改枪码' : '当前筛选条件下没有方案' }}
             </p>

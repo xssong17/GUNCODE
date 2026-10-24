@@ -98,8 +98,7 @@ function isPrice(tag: string) {
         class="rounded px-1.5 py-0.5 text-[10px]"
         :class="isPrice(tag) ? 'bg-accent-soft text-accent' : 'bg-surface-border/70 text-slate-400'"
       >
-        <svg v-if="isPrice(tag)" class="inline-block h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        <template v-else>#</template>{{ tag }}
+        {{ isPrice(tag) ? '💰' : '#' }}{{ tag }}
       </span>
     </div>
 

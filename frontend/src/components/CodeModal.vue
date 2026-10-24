@@ -274,8 +274,7 @@ function submit() {
           <!-- 枪械：可搜索选择器，粘贴分享码自动识别优先 -->
           <label ref="weaponPickerRef" class="block">
             <span class="mb-1 block text-xs text-slate-400">
-              <svg class="mb-0.5 inline-block h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-              枪械
+              🔫 枪械
               <span v-if="!weaponId" class="text-slate-500">（粘贴分享码自动识别，或搜索选择）</span>
             </span>
             <div class="relative">
@@ -377,9 +376,9 @@ function submit() {
                 class="rounded border border-surface-border px-1.5 py-0.5 text-[11px] transition hover:border-accent/60 hover:text-accent"
                 :class="hasTag(p) ? 'border-accent text-accent' : 'text-slate-400'"
                 @click="addPriceTag(p)"
-              ><svg class="mr-0.5 inline-block h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>{{ p }}</button>
+              >💰{{ p }}</button>
               <div class="relative">
-                <svg class="pointer-events-none absolute left-1.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <span class="pointer-events-none absolute left-1.5 top-1/2 -translate-y-1/2 text-[10px] text-slate-500">💰</span>
                 <input
                   v-model="priceInput"
                   type="text"
