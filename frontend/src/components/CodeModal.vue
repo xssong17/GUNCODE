@@ -274,7 +274,7 @@ function submit() {
           <!-- 枪械：可搜索选择器，粘贴分享码自动识别优先 -->
           <label ref="weaponPickerRef" class="block">
             <span class="mb-1 block text-xs text-slate-400">
-              <svg class="mb-0.5 inline-block h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+              <svg class="mb-0.5 inline-block h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
               枪械
               <span v-if="!weaponId" class="text-slate-500">（粘贴分享码自动识别，或搜索选择）</span>
             </span>

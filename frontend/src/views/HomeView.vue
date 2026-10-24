@@ -417,7 +417,7 @@ function msg(e: unknown) {
           >
             <div v-if="hotCategories.length" class="flex flex-wrap items-center gap-1.5">
               <span class="flex items-center gap-1 text-[11px] text-slate-500">
-                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>类型：
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>类型：
               </span>
               <button
                 v-for="g in hotCategories"
@@ -428,9 +428,7 @@ function msg(e: unknown) {
               >{{ g.name }}</button>
             </div>
             <div v-if="hotTags.length" class="flex flex-wrap items-center gap-1.5">
-              <span class="flex items-center gap-1 text-[11px] text-slate-500">
-                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 12 22l-10-10V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>标签：
-              </span>
+              <span class="flex items-center gap-1 text-[11px] text-slate-500">🏷️ 标签：</span>
               <button
                 v-for="t in hotTags"
                 :key="t"
@@ -458,7 +456,7 @@ function msg(e: unknown) {
             v-if="weaponCards.length === 0"
             class="flex h-full flex-col items-center justify-center gap-3 text-center"
           >
-            <svg class="h-14 w-14 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+            <svg class="h-14 w-14 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
             <p class="text-sm text-slate-400">
               {{ loadouts.length === 0 ? '还没有任何改枪码' : selectedTag ? '当前标签下没有带改枪码的枪械' : '当前分类下没有带改枪码的枪械' }}
             </p>
@@ -506,7 +504,7 @@ function msg(e: unknown) {
           <div class="mb-4 flex flex-col gap-1.5">
             <div class="flex flex-wrap items-center gap-1.5">
               <span class="flex items-center gap-1 text-[11px] text-slate-500">
-                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>模式：
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>模式：
               </span>
               <button
                 class="rounded-md border px-2 py-0.5 text-[11px] transition"
@@ -520,9 +518,7 @@ function msg(e: unknown) {
               >⚔️ 全面战场</button>
             </div>
             <div v-if="weaponScopedTags.normal.length" class="flex flex-wrap items-center gap-1.5">
-              <span class="flex items-center gap-1 text-[11px] text-slate-500">
-                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 12 22l-10-10V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>标签：
-              </span>
+              <span class="flex items-center gap-1 text-[11px] text-slate-500">🏷️ 标签：</span>
               <button
                 v-for="t in weaponScopedTags.normal"
                 :key="t"
@@ -547,7 +543,7 @@ function msg(e: unknown) {
 
           <!-- 空状态（选中具体枪但无方案） -->
           <div v-if="visible.length === 0" class="flex h-full flex-col items-center justify-center gap-3 text-center">
-            <svg class="h-14 w-14 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+            <svg class="h-14 w-14 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
             <p class="text-sm text-slate-400">
               {{ loadouts.length === 0 ? '还没有任何改枪码' : '当前筛选条件下没有方案' }}
             </p>
