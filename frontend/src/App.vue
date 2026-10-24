@@ -147,31 +147,11 @@ const APP_VERSION = '1.0.0'
           </dl>
 
           <div class="my-3 h-px bg-surface-border"></div>
-          <div class="space-y-3">
-            <div>
-              <div class="mb-1 text-xs font-semibold text-slate-200">免费声明</div>
-              <p class="text-xs leading-relaxed text-slate-400">
-                本软件完全免费，无任何盈利性质，不含广告、付费或诱导功能，仅作为个人整理改枪码的辅助工具。
-              </p>
-            </div>
-            <div>
-              <div class="mb-1 text-xs font-semibold text-slate-200">图像资源声明</div>
-              <p class="text-xs leading-relaxed text-slate-400">
-                本工具展示的枪械图样来源于《三角洲行动》官方或第三方图鉴站点，其著作权、商标权归原权利方所有，本工具仅作展示与整理，不主张任何权利。如有异议请联系处理。
-              </p>
-            </div>
-            <div>
-              <div class="mb-1 text-xs font-semibold text-slate-200">数据来源声明</div>
-              <p class="text-xs leading-relaxed text-slate-400">
-                武器分类与图样数据参考 dfttk.com 与 deltaforcetools.gg，如有出入请以游戏内实际为准。
-              </p>
-            </div>
-            <div>
-              <div class="mb-1 text-xs font-semibold text-slate-200">免责声明</div>
-              <p class="text-xs leading-relaxed text-slate-400">
-                本工具非《三角洲行动》官方产品，与游戏开发商无任何关联；改枪码仅供个人参考，请以游戏内实际效果为准。
-              </p>
-            </div>
+          <div>
+            <div class="mb-1 text-xs font-semibold text-slate-200">免责声明</div>
+            <p class="text-xs leading-relaxed text-slate-400">
+              本工具非《三角洲行动》官方产品，与游戏开发商无任何关联；改枪码仅供个人参考，请以游戏内实际效果为准。
+            </p>
           </div>
         </div>
       </div>
