@@ -116,10 +116,8 @@ const hotPriceTags = computed(() =>
     .slice(0, 6)
     .map(([t]) => t),
 )
-/** 已有方案的枪械分类（供快捷「类型」筛选行） */
-const hotCategories = computed(() =>
-  weaponsByCategory.value.filter((g) => g.weapons.some((w) => (weaponCounts.value.get(w.id) ?? 0) > 0)),
-)
+/** 全量枪械分类（供快捷「类型」筛选行；即使某分类暂无方案也展示） */
+const hotCategories = computed(() => weaponsByCategory.value)
 function toggleCategory(key: string) {
   selectedCategory.value = selectedCategory.value === key ? '' : key
 }
