@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import ToastHost from './components/ToastHost.vue'
 import HomeView from './views/HomeView.vue'
+import ChangelogModal from './components/ChangelogModal.vue'
 import { useGunCode } from './composables/useGunCode'
 
 /** 无边框窗口的运行时控制（wails runtime 注入在 window.runtime） */
@@ -19,12 +20,10 @@ async function onImport() { await homeViewRef.value?.onImport() }
 /** 标题栏下拉菜单与「关于」弹窗 */
 const menuOpen = ref(false)
 const aboutOpen = ref(false)
+const changelogOpen = ref(false)
 
 /** 应用版本号（手动维护，随发布递增；涉及大的功能/UI改动时自增） */
 const APP_VERSION = '1.0.0'
-/** 当前版本说明（展示在「关于」） */
-const VERSION_NOTES =
-  'v1.0.0 首个可用版本：改枪码粘贴识别与导入、JSON 备份导入导出、价格标签、快捷筛选/排序、收藏置顶、卡片点击复制。'
 </script>
 
 <template>
@@ -65,6 +64,10 @@ const VERSION_NOTES =
               @click="menuOpen = false; onImport()"
             >导入备份</button>
             <div class="my-1 h-px bg-surface-border"></div>
+            <button
+              class="flex w-full items-center px-3 py-2 text-left text-sm text-slate-200 transition hover:bg-surface-sunken"
+              @click="menuOpen = false; changelogOpen = true"
+            >版本说明</button>
             <button
               class="flex w-full items-center px-3 py-2 text-left text-sm text-slate-200 transition hover:bg-surface-sunken"
               @click="menuOpen = false; aboutOpen = true"
@@ -127,16 +130,14 @@ const VERSION_NOTES =
             <dd class="text-slate-100">{{ appInfo?.datasetVersion ?? '—' }}</dd>
           </div>
         </dl>
-        <div class="my-3 h-px bg-surface-border"></div>
-        <div>
-          <div class="mb-1 text-xs text-slate-400">版本说明</div>
-          <p class="text-[12px] leading-relaxed text-slate-400">{{ VERSION_NOTES }}</p>
-        </div>
         <button
           class="mt-4 w-full rounded-md bg-accent py-2 text-sm font-medium text-slate-900 transition hover:brightness-110"
           @click="aboutOpen = false"
         >关闭</button>
       </div>
     </div>
+
+    <!-- 版本说明（更新日志） -->
+    <ChangelogModal :open="changelogOpen" @close="changelogOpen = false" />
   </div>
 </template>
