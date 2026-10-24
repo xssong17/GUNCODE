@@ -243,7 +243,7 @@ function submit() {
           <!-- 改枪码：主输入置顶，粘贴即识别（参考购物网站地址自动识别交互） -->
           <label class="block">
             <span class="mb-1 flex items-center justify-between text-xs text-slate-400">
-              <span>改枪码 * <span class="text-slate-500">（粘贴分享码自动识别枪械与模式）</span></span>
+              <span>📋 改枪码 * <span class="text-slate-500">（粘贴分享码自动识别枪械与模式）</span></span>
               <span v-if="parsing" class="text-slate-500">识别中…</span>
             </span>
             <textarea
@@ -274,7 +274,7 @@ function submit() {
           <!-- 枪械：可搜索选择器，粘贴分享码自动识别优先 -->
           <label ref="weaponPickerRef" class="block">
             <span class="mb-1 block text-xs text-slate-400">
-              枪械
+              🔫 枪械
               <span v-if="!weaponId" class="text-slate-500">（粘贴分享码自动识别，或搜索选择）</span>
             </span>
             <div class="relative">
@@ -321,7 +321,7 @@ function submit() {
 
           <!-- 标题 -->
           <label class="block">
-            <span class="mb-1 block text-xs text-slate-400">方案标题 *</span>
+            <span class="mb-1 block text-xs text-slate-400">✏️ 方案标题 *</span>
             <input
               v-model="title"
               type="text"
@@ -334,7 +334,7 @@ function submit() {
 
           <!-- 模式 -->
           <div>
-            <span class="mb-1 block text-xs text-slate-400">适用模式</span>
+            <span class="mb-1 block text-xs text-slate-400">🎮 适用模式</span>
             <div class="flex gap-2">
               <button
                 v-for="m in modes"
@@ -358,7 +358,7 @@ function submit() {
           <!-- 标签（含可选价格标签） -->
           <label class="block">
             <span class="mb-1 flex items-center justify-between text-xs text-slate-400">
-              <span>标签（逗号分隔）</span>
+              <span>🏷️ 标签（逗号分隔）</span>
               <span class="text-slate-500">可选价格标签</span>
             </span>
             <input
@@ -392,7 +392,7 @@ function submit() {
 
           <!-- 调校 -->
           <label class="block">
-            <span class="mb-1 block text-xs text-slate-400">调校参数（可选）</span>
+            <span class="mb-1 block text-xs text-slate-400">⚙️ 调校参数（可选）</span>
             <input
               v-model="tuning"
               type="text"
@@ -403,7 +403,7 @@ function submit() {
 
           <!-- 备注 -->
           <label class="block">
-            <span class="mb-1 block text-xs text-slate-400">备注</span>
+            <span class="mb-1 block text-xs text-slate-400">📝 备注</span>
             <textarea
               v-model="note"
               rows="2"
