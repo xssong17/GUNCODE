@@ -19,6 +19,9 @@ async function onImport() { await homeViewRef.value?.onImport() }
 /** 标题栏下拉菜单与「关于」弹窗 */
 const menuOpen = ref(false)
 const aboutOpen = ref(false)
+
+/** 应用版本号（手动维护，随发布递增） */
+const APP_VERSION = '1.0.0'
 </script>
 
 <template>
@@ -113,8 +116,12 @@ const aboutOpen = ref(false)
             <dd class="text-slate-100">书包呀</dd>
           </div>
           <div class="flex justify-between">
+            <dt class="text-slate-400">版本</dt>
+            <dd class="text-slate-100">v{{ APP_VERSION }}</dd>
+          </div>
+          <div class="flex justify-between">
             <dt class="text-slate-400">数据版本</dt>
-            <dd class="text-slate-100">v{{ appInfo?.datasetVersion ?? '—' }}</dd>
+            <dd class="text-slate-100">{{ appInfo?.datasetVersion ?? '—' }}</dd>
           </div>
           <div class="flex justify-between">
             <dt class="text-slate-400">枪械总数</dt>
