@@ -47,6 +47,32 @@ const modes = [
 /** 当前选中的枪械 */
 const currentWeapon = computed(() => props.weapons.find((w) => w.id === weaponId.value) ?? null)
 
+// —— 可搜索的枪械选择器 ——
+const weaponQuery = ref('')
+const weaponOpen = ref(false)
+const weaponError = ref('')
+const filteredWeapons = computed(() => {
+  const kw = weaponQuery.value.trim().toLowerCase()
+  if (!kw) return props.weapons
+  return props.weapons.filter((w) =>
+    `${w.name} ${w.inGameName} ${w.categoryName} ${w.aliases}`.toLowerCase().includes(kw),
+  )
+})
+function selectWeapon(w: Weapon) {
+  weaponId.value = w.id
+  weaponQuery.value = ''
+  weaponOpen.value = false
+  weaponError.value = ''
+  updatePreview()
+}
+function clearWeapon() {
+  weaponId.value = 0
+  weaponQuery.value = ''
+  weaponOpen.value = false
+  weaponError.value = ''
+  updatePreview()
+}
+
 watch(
   () => props.open,
   (open) => {
@@ -55,6 +81,9 @@ watch(
     codeError.value = ''
     preview.value = ''
     parseHint.value = null
+    weaponQuery.value = ''
+    weaponOpen.value = false
+    weaponError.value = ''
     if (props.mode === 'edit' && props.loadout) {
       const l = props.loadout
       weaponId.value = l.weaponId
@@ -66,7 +95,12 @@ watch(
       tags.value = l.tags.join(', ')
       favorite.value = l.favorite
     } else {
-      weaponId.value = props.defaultWeaponId || props.weapons[0]?.id || 0
+      // 全部枪械视图下（defaultWeaponId=0）默认不选枪，靠粘贴分享码自动识别或搜索选择，
+      // 避免默认选中第一把枪误导用户。
+      weaponId.value = props.defaultWeaponId || 0
+      weaponQuery.value = ''
+      weaponOpen.value = false
+      weaponError.value = ''
       title.value = ''
       mode.value = MODE_UNKNOWN
       code.value = ''
@@ -101,9 +135,14 @@ async function onPaste() {
   parsing.value = true
   try {
     const parsed = await api.parseShareCode(text)
+    weaponOpen.value = false
+    weaponQuery.value = ''
     if (parsed.matched) {
       const w = props.weapons.find((x) => x.key === parsed.weaponKey)
-      if (w) weaponId.value = w.id
+      if (w) {
+        weaponId.value = w.id
+        weaponError.value = ''
+      }
       if (parsed.mode !== MODE_UNKNOWN) mode.value = parsed.mode
       if (!title.value) title.value = `${w?.name ?? parsed.weaponName} 配枪`
       parseHint.value = w
@@ -121,9 +160,10 @@ async function onPaste() {
 }
 
 function submit() {
+  weaponError.value = weaponId.value ? '' : '请选择枪械，或粘贴分享码自动识别'
   titleError.value = title.value.trim() ? '' : '请填写方案标题'
   codeError.value = code.value.trim() ? '' : '请填写改枪码'
-  if (titleError.value || codeError.value) return
+  if (weaponError.value || titleError.value || codeError.value) return
 
   emit('submit', {
     weaponId: weaponId.value,
@@ -163,17 +203,52 @@ function submit() {
 
         <!-- 表单 -->
         <div class="min-h-0 flex-1 space-y-3 overflow-y-auto px-5 py-4">
-          <!-- 枪械 -->
+          <!-- 枪械：可搜索选择器，粘贴分享码自动识别优先 -->
           <label class="block">
-            <span class="mb-1 block text-xs text-slate-400">枪械</span>
-            <select
-              v-model.number="weaponId"
-              class="w-full rounded-md border border-surface-border bg-surface-sunken px-2 py-1.5 text-sm text-slate-200 focus:border-accent focus:outline-none"
+            <span class="mb-1 block text-xs text-slate-400">
+              枪械
+              <span v-if="!weaponId" class="text-slate-500">（粘贴分享码自动识别，或搜索选择）</span>
+            </span>
+            <div class="relative">
+              <input
+                v-model="weaponQuery"
+                type="text"
+                placeholder="搜索枪械型号 / 分类…"
+                class="w-full rounded-md border bg-surface-sunken px-2 py-1.5 pr-8 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none"
+                :class="weaponError ? 'border-rose-500' : 'border-surface-border focus:border-accent'"
+                @focus="weaponOpen = true"
+                @input="weaponOpen = true"
+                @keydown.esc="weaponOpen = false"
+              />
+              <span
+                v-if="currentWeapon && !weaponOpen"
+                class="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer rounded bg-accent-soft px-1.5 py-0.5 text-xs text-accent transition hover:brightness-110"
+                title="清除已选枪械"
+                @click="clearWeapon"
+              >{{ currentWeapon.name }} ✕</span>
+            </div>
+
+            <!-- 下拉候选 -->
+            <div
+              v-if="weaponOpen"
+              class="mt-1 max-h-48 overflow-y-auto rounded-md border border-surface-border bg-surface-raised shadow-lg"
             >
-              <option v-for="w in weapons" :key="w.id" :value="w.id">
-                {{ w.name }}（{{ w.categoryName }}）
-              </option>
-            </select>
+              <button
+                v-for="w in filteredWeapons"
+                :key="w.id"
+                class="flex w-full items-center justify-between px-2.5 py-1.5 text-left text-sm transition hover:bg-surface-sunken"
+                :class="w.id === weaponId ? 'text-accent' : 'text-slate-200'"
+                @click="selectWeapon(w)"
+              >
+                <span>{{ w.name }}</span>
+                <span class="text-[11px] text-slate-500">{{ w.categoryName }}</span>
+              </button>
+              <div v-if="filteredWeapons.length === 0" class="px-2.5 py-2 text-xs text-slate-500">
+                没有匹配的枪械
+              </div>
+            </div>
+
+            <span v-if="weaponError" class="mt-1 block text-xs text-rose-400">{{ weaponError }}</span>
           </label>
 
           <!-- 标题 -->
