@@ -72,10 +72,30 @@ const weaponTags = computed(() => {
   }
   return m
 })
-/** 标签出现次数（按方案计） */
+/** 当前视图范围内（分类/关键字/仅收藏，不含标签筛选本身）的枪械 id，用于标签统计 */
+const scopedWeaponIds = computed(() => {
+  const kw = keyword.value.trim().toLowerCase()
+  const ids = new Set<number>()
+  for (const g of weaponsByCategory.value) {
+    if (selectedCategory.value && g.key !== selectedCategory.value) continue
+    for (const w of g.weapons) {
+      if ((weaponCounts.value.get(w.id) ?? 0) === 0) continue
+      if (onlyFavorite.value && (weaponFavCount.value.get(w.id) ?? 0) === 0) continue
+      if (kw) {
+        const tags = [...(weaponTags.value.get(w.id) ?? [])].join(' ')
+        const hay = `${w.name} ${w.inGameName} ${w.aliases ?? ''} ${tags}`.toLowerCase()
+        if (!hay.includes(kw)) continue
+      }
+      ids.add(w.id)
+    }
+  }
+  return ids
+})
+/** 当前范围内方案的标签出现次数（按方案计） */
 const tagStats = computed(() => {
   const m = new Map<string, number>()
   for (const l of loadouts.value) {
+    if (!scopedWeaponIds.value.has(l.weaponId)) continue
     for (const t of l.tags) m.set(t, (m.get(t) ?? 0) + 1)
   }
   return m
