@@ -264,8 +264,8 @@
       "category": "ar",
       "aliases": [],
       "caliber": null,
-      "status": "unverified",
-      "source": "db",
+      "status": "available",
+      "source": "user",
       "note": "有第三方改枪码页面，待核实"
     },
     {
@@ -275,8 +275,8 @@
       "category": "ar",
       "aliases": [],
       "caliber": null,
-      "status": "unverified",
-      "source": "db",
+      "status": "available",
+      "source": "user",
       "note": "仅有第三方库线索，可信度最低"
     },
     {
