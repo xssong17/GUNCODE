@@ -47,11 +47,10 @@ defineExpose({ focusSearch })
         :value="keyword"
         type="search"
         placeholder="搜索方案 / 标签 / 枪械…"
-        class="w-56 rounded-md border border-surface-border bg-surface-sunken py-1.5 pl-7 pr-2 text-sm text-slate-200
+        class="w-56 rounded-md border border-surface-border bg-surface-sunken py-1.5 pl-2 pr-2 text-sm text-slate-200
                placeholder:text-slate-500 focus:border-accent focus:outline-none"
         @input="emit('update:keyword', ($event.target as HTMLInputElement).value)"
       />
-      <span class="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs text-slate-500">🔍</span>
     </div>
 
     <!-- 排序 -->
