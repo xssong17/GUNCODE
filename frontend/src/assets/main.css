@@ -61,9 +61,9 @@
            transition-colors hover:border-accent/60;
   }
 
-  /* 改枪码文本：等宽、可换行、完整展示 */
+  /* 改枪码文本：等宽、加粗清晰、可换行、完整展示 */
   .code-text {
-    @apply font-mono text-xs leading-relaxed break-all text-slate-300
+    @apply font-mono text-[13px] font-medium leading-relaxed break-all text-slate-200
            select-text rounded-md bg-surface-sunken p-2;
   }
 }

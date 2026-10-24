@@ -42,7 +42,7 @@ function isPrice(tag: string) {
 
 <template>
   <article
-    class="card group relative flex cursor-pointer flex-col transition-all hover:border-accent/60 hover:shadow-lg hover:shadow-black/25"
+    class="card group relative flex h-full cursor-pointer flex-col transition-all hover:border-accent/60 hover:shadow-lg hover:shadow-black/25"
     @click="onCopy"
     title="点击卡片复制改枪码"
   >
@@ -102,8 +102,8 @@ function isPrice(tag: string) {
       </span>
     </div>
 
-    <!-- 改枪码 -->
-    <div class="code-text mt-2.5 line-clamp-4" :title="loadout.code">{{ loadout.code }}</div>
+    <!-- 改枪码（占满剩余空间，保证卡片等高、底部对齐） -->
+    <div class="code-text mt-2.5 line-clamp-4 min-h-[70px] flex-1" :title="loadout.code">{{ loadout.code }}</div>
 
     <!-- 备注与调校 -->
     <p v-if="loadout.note" class="mt-2 truncate text-[11px] text-slate-400" :title="loadout.note">
