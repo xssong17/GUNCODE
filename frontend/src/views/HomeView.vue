@@ -458,16 +458,10 @@ function msg(e: unknown) {
             v-if="weaponCards.length === 0"
             class="flex h-full flex-col items-center justify-center gap-3 text-center"
           >
-            <div class="text-4xl opacity-40">🔫</div>
+            <svg class="h-14 w-14 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
             <p class="text-sm text-slate-400">
               {{ loadouts.length === 0 ? '还没有任何改枪码' : selectedTag ? '当前标签下没有带改枪码的枪械' : '当前分类下没有带改枪码的枪械' }}
             </p>
-            <button
-              class="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-slate-900 transition hover:brightness-110"
-              @click="openCreate"
-            >
-              添加第一条改枪码
-            </button>
           </div>
 
           <!-- 枪械卡片网格 -->
@@ -553,16 +547,10 @@ function msg(e: unknown) {
 
           <!-- 空状态（选中具体枪但无方案） -->
           <div v-if="visible.length === 0" class="flex h-full flex-col items-center justify-center gap-3 text-center">
-            <div class="text-4xl opacity-40">🔫</div>
+            <svg class="h-14 w-14 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
             <p class="text-sm text-slate-400">
               {{ loadouts.length === 0 ? '还没有任何改枪码' : '当前筛选条件下没有方案' }}
             </p>
-            <button
-              class="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-slate-300 transition hover:brightness-110"
-              @click="openCreate"
-            >
-              添加第一条改枪码
-            </button>
           </div>
 
           <!-- 方案按模式分组显示（区分烽火地带 / 全面战场） -->
