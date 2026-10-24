@@ -187,3 +187,29 @@ type ParsedCode struct {
 	Mode             string `json:"mode"`    // op / ww / unknown
 	Payload          string `json:"payload"` // 去掉枪械与模式后的码主体
 }
+
+// ExportFile 导出备份文件的整体结构（跨库迁移用 weaponKey 稳定匹配枪械）。
+type ExportFile struct {
+	App        string            `json:"app"` // 固定 "guncode"
+	Version    int               `json:"version"`
+	ExportedAt time.Time         `json:"exportedAt"`
+	Loadouts   []ExportedLoadout `json:"loadouts"`
+}
+
+// ExportedLoadout 单条导出的改枪方案。
+type ExportedLoadout struct {
+	WeaponKey string   `json:"weaponKey"` // 枪械稳定标识，导入时用它定位当前库中的枪
+	Title     string   `json:"title"`
+	Mode      string   `json:"mode"`
+	Code      string   `json:"code"`
+	Note      string   `json:"note"`
+	Tuning    string   `json:"tuning"`
+	Tags      []string `json:"tags"`
+	Favorite  bool     `json:"favorite"`
+}
+
+// ImportResult 导入结果统计。
+type ImportResult struct {
+	Imported int `json:"imported"` // 成功导入条数
+	Skipped  int `json:"skipped"`  // 跳过条数（枪械不存在 / 已存在同枪同码）
+}

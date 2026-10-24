@@ -218,3 +218,47 @@ func validateInput(in *model.LoadoutInput) error {
 	}
 	return nil
 }
+
+// ImportLoadouts 批量导入改枪方案。
+//
+// 以 weaponKey 在当前库中定位枪械（跨库迁移时 ID 可能不同）；找不到则跳过；
+// 同枪 + 同码已存在的也跳过，避免重复导入。返回导入数与跳过数。
+func ImportLoadouts(db *gorm.DB, items []model.ExportedLoadout) (imported, skipped int, err error) {
+	for _, it := range items {
+		w, gerr := GetWeaponByKey(db, it.WeaponKey)
+		if gerr != nil {
+			if errors.Is(gerr, ErrWeaponNotFound) {
+				skipped++
+				continue
+			}
+			return imported, skipped, fmt.Errorf("定位枪械 %q 失败: %w", it.WeaponKey, gerr)
+		}
+		// 去重：同枪同码视为已存在
+		var count int64
+		if cerr := db.Model(&model.Loadout{}).
+			Where("weapon_id = ? AND code = ?", w.ID, it.Code).
+			Count(&count).Error; cerr != nil {
+			return imported, skipped, fmt.Errorf("查询重复方案失败: %w", cerr)
+		}
+		if count > 0 {
+			skipped++
+			continue
+		}
+
+		l := model.Loadout{
+			WeaponID: w.ID,
+			Title:    strings.TrimSpace(it.Title),
+			Mode:     model.NormalizeMode(it.Mode),
+			Code:     strings.TrimSpace(it.Code),
+			Note:     strings.TrimSpace(it.Note),
+			Tuning:   strings.TrimSpace(it.Tuning),
+			Tags:     model.JoinTags(it.Tags),
+			Favorite: it.Favorite,
+		}
+		if cerr := db.Create(&l).Error; cerr != nil {
+			return imported, skipped, fmt.Errorf("导入方案 %q 失败: %w", it.Title, cerr)
+		}
+		imported++
+	}
+	return imported, skipped, nil
+}

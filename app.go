@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
+	"os"
+	"time"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"gorm.io/gorm"
@@ -165,4 +168,88 @@ func (a *App) ParseShareCode(text string) (model.ParsedCode, error) {
 		return model.ParsedCode{}, err
 	}
 	return service.ParseShareCode(text, weapons), nil
+}
+
+// ExportData 把所有改枪方案导出为 JSON 备份文件。
+//
+// 通过文件对话框让用户选择保存位置；用户取消时返回空路径。
+func (a *App) ExportData() (string, error) {
+	loadouts, err := store.ListLoadouts(a.db, store.LoadoutFilter{})
+	if err != nil {
+		return "", err
+	}
+
+	path, err := runtime.SaveFileDialog(a.ctx, runtime.SaveDialogOptions{
+		Title:          "导出改枪方案备份",
+		DefaultFilename: "guncode-backup-" + time.Now().Format("20060102-150405") + ".json",
+		Filters:        []runtime.FileFilter{{DisplayName: "JSON 文件", Pattern: "*.json"}},
+	})
+	if err != nil {
+		return "", fmt.Errorf("打开保存对话框失败: %w", err)
+	}
+	if path == "" {
+		return "", nil // 用户取消
+	}
+
+	exp := model.ExportFile{
+		App:        "guncode",
+		Version:    1,
+		ExportedAt: time.Now(),
+	}
+	for _, l := range loadouts {
+		exp.Loadouts = append(exp.Loadouts, model.ExportedLoadout{
+			WeaponKey: l.WeaponKey,
+			Title:     l.Title,
+			Mode:      l.Mode,
+			Code:      l.Code,
+			Note:      l.Note,
+			Tuning:    l.Tuning,
+			Tags:      l.Tags,
+			Favorite:  l.Favorite,
+		})
+	}
+
+	data, err := json.MarshalIndent(exp, "", "  ")
+	if err != nil {
+		return "", fmt.Errorf("序列化备份数据失败: %w", err)
+	}
+	if err := os.WriteFile(path, data, 0o644); err != nil {
+		return "", fmt.Errorf("写入备份文件失败: %w", err)
+	}
+	return path, nil
+}
+
+// ImportData 从 JSON 备份文件导入改枪方案。
+//
+// 通过文件对话框让用户选择文件；用户取消时返回空结果。
+// 已存在的同枪同码方案会跳过，不会重复导入。
+func (a *App) ImportData() (model.ImportResult, error) {
+	path, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		Title:   "选择要导入的改枪方案备份",
+		Filters: []runtime.FileFilter{{DisplayName: "JSON 文件", Pattern: "*.json"}},
+	})
+	if err != nil {
+		return model.ImportResult{}, fmt.Errorf("打开文件对话框失败: %w", err)
+	}
+	if path == "" {
+		return model.ImportResult{}, nil // 用户取消
+	}
+
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return model.ImportResult{}, fmt.Errorf("读取备份文件失败: %w", err)
+	}
+	var exp model.ExportFile
+	if err := json.Unmarshal(data, &exp); err != nil {
+		return model.ImportResult{}, fmt.Errorf("解析备份文件失败（不是有效的 GunCode 备份）: %w", err)
+	}
+	if exp.App != "guncode" {
+		return model.ImportResult{}, fmt.Errorf("该文件不是 GunCode 改枪码备份（app=%q）", exp.App)
+	}
+
+	imported, skipped, err := store.ImportLoadouts(a.db, exp.Loadouts)
+	if err != nil {
+		return model.ImportResult{}, err
+	}
+	return model.ImportResult{Imported: imported, Skipped: skipped}, nil
 }

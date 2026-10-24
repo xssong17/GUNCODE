@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /** 主视图：左侧枪械栏 + 顶部筛选条 + 卡片网格。 */
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import * as api from '../api'
 import CodeModal from '../components/CodeModal.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
@@ -29,8 +29,33 @@ const modalMode = ref<'create' | 'edit'>('create')
 const editing = ref<LoadoutDTO | null>(null)
 const deleting = ref<LoadoutDTO | null>(null)
 
+// —— 快捷键（Ctrl+F 搜索 / Ctrl+N 新建 / Ctrl+Q 退出 / Esc 关弹窗）——
+const filterBarRef = ref<InstanceType<typeof FilterBar> | null>(null)
+
+function onKeydown(e: KeyboardEvent) {
+  const ctrl = e.ctrlKey || e.metaKey
+  if (ctrl && e.key.toLowerCase() === 'f') {
+    e.preventDefault()
+    filterBarRef.value?.focusSearch()
+  } else if (ctrl && e.key.toLowerCase() === 'n') {
+    e.preventDefault()
+    openCreate()
+  } else if (ctrl && e.key.toLowerCase() === 'q') {
+    e.preventDefault()
+    ;(window as any).runtime?.Quit?.()
+  } else if (e.key === 'Escape') {
+    if (modalOpen.value) modalOpen.value = false
+    else if (deleting.value) deleting.value = null
+  }
+}
+
 onMounted(async () => {
   await refresh()
+  window.addEventListener('keydown', onKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', onKeydown)
 })
 
 /** 是否处于「枪械卡片视图」：未选中具体某把枪（全部枪械或某分类）时展示有方案的枪械卡片 */
@@ -126,6 +151,31 @@ async function onCopy(l: LoadoutDTO) {
   }
 }
 
+/** 导出全部方案为 JSON 备份 */
+async function onExport() {
+  try {
+    const p = await api.exportData()
+    if (p) toast.success(`已导出到：${p}`)
+  } catch (e) {
+    toast.error(`导出失败：${msg(e)}`)
+  }
+}
+
+/** 从 JSON 备份导入方案 */
+async function onImport() {
+  try {
+    const r = await api.importData()
+    if (r.imported > 0) {
+      toast.success(`已导入 ${r.imported} 条改枪码${r.skipped ? `（跳过 ${r.skipped} 条已存在）` : ''}`)
+      await refresh()
+    } else if (r.skipped > 0) {
+      toast.info(`没有新增：${r.skipped} 条已存在或无法匹配到对应枪械`)
+    }
+  } catch (e) {
+    toast.error(`导入失败：${msg(e)}`)
+  }
+}
+
 async function onToggleFavorite(l: LoadoutDTO) {
   try {
     await api.toggleFavorite(l.id, !l.favorite)
@@ -195,6 +245,7 @@ function msg(e: unknown) {
     <!-- 右侧主体 -->
     <section class="flex min-w-0 flex-1 flex-col">
       <FilterBar
+        ref="filterBarRef"
         :keyword="keyword"
         :sort="sort"
         :only-favorite="onlyFavorite"
@@ -205,6 +256,8 @@ function msg(e: unknown) {
         @update:sort="sort = $event"
         @update:onlyFavorite="onlyFavorite = $event"
         @add="openCreate"
+        @export="onExport"
+        @import="onImport"
       />
 
       <!-- 内容区 -->

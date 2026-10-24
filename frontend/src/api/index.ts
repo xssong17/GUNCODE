@@ -3,6 +3,7 @@ import * as App from '../../wailsjs/go/main/App'
 import type {
   AppInfo,
   Category,
+  ImportResult,
   LoadoutDTO,
   LoadoutInput,
   ParsedCode,
@@ -79,4 +80,14 @@ export async function createCustomWeapon(name: string, categoryKey: string, inGa
 /** 应用与数据概览 */
 export async function getAppInfo(): Promise<AppInfo> {
   return App.GetAppInfo() as Promise<AppInfo>
+}
+
+/** 导出全部改枪方案为 JSON 备份。返回保存路径；用户取消时返回空串。 */
+export async function exportData(): Promise<string> {
+  return App.ExportData() as Promise<string>
+}
+
+/** 从 JSON 备份导入改枪方案。返回导入/跳过条数；用户取消时 imported/skipped 均为 0。 */
+export async function importData(): Promise<ImportResult> {
+  return App.ImportData() as Promise<ImportResult>
 }

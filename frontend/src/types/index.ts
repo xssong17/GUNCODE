@@ -87,6 +87,12 @@ export interface AppInfo {
   loadoutCount: number
 }
 
+/** 导入备份结果 */
+export interface ImportResult {
+  imported: number
+  skipped: number
+}
+
 /** 模式 */
 export const MODE_OP = 'op'
 export const MODE_WW = 'ww'

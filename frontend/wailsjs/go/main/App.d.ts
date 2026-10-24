@@ -11,9 +11,13 @@ export function CreateLoadout(arg1:model.LoadoutInput):Promise<model.LoadoutDTO>
 
 export function DeleteLoadout(arg1:number):Promise<void>;
 
+export function ExportData():Promise<string>;
+
 export function GetAppInfo():Promise<main.AppInfo>;
 
 export function GetLoadout(arg1:number):Promise<model.LoadoutDTO>;
+
+export function ImportData():Promise<model.ImportResult>;
 
 export function ListCategories():Promise<Array<model.Category>>;
 

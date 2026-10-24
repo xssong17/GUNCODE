@@ -18,12 +18,20 @@ export function DeleteLoadout(arg1) {
   return window['go']['main']['App']['DeleteLoadout'](arg1);
 }
 
+export function ExportData() {
+  return window['go']['main']['App']['ExportData']();
+}
+
 export function GetAppInfo() {
   return window['go']['main']['App']['GetAppInfo']();
 }
 
 export function GetLoadout(arg1) {
   return window['go']['main']['App']['GetLoadout'](arg1);
+}
+
+export function ImportData() {
+  return window['go']['main']['App']['ImportData']();
 }
 
 export function ListCategories() {

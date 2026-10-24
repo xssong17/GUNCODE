@@ -289,3 +289,50 @@ func TestDatasetIntegrity(t *testing.T) {
 		}
 	}
 }
+
+func TestImportLoadouts(t *testing.T) {
+	db := newTestDB(t)
+
+	weapons, err := ListWeapons(db)
+	if err != nil {
+		t.Fatalf("读取枪械失败: %v", err)
+	}
+	if len(weapons) == 0 {
+		t.Fatal("种子库没有枪械")
+	}
+	key := weapons[0].Key
+
+	items := []model.ExportedLoadout{
+		{WeaponKey: key, Title: "方案A", Mode: model.ModeOp, Code: "code-1"},
+		{WeaponKey: key, Title: "方案B", Mode: model.ModeWW, Code: "code-2"},
+	}
+
+	// 首次导入应全部成功
+	imported, skipped, err := ImportLoadouts(db, items)
+	if err != nil {
+		t.Fatalf("首次导入失败: %v", err)
+	}
+	if imported != 2 || skipped != 0 {
+		t.Errorf("首次导入 imported=%d skipped=%d, 期望 2/0", imported, skipped)
+	}
+
+	// 重复导入：同枪同码应跳过，不产生重复
+	imported, skipped, err = ImportLoadouts(db, items)
+	if err != nil {
+		t.Fatalf("重复导入失败: %v", err)
+	}
+	if imported != 0 || skipped != 2 {
+		t.Errorf("重复导入 imported=%d skipped=%d, 期望 0/2", imported, skipped)
+	}
+
+	// 未知枪械 key：应跳过
+	imported, skipped, err = ImportLoadouts(db, []model.ExportedLoadout{
+		{WeaponKey: "no-such-weapon", Title: "方案C", Code: "x"},
+	})
+	if err != nil {
+		t.Fatalf("未知枪导入失败: %v", err)
+	}
+	if imported != 0 || skipped != 1 {
+		t.Errorf("未知枪导入 imported=%d skipped=%d, 期望 0/1", imported, skipped)
+	}
+}

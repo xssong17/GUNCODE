@@ -35,6 +35,8 @@ const titleError = ref('')
 const codeError = ref('')
 const preview = ref('')
 const parsing = ref(false)
+/** 粘贴识别结果反馈（ok=成功 / warn=需注意） */
+const parseHint = ref<{ type: 'ok' | 'warn'; text: string } | null>(null)
 
 const modes = [
   { key: MODE_OP, label: '烽火地带' },
@@ -52,6 +54,7 @@ watch(
     titleError.value = ''
     codeError.value = ''
     preview.value = ''
+    parseHint.value = null
     if (props.mode === 'edit' && props.loadout) {
       const l = props.loadout
       weaponId.value = l.weaponId
@@ -103,9 +106,14 @@ async function onPaste() {
       if (w) weaponId.value = w.id
       if (parsed.mode !== MODE_UNKNOWN) mode.value = parsed.mode
       if (!title.value) title.value = `${w?.name ?? parsed.weaponName} 配枪`
+      parseHint.value = w
+        ? { type: 'ok', text: `已识别：${w.name} · ${MODE_LABEL[mode.value] ?? '未标注'}` }
+        : { type: 'warn', text: `已识别到「${parsed.weaponName}」但不在当前枪械库中，请手动选择` }
+    } else {
+      parseHint.value = { type: 'warn', text: '未识别到枪械，请手动选择或直接输入改枪码' }
     }
   } catch {
-    // 识别失败时保持用户输入不变
+    parseHint.value = { type: 'warn', text: '识别失败，请手动填写' }
   } finally {
     parsing.value = false
     updatePreview()
@@ -220,6 +228,13 @@ function submit() {
               @input="updatePreview"
             />
             <span v-if="codeError" class="mt-1 block text-xs text-rose-400">{{ codeError }}</span>
+            <span
+              v-else-if="parseHint"
+              class="mt-1 block text-xs"
+              :class="parseHint.type === 'ok' ? 'text-emerald-400' : 'text-amber-400'"
+            >
+              {{ parseHint.text }}
+            </span>
           </label>
 
           <!-- 导入预览 -->

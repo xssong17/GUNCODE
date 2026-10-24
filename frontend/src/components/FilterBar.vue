@@ -1,5 +1,6 @@
 <script setup lang="ts">
 /** 顶部筛选条：搜索、排序、仅看收藏、当前筛选上下文与新增入口。 */
+import { ref } from 'vue'
 import type { SortKey } from '../types'
 
 defineProps<{
@@ -17,6 +18,8 @@ const emit = defineEmits<{
   (e: 'update:sort', value: SortKey): void
   (e: 'update:onlyFavorite', value: boolean): void
   (e: 'add'): void
+  (e: 'export'): void
+  (e: 'import'): void
 }>()
 
 const sorts: { key: SortKey; label: string }[] = [
@@ -25,6 +28,14 @@ const sorts: { key: SortKey; label: string }[] = [
   { key: 'favorite', label: '收藏优先' },
   { key: 'title', label: '按标题' },
 ]
+
+/** 搜索框元素引用（供 Ctrl+F 快捷键聚焦） */
+const searchInput = ref<HTMLInputElement | null>(null)
+function focusSearch() {
+  searchInput.value?.focus()
+  searchInput.value?.select()
+}
+defineExpose({ focusSearch })
 </script>
 
 <template>
@@ -32,6 +43,7 @@ const sorts: { key: SortKey; label: string }[] = [
     <!-- 搜索 -->
     <div class="relative">
       <input
+        ref="searchInput"
         :value="keyword"
         type="search"
         placeholder="搜索方案 / 标签 / 枪械…"
@@ -68,9 +80,23 @@ const sorts: { key: SortKey; label: string }[] = [
       {{ shown }} / {{ total }} 条
     </div>
 
-    <div class="ml-auto">
+    <div class="ml-auto flex items-center gap-2">
       <button
-        class="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-slate-300 transition hover:brightness-110"
+        class="rounded-md border border-surface-border px-3 py-1.5 text-sm text-slate-300 transition hover:bg-surface-sunken hover:text-slate-100"
+        title="把所有改枪方案导出为 JSON 备份"
+        @click="emit('export')"
+      >
+        导出
+      </button>
+      <button
+        class="rounded-md border border-surface-border px-3 py-1.5 text-sm text-slate-300 transition hover:bg-surface-sunken hover:text-slate-100"
+        title="从 JSON 备份导入改枪方案"
+        @click="emit('import')"
+      >
+        导入
+      </button>
+      <button
+        class="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-slate-900 transition hover:brightness-110"
         @click="emit('add')"
       >
         新增改枪码

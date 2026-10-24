@@ -64,6 +64,20 @@ export namespace model {
 		    return a;
 		}
 	}
+	export class ImportResult {
+	    imported: number;
+	    skipped: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new ImportResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.imported = source["imported"];
+	        this.skipped = source["skipped"];
+	    }
+	}
 	export class LoadoutDTO {
 	    id: number;
 	    weaponId: number;
