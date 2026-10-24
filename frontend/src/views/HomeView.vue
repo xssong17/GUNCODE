@@ -61,7 +61,47 @@ onUnmounted(() => {
 /** 是否处于「枪械卡片视图」：未选中具体某把枪（全部枪械或某分类）时展示有方案的枪械卡片 */
 const showWeaponGrid = computed(() => selectedWeaponId.value === 0)
 
-/** 有改枪码的枪械（按分类顺序排列），支持用关键字过滤枪名 / 游戏内全名 / 别名 */
+// —— 全部枪械视图的快捷筛选标签 ——
+const isPriceTag = (t: string) => /^\d+\s*w$/i.test(t)
+/** weaponId → 该枪所有方案的去重标签 */
+const weaponTags = computed(() => {
+  const m = new Map<number, Set<string>>()
+  for (const l of loadouts.value) {
+    if (!m.has(l.weaponId)) m.set(l.weaponId, new Set())
+    for (const t of l.tags) m.get(l.weaponId)!.add(t)
+  }
+  return m
+})
+/** 标签出现次数（按方案计） */
+const tagStats = computed(() => {
+  const m = new Map<string, number>()
+  for (const l of loadouts.value) {
+    for (const t of l.tags) m.set(t, (m.get(t) ?? 0) + 1)
+  }
+  return m
+})
+/** 热门普通标签（出现次数降序，最多 8 个） */
+const hotTags = computed(() =>
+  [...tagStats.value.entries()]
+    .filter(([t]) => !isPriceTag(t))
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([t]) => t),
+)
+/** 热门价格标签（单行显示，最多 6 个） */
+const hotPriceTags = computed(() =>
+  [...tagStats.value.entries()]
+    .filter(([t]) => isPriceTag(t))
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6)
+    .map(([t]) => t),
+)
+const selectedTag = ref('')
+function toggleTag(t: string) {
+  selectedTag.value = selectedTag.value === t ? '' : t
+}
+
+/** 有改枪码的枪械（按分类顺序排列），支持用关键字过滤枪名 / 游戏内全名 / 别名 + 快捷标签筛选 */
 const weaponCards = computed<Weapon[]>(() => {
   const kw = keyword.value.trim().toLowerCase()
   const list: Weapon[] = []
@@ -73,6 +113,7 @@ const weaponCards = computed<Weapon[]>(() => {
         const hay = `${w.name} ${w.inGameName} ${w.aliases ?? ''}`.toLowerCase()
         if (!hay.includes(kw)) continue
       }
+      if (selectedTag.value && !weaponTags.value.get(w.id)?.has(selectedTag.value)) continue
       list.push(w)
     }
   }
@@ -274,6 +315,30 @@ function msg(e: unknown) {
 
         <!-- 枪械卡片视图（未选中具体枪：全部枪械 / 某分类） -->
         <template v-else-if="showWeaponGrid">
+          <!-- 快捷筛选标签：全部枪械视图，价格标签单独一行 -->
+          <div v-if="hotTags.length || hotPriceTags.length" class="mb-4 flex flex-col gap-1.5">
+            <div v-if="hotTags.length" class="flex flex-wrap items-center gap-1.5">
+              <span class="text-[11px] text-slate-500">🏷️ 标签：</span>
+              <button
+                v-for="t in hotTags"
+                :key="t"
+                class="rounded-md border px-2 py-0.5 text-[11px] transition"
+                :class="selectedTag === t ? 'border-accent bg-accent-soft text-accent' : 'border-surface-border text-slate-400 hover:border-accent/50 hover:text-slate-200'"
+                @click="toggleTag(t)"
+              >#{{ t }}</button>
+            </div>
+            <div v-if="hotPriceTags.length" class="flex flex-wrap items-center gap-1.5">
+              <span class="text-[11px] text-slate-500">💰 价格：</span>
+              <button
+                v-for="t in hotPriceTags"
+                :key="t"
+                class="rounded-md border px-2 py-0.5 text-[11px] transition"
+                :class="selectedTag === t ? 'border-accent bg-accent-soft text-accent' : 'border-surface-border text-slate-400 hover:border-accent/50 hover:text-slate-200'"
+                @click="toggleTag(t)"
+              >{{ t }}</button>
+            </div>
+          </div>
+
           <!-- 空状态：没有任何带方案的枪 -->
           <div
             v-if="weaponCards.length === 0"
@@ -281,7 +346,7 @@ function msg(e: unknown) {
           >
             <div class="text-4xl opacity-40">🔫</div>
             <p class="text-sm text-slate-400">
-              {{ loadouts.length === 0 ? '还没有任何改枪码' : '当前分类下没有带改枪码的枪械' }}
+              {{ loadouts.length === 0 ? '还没有任何改枪码' : selectedTag ? '当前标签下没有带改枪码的枪械' : '当前分类下没有带改枪码的枪械' }}
             </p>
             <button
               class="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-slate-900 transition hover:brightness-110"
