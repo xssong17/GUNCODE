@@ -101,10 +101,33 @@ function toggleTag(t: string) {
   selectedTag.value = selectedTag.value === t ? '' : t
 }
 
+// —— 枪械视图排序依据（每把枪取其方案的最新时间 / 收藏数）——
+const weaponLatest = computed(() => {
+  const m = new Map<number, string>()
+  for (const l of loadouts.value) {
+    const cur = m.get(l.weaponId) ?? ''
+    if (l.updatedAt > cur) m.set(l.weaponId, l.updatedAt)
+  }
+  return m
+})
+const weaponCreated = computed(() => {
+  const m = new Map<number, string>()
+  for (const l of loadouts.value) {
+    const cur = m.get(l.weaponId) ?? ''
+    if (l.createdAt > cur) m.set(l.weaponId, l.createdAt)
+  }
+  return m
+})
+const weaponFavCount = computed(() => {
+  const m = new Map<number, number>()
+  for (const l of loadouts.value) if (l.favorite) m.set(l.weaponId, (m.get(l.weaponId) ?? 0) + 1)
+  return m
+})
+
 /** 有改枪码的枪械（按分类顺序排列），支持用关键字过滤枪名 / 游戏内全名 / 别名 + 快捷标签筛选 */
 const weaponCards = computed<Weapon[]>(() => {
   const kw = keyword.value.trim().toLowerCase()
-  const list: Weapon[] = []
+  let list: Weapon[] = []
   for (const g of weaponsByCategory.value) {
     if (selectedCategory.value && g.key !== selectedCategory.value) continue
     for (const w of g.weapons) {
@@ -117,6 +140,21 @@ const weaponCards = computed<Weapon[]>(() => {
       if (selectedTag.value && !weaponTags.value.get(w.id)?.has(selectedTag.value)) continue
       list.push(w)
     }
+  }
+  // 应用排序（与方案视图一致；recent=最近更新在前）
+  list = [...list]
+  switch (sort.value) {
+    case 'title':
+      list.sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'))
+      break
+    case 'created':
+      list.sort((a, b) => (weaponCreated.value.get(b.id) ?? '').localeCompare(weaponCreated.value.get(a.id) ?? ''))
+      break
+    case 'favorite':
+      list.sort((a, b) => (weaponFavCount.value.get(b.id) ?? 0) - (weaponFavCount.value.get(a.id) ?? 0))
+      break
+    default:
+      list.sort((a, b) => (weaponLatest.value.get(b.id) ?? '').localeCompare(weaponLatest.value.get(a.id) ?? ''))
   }
   return list
 })
