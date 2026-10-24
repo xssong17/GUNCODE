@@ -6,6 +6,8 @@ import type { LoadoutDTO } from '../types'
 
 const props = defineProps<{
   loadout: LoadoutDTO
+  /** 是否显示枪械名（方案视图顶部已有图例，可传 false 隐藏避免重复） */
+  showWeaponName?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -55,7 +57,7 @@ function isPrice(tag: string) {
     <header class="flex items-start justify-between gap-2">
       <div class="min-w-0">
         <div class="flex items-center gap-2">
-          <span class="truncate text-sm font-semibold text-slate-100">{{ loadout.weaponName }}</span>
+          <span v-if="showWeaponName" class="truncate text-sm font-semibold text-slate-100">{{ loadout.weaponName }}</span>
           <span class="shrink-0 rounded px-1.5 py-0.5 text-[10px]" :class="modeClass(loadout.mode)">
             {{ MODE_LABEL[loadout.mode] ?? '未标注' }}
           </span>

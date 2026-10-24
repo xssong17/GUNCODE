@@ -538,6 +538,7 @@ function msg(e: unknown) {
               v-for="l in visible"
               :key="l.id"
               :loadout="l"
+              :show-weapon-name="false"
               @copy="onCopy"
               @edit="openEdit"
               @remove="deleting = $event"
