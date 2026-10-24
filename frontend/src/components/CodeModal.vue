@@ -2,7 +2,7 @@
 /** 新增 / 编辑改枪码的表单弹窗。
  *  粘贴分享码时自动识别枪械与模式，并预览最终可导入的完整串。
  */
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import * as api from '../api'
 import { MODE_LABEL, MODE_OP, MODE_UNKNOWN, MODE_WW } from '../types'
 import type { LoadoutDTO, LoadoutInput, Weapon } from '../types'
@@ -72,6 +72,16 @@ function clearWeapon() {
   weaponError.value = ''
   updatePreview()
 }
+
+/** 枪械选择器容器引用：点击其外部时收起下拉（不必非要选中才收起） */
+const weaponPickerRef = ref<HTMLElement | null>(null)
+function onDocClick(e: MouseEvent) {
+  if (weaponPickerRef.value && !weaponPickerRef.value.contains(e.target as Node)) {
+    weaponOpen.value = false
+  }
+}
+onMounted(() => document.addEventListener('mousedown', onDocClick))
+onUnmounted(() => document.removeEventListener('mousedown', onDocClick))
 
 watch(
   () => props.open,
@@ -186,7 +196,6 @@ function submit() {
     <div
       v-if="open"
       class="fixed inset-0 z-40 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
-      @click.self="emit('close')"
       @keydown.esc="emit('close')"
     >
       <div class="flex max-h-[88vh] w-full max-w-xl flex-col overflow-hidden rounded-xl border border-surface-border bg-surface-raised shadow-2xl">
@@ -235,7 +244,7 @@ function submit() {
           </div>
 
           <!-- 枪械：可搜索选择器，粘贴分享码自动识别优先 -->
-          <label class="block">
+          <label ref="weaponPickerRef" class="block">
             <span class="mb-1 block text-xs text-slate-400">
               枪械
               <span v-if="!weaponId" class="text-slate-500">（粘贴分享码自动识别，或搜索选择）</span>
