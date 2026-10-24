@@ -121,6 +121,24 @@ const hotCategories = computed(() => weaponsByCategory.value)
 function toggleCategory(key: string) {
   selectedCategory.value = selectedCategory.value === key ? '' : key
 }
+
+// —— 选中具体枪：枪械头部 + 该枪快捷标签/价格筛选 ——
+const currentWeapon = computed(() => weapons.value.find((w) => w.id === selectedWeaponId.value))
+const currentWeaponImg = computed(() => (currentWeapon.value ? `/weapons/${currentWeapon.value.key}.png` : ''))
+const currentWeaponImgFailed = ref(false)
+/** 当前选中枪方案的标签/价格热门（供方案视图快捷筛选行） */
+const weaponScopedTags = computed(() => {
+  const stats = new Map<string, number>()
+  for (const l of loadouts.value) {
+    if (l.weaponId !== selectedWeaponId.value) continue
+    for (const t of l.tags) stats.set(t, (stats.get(t) ?? 0) + 1)
+  }
+  const entries = [...stats.entries()].sort((a, b) => b[1] - a[1])
+  return {
+    normal: entries.filter(([t]) => !isPriceTag(t)).slice(0, 8).map(([t]) => t),
+    price: entries.filter(([t]) => isPriceTag(t)).slice(0, 6).map(([t]) => t),
+  }
+})
 const selectedTag = ref('')
 function toggleTag(t: string) {
   selectedTag.value = selectedTag.value === t ? '' : t
@@ -213,6 +231,7 @@ const visible = computed(() => {
     if (selectedWeaponId.value && l.weaponId !== selectedWeaponId.value) return false
     if (!selectedWeaponId.value && selectedCategory.value && l.categoryKey !== selectedCategory.value) return false
     if (onlyFavorite.value && !l.favorite) return false
+    if (selectedTag.value && !l.tags.includes(selectedTag.value)) return false
     if (!kw) return true
     const hay = [
       l.title,
@@ -447,32 +466,85 @@ function msg(e: unknown) {
           </div>
         </template>
 
-        <!-- 空状态（选中具体枪但无方案） -->
-        <div v-else-if="visible.length === 0" class="flex h-full flex-col items-center justify-center gap-3 text-center">
-          <div class="text-4xl opacity-40">🔫</div>
-          <p class="text-sm text-slate-400">
-            {{ loadouts.length === 0 ? '还没有任何改枪码' : '当前筛选条件下没有方案' }}
-          </p>
-          <button
-            class="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-slate-300 transition hover:brightness-110"
-            @click="openCreate"
-          >
-            添加第一条改枪码
-          </button>
-        </div>
+        <!-- 选中具体枪的方案视图 -->
+        <template v-else>
+          <!-- 枪械头部：图样 + 名称，突出当前主题 -->
+          <div class="mb-4 flex items-center gap-4 rounded-xl border border-surface-border bg-surface-raised px-4 py-3">
+            <div class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-slate-200 to-slate-100">
+              <img
+                v-if="currentWeaponImg && !currentWeaponImgFailed"
+                :src="currentWeaponImg"
+                :alt="currentWeapon?.name"
+                class="h-full w-full object-contain"
+                @error="currentWeaponImgFailed = true"
+              />
+              <span v-else class="text-xl font-bold tracking-wide text-slate-500">{{ currentWeapon?.name }}</span>
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2">
+                <h2 class="truncate text-lg font-semibold text-slate-100">{{ currentWeapon?.name }}</h2>
+                <span class="shrink-0 rounded bg-surface-border/60 px-1.5 py-0.5 text-[10px] text-slate-400">
+                  {{ currentWeapon?.categoryName }}
+                </span>
+              </div>
+              <div class="mt-1 text-xs text-slate-400">{{ weaponCounts.get(selectedWeaponId) ?? 0 }} 套改枪方案</div>
+            </div>
+          </div>
 
-        <!-- 方案卡片网格（选中具体某把枪） -->
-        <div v-else class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
-          <LoadoutCard
-            v-for="l in visible"
-            :key="l.id"
-            :loadout="l"
-            @copy="onCopy"
-            @edit="openEdit"
-            @remove="deleting = $event"
-            @toggle-favorite="onToggleFavorite"
-          />
-        </div>
+          <!-- 快捷标签/价格筛选（当前枪） -->
+          <div
+            v-if="weaponScopedTags.normal.length || weaponScopedTags.price.length"
+            class="mb-4 flex flex-col gap-1.5"
+          >
+            <div v-if="weaponScopedTags.normal.length" class="flex flex-wrap items-center gap-1.5">
+              <span class="text-[11px] text-slate-500">🏷️ 标签：</span>
+              <button
+                v-for="t in weaponScopedTags.normal"
+                :key="t"
+                class="rounded-md border px-2 py-0.5 text-[11px] transition"
+                :class="selectedTag === t ? 'border-accent bg-accent-soft text-accent' : 'border-surface-border text-slate-400 hover:border-accent/50 hover:text-slate-200'"
+                @click="toggleTag(t)"
+              >#{{ t }}</button>
+            </div>
+            <div v-if="weaponScopedTags.price.length" class="flex flex-wrap items-center gap-1.5">
+              <span class="text-[11px] text-slate-500">💰 价格：</span>
+              <button
+                v-for="t in weaponScopedTags.price"
+                :key="t"
+                class="rounded-md border px-2 py-0.5 text-[11px] transition"
+                :class="selectedTag === t ? 'border-accent bg-accent-soft text-accent' : 'border-surface-border text-slate-400 hover:border-accent/50 hover:text-slate-200'"
+                @click="toggleTag(t)"
+              >{{ t }}</button>
+            </div>
+          </div>
+
+          <!-- 空状态（选中具体枪但无方案） -->
+          <div v-if="visible.length === 0" class="flex h-full flex-col items-center justify-center gap-3 text-center">
+            <div class="text-4xl opacity-40">🔫</div>
+            <p class="text-sm text-slate-400">
+              {{ loadouts.length === 0 ? '还没有任何改枪码' : '当前筛选条件下没有方案' }}
+            </p>
+            <button
+              class="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-slate-300 transition hover:brightness-110"
+              @click="openCreate"
+            >
+              添加第一条改枪码
+            </button>
+          </div>
+
+          <!-- 方案卡片网格（选中具体某把枪） -->
+          <div v-else class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
+            <LoadoutCard
+              v-for="l in visible"
+              :key="l.id"
+              :loadout="l"
+              @copy="onCopy"
+              @edit="openEdit"
+              @remove="deleting = $event"
+              @toggle-favorite="onToggleFavorite"
+            />
+          </div>
+        </template>
       </div>
 
       <!-- 数据集信息（数字用醒目橙色，参考"数据面板"风格） -->
