@@ -364,6 +364,10 @@ async function onDelete() {
 function msg(e: unknown) {
   return e instanceof Error ? e.message : String(e)
 }
+
+/** 暴露给 App 标题栏的导出/导入（按钮已移到标题栏） */
+defineExpose({ onExport, onImport })
+
 </script>
 
 <template>
@@ -392,8 +396,6 @@ function msg(e: unknown) {
         @update:sort="sort = $event"
         @update:onlyFavorite="onlyFavorite = $event"
         @add="openCreate"
-        @export="onExport"
-        @import="onImport"
       />
 
       <!-- 内容区 -->

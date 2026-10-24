@@ -81,20 +81,6 @@ defineExpose({ focusSearch })
 
     <div class="ml-auto flex items-center gap-2">
       <button
-        class="rounded-md border border-surface-border px-3 py-1.5 text-sm text-slate-300 transition hover:bg-surface-sunken hover:text-slate-100"
-        title="把所有改枪方案导出为 JSON 备份"
-        @click="emit('export')"
-      >
-        导出
-      </button>
-      <button
-        class="rounded-md border border-surface-border px-3 py-1.5 text-sm text-slate-300 transition hover:bg-surface-sunken hover:text-slate-100"
-        title="从 JSON 备份导入改枪方案"
-        @click="emit('import')"
-      >
-        导入
-      </button>
-      <button
         class="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-slate-900 transition hover:brightness-110"
         @click="emit('add')"
       >
