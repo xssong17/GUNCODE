@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -41,17 +40,10 @@ type UpdateInfo struct {
 	ReleaseUrl string `json:"releaseUrl"` // Release 页面地址
 }
 
-// CheckUpdate 查询 GitHub 上最新 Release 版本（走本地代理）。
-// 失败时返回 error，由前端提示用户（如代理未开启 / 网络不可达）。
+// CheckUpdate 查询 GitHub 上最新 Release 版本（跟随系统代理，不写死本地代理）。
+// 失败时返回 error，由前端提示用户（如网络不可达）。
 func (a *App) CheckUpdate() (UpdateInfo, error) {
-	proxyURL, err := url.Parse("http://127.0.0.1:10808")
-	if err != nil {
-		return UpdateInfo{}, err
-	}
-	client := &http.Client{
-		Transport: &http.Transport{ Proxy: http.ProxyURL(proxyURL) },
-		Timeout:   12 * time.Second,
-	}
+	client := &http.Client{ Timeout: 12 * time.Second }
 	resp, err := client.Get("https://api.github.com/repos/xssong17/GUNCODE/releases/latest")
 	if err != nil {
 		return UpdateInfo{}, err

@@ -22,7 +22,7 @@
 ## !define INFO_PROJECTNAME    "MyProject" # Default "{{.Name}}"
 ## !define INFO_COMPANYNAME    "MyCompany" # Default "{{.Info.CompanyName}}"
 ## !define INFO_PRODUCTNAME    "MyProduct" # Default "{{.Info.ProductName}}"
-## !define INFO_PRODUCTVERSION "1.0.0"     # Default "{{.Info.ProductVersion}}"
+## !define INFO_PRODUCTVERSION "1.3.0"     # Default "{{.Info.ProductVersion}}"
 ## !define INFO_COPYRIGHT      "Copyright" # Default "{{.Info.Copyright}}"
 ###
 ## !define PRODUCT_EXECUTABLE  "Application.exe"      # Default "${INFO_PROJECTNAME}.exe"
@@ -35,7 +35,7 @@
 # 覆盖默认 ProjectInfo：安装包/产品名统一为 GUNCODE（版本 1.0.0，作者书包呀）
 !define INFO_PROJECTNAME    "GUNCODE"
 !define INFO_PRODUCTNAME    "GUNCODE"
-!define INFO_PRODUCTVERSION "1.0.0"
+!define INFO_PRODUCTVERSION "1.3.0"
 !define INFO_COMPANYNAME    "GUNCODE"
 !define INFO_COPYRIGHT      "本软件完全免费、无盈利性质；图标与素材版权归原权利方所有。"
 !include "wails_tools.nsh"
