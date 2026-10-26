@@ -88,15 +88,63 @@ func ParseShareCode(text string, weapons []model.Weapon) model.ParsedCode {
 		if idx < 0 {
 			continue
 		}
-		rest := raw[idx+len(c.prefix):]
-		// 枪械名后必须紧跟模式分隔（"-烽火地带-" / "-全面战场-"）或"-码"，
-		// 否则视为把码里的枪名子串误当识别点，跳过继续找更合适的候选。
-		if !strings.HasPrefix(rest, "-") {
-			continue
+		tail := raw[idx+len(c.prefix):]
+		// 在枪名之后定位最早出现的模式分隔（"-烽火地带-" / "-全面战场-"）。
+		opAt := strings.Index(tail, opSeparator)
+		wwAt := strings.Index(tail, wwSeparator)
+		modeSep := -1
+		switch {
+		case opAt >= 0 && (wwAt < 0 || opAt < wwAt):
+			modeSep = opAt
+		case wwAt >= 0:
+			modeSep = wwAt
 		}
-		return fillParsed(result, c.weapon, rest)
+		// 兼容「枪名-码」旧形态（无模式分隔），仍返回未标注模式。
+		if modeSep < 0 {
+			if !strings.HasPrefix(tail, "-") {
+				continue
+			}
+			priceTag, rest := trimOptionalPrice(tail)
+			return fillParsed(result, c.weapon, rest, priceTag, "")
+		}
+		// 枪名到模式分隔之间的原文即标题（含价格标签 / 备注，如"ASh-12战斗步枪"）。
+		head := tail[:modeSep]
+		priceTag := extractPriceTag(head)
+		rawTitle := strings.TrimSpace(c.prefix + head)
+		rest := tail[modeSep:]
+		return fillParsed(result, c.weapon, rest, priceTag, rawTitle)
 	}
 	return result
+}
+
+// extractPriceTag 从枪名后的头部提取价格标签（如 "40w"/"40W"），
+// 仅当 head 形如「数字…w」开头时返回，否则为空。head 不含模式分隔。
+func extractPriceTag(head string) string {
+	i := 0
+	for i < len(head) && head[i] >= '0' && head[i] <= '9' {
+		i++
+	}
+	if i > 0 && i < len(head) && (head[i] == 'w' || head[i] == 'W') {
+		return head[:i+1]
+	}
+	return ""
+}
+
+// trimOptionalPrice 剥掉枪名后可选的价格标签前缀（如 "40w-" / "40W-"），
+// 返回价格标签（如 "40w"，无则为空）与剩余部分。
+// 仅当 rest 为「数字…w-」形态时剥离（如 "汤姆逊冲锋枪40w-烽火地带-…"），
+// 否则原样返回，避免把码主体误剥（码主体以字母为主，数字后不跟 "w-"）。
+func trimOptionalPrice(rest string) (string, string) {
+	for i := 0; i < len(rest); i++ {
+		if rest[i] >= '0' && rest[i] <= '9' {
+			continue
+		}
+		if (rest[i] == 'w' || rest[i] == 'W') && i+1 < len(rest) && rest[i+1] == '-' {
+			return rest[:i+1], rest[i+1:]
+		}
+		break
+	}
+	return "", rest
 }
 
 // buildCandidates 生成按前缀长度降序排列的候选列表。
@@ -125,13 +173,15 @@ func buildCandidates(weapons []model.Weapon) []prefixCandidate {
 }
 
 // fillParsed 解析前缀之后的剩余部分，取出模式与码主体。
-func fillParsed(result model.ParsedCode, w model.Weapon, rest string) model.ParsedCode {
+func fillParsed(result model.ParsedCode, w model.Weapon, rest string, priceTag string, title string) model.ParsedCode {
 	result.Matched = true
 	result.WeaponKey = w.Key
 	result.WeaponName = w.Name
 	result.WeaponInGameName = w.InGameName
 	result.CategoryKey = w.CategoryKey
 	result.CategoryName = w.CategoryName
+	result.PriceTag = priceTag
+	result.Title = title
 
 	rest = strings.TrimPrefix(rest, "-")
 	switch {

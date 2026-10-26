@@ -74,6 +74,8 @@ export interface ParsedCode {
   weaponInGameName: string
   categoryKey: string
   categoryName: string
+  priceTag: string
+  title: string
   mode: string
   payload: string
 }
@@ -91,6 +93,17 @@ export interface AppInfo {
 export interface ImportResult {
   imported: number
   skipped: number
+}
+
+/** 批量导入文本时单条改枪码及其配置（标题 / 价格 / 标签）；裸码行由 weaponKey/mode/code 显式指定 */
+export interface ImportRow {
+  line: string
+  title: string
+  price: string
+  tags: string[]
+  weaponKey: string
+  mode: string
+  code: string
 }
 
 /** 模式 */

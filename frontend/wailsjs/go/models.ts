@@ -20,6 +20,20 @@ export namespace main {
 	        this.loadoutCount = source["loadoutCount"];
 	    }
 	}
+	export class UpdateInfo {
+	    latest: string;
+	    releaseUrl: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new UpdateInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.latest = source["latest"];
+	        this.releaseUrl = source["releaseUrl"];
+	    }
+	}
 
 }
 
@@ -76,6 +90,30 @@ export namespace model {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.imported = source["imported"];
 	        this.skipped = source["skipped"];
+	    }
+	}
+	export class ImportRow {
+	    line: string;
+	    title: string;
+	    price: string;
+	    tags: string[];
+	    weaponKey: string;
+	    mode: string;
+	    code: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ImportRow(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.line = source["line"];
+	        this.title = source["title"];
+	        this.price = source["price"];
+	        this.tags = source["tags"];
+	        this.weaponKey = source["weaponKey"];
+	        this.mode = source["mode"];
+	        this.code = source["code"];
 	    }
 	}
 	export class LoadoutDTO {
@@ -174,6 +212,8 @@ export namespace model {
 	    weaponInGameName: string;
 	    categoryKey: string;
 	    categoryName: string;
+	    priceTag: string;
+	    title: string;
 	    mode: string;
 	    payload: string;
 	
@@ -190,6 +230,8 @@ export namespace model {
 	        this.weaponInGameName = source["weaponInGameName"];
 	        this.categoryKey = source["categoryKey"];
 	        this.categoryName = source["categoryName"];
+	        this.priceTag = source["priceTag"];
+	        this.title = source["title"];
 	        this.mode = source["mode"];
 	        this.payload = source["payload"];
 	    }

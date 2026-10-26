@@ -12,7 +12,7 @@ function cls(type: string) {
 </script>
 
 <template>
-  <div class="pointer-events-none fixed right-4 top-4 z-50 flex flex-col gap-2">
+  <div class="pointer-events-none fixed right-4 top-4 z-[100] flex flex-col gap-2">
     <div
       v-for="t in toasts"
       :key="t.id"

@@ -5,7 +5,30 @@ import HomeView from './views/HomeView.vue'
 import ChangelogModal from './components/ChangelogModal.vue'
 import ImportTextModal from './components/ImportTextModal.vue'
 import { useGunCode } from './composables/useGunCode'
+import { useToast } from './composables/useToast'
 import { GIT_VERSION } from './generated/buildInfo'
+import * as api from './api'
+
+/** 在系统默认浏览器打开外部链接（GitHub 等） */
+function openExternal(url: string) {
+  api.openExternal(url)
+}
+
+/** 检查 GitHub 最新版本并提示 */
+const { info } = useToast()
+async function onCheckUpdate() {
+  try {
+    const r = await api.checkUpdate()
+    const latest = r.latest.replace(/^v/i, '')
+    if (latest === APP_VERSION) {
+      info(`已是最新版本 v${APP_VERSION}`)
+    } else {
+      info(`发现新版本 v${latest}，可前往 GitHub 查看`)
+    }
+  } catch {
+    info('检查更新失败：请确认网络 / 代理已开启')
+  }
+}
 
 /** 无边框窗口的运行时控制（wails runtime 注入在 window.runtime） */
 const rt = () => (window as any).runtime
@@ -14,7 +37,7 @@ function winMax() { rt()?.WindowToggleMaximise?.() }
 function winClose() { rt()?.Quit?.() }
 
 /** 全局数据（含版本信息）；导出/导入逻辑保留在 HomeView，标题栏按钮经 ref 调用 */
-const { appInfo } = useGunCode()
+const { appInfo, weapons } = useGunCode()
 const homeViewRef = ref<InstanceType<typeof HomeView> | null>(null)
 async function onExport() { await homeViewRef.value?.onExport() }
 async function onImport() { await homeViewRef.value?.onImport() }
@@ -31,7 +54,7 @@ const changelogOpen = ref(false)
 const importTextOpen = ref(false)
 
 /** 应用版本号（手动维护，随发布递增；涉及大的功能/UI改动时自增） */
-const APP_VERSION = '1.2.0'
+const APP_VERSION = '1.3.0'
 </script>
 
 <template>
@@ -155,7 +178,18 @@ const APP_VERSION = '1.2.0'
               <dt class="text-slate-400">数据版本</dt>
               <dd class="text-slate-100">{{ appInfo?.datasetVersion ?? '—' }}</dd>
             </div>
+            <div class="flex justify-between">
+              <dt class="text-slate-400">项目地址</dt>
+              <dd class="text-slate-100">
+                <button class="text-accent underline-offset-2 transition hover:underline" @click="openExternal('https://github.com/xssong17/GUNCODE')">GitHub ↗</button>
+              </dd>
+            </div>
           </dl>
+
+          <button
+            class="mt-3 w-full rounded-md border border-accent/40 px-3 py-1.5 text-sm text-accent transition hover:bg-accent/10"
+            @click="onCheckUpdate"
+          >检查更新</button>
 
           <div class="my-3 h-px bg-surface-border"></div>
           <div>
@@ -173,6 +207,7 @@ const APP_VERSION = '1.2.0'
 
     <ImportTextModal
       :open="importTextOpen"
+      :weapons="weapons"
       @close="importTextOpen = false"
       @imported="onTextImported"
     />

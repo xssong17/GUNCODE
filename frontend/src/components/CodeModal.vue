@@ -35,6 +35,8 @@ const titleError = ref('')
 const codeError = ref('')
 const preview = ref('')
 const parsing = ref(false)
+/** 自动识别开关：默认开启，改枪码变化即自动识别；关闭后由用户手动填写 */
+const autoParse = ref(true)
 /** 输入防抖识别定时器 */
 let parseTimer: ReturnType<typeof setTimeout> | null = null
 /** 输入/粘贴识别结果反馈（ok=成功 / warn=需注意） */
@@ -139,6 +141,7 @@ watch(
   () => props.open,
   (open) => {
     if (!open) return
+    autoParse.value = true
     titleError.value = ''
     codeError.value = ''
     preview.value = ''
@@ -192,10 +195,11 @@ async function updatePreview() {
   }
 }
 
-/** 输入框内容变化时：实时预览 + 防抖自动识别（手动输入、删除、粘贴都会触发 @input） */
+/** 输入框内容变化时：实时预览；自动识别开启则防抖识别（手动输入、删除、粘贴都会触发 @input） */
 function onCodeInput() {
   updatePreview()
   if (parseTimer) clearTimeout(parseTimer)
+  if (!autoParse.value) return
   const text = code.value.trim()
   if (!text) {
     parseHint.value = null
@@ -203,6 +207,15 @@ function onCodeInput() {
   }
   parseTimer = setTimeout(() => runParse(text), 350)
 }
+
+/** 重新开启自动识别且已有改枪码时，立即补一次识别 */
+watch(autoParse, (on) => {
+  if (!on) return
+  const text = code.value.trim()
+  if (!text) return
+  if (parseTimer) clearTimeout(parseTimer)
+  parseTimer = setTimeout(() => runParse(text), 50)
+})
 
 /** 识别改枪码中的枪械与模式 */
 async function runParse(text: string) {
@@ -218,7 +231,8 @@ async function runParse(text: string) {
         weaponError.value = ''
       }
       if (parsed.mode !== MODE_UNKNOWN) mode.value = parsed.mode
-      if (!title.value) title.value = `${w?.name ?? parsed.weaponName} 配枪`
+      // 标题直接用码里面的：后端识别出的原文标题（含价格/备注，如「汤姆逊冲锋枪40w」）
+      title.value = parsed.title || w?.name || parsed.weaponName
       parseHint.value = w
         ? { type: 'ok', text: `已识别：${w.name} · ${MODE_LABEL[mode.value] ?? '未标注'}` }
         : { type: 'warn', text: `已识别到「${parsed.weaponName}」但不在当前枪械库中，请手动选择` }
@@ -279,7 +293,13 @@ function submit() {
           <!-- 改枪码：主输入置顶，粘贴即识别（参考购物网站地址自动识别交互） -->
           <label class="block">
             <span class="mb-1 flex items-center justify-between text-xs text-slate-400">
-              <span>📋 改枪码 * <span class="text-slate-500">（输入即自动识别枪械与模式）</span></span>
+              <span class="flex items-center gap-2">
+                <span>📋 改枪码 *</span>
+                <label class="flex cursor-pointer select-none items-center gap-1 text-slate-400">
+                  <input type="checkbox" v-model="autoParse" class="h-3 w-3 accent-emerald-500" />
+                  <span>自动识别</span>
+                </label>
+              </span>
               <span v-if="parsing" class="text-slate-500">识别中…</span>
             </span>
             <textarea

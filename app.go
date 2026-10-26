@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -31,6 +33,38 @@ type AppInfo struct {
 	WeaponCount    int    `json:"weaponCount"`
 	CategoryCount  int    `json:"categoryCount"`
 	LoadoutCount   int    `json:"loadoutCount"`
+}
+
+// UpdateInfo GitHub 最新 Release 检查结果。
+type UpdateInfo struct {
+	Latest     string `json:"latest"`     // 最新 tag 名，如 "v1.3.0"
+	ReleaseUrl string `json:"releaseUrl"` // Release 页面地址
+}
+
+// CheckUpdate 查询 GitHub 上最新 Release 版本（走本地代理）。
+// 失败时返回 error，由前端提示用户（如代理未开启 / 网络不可达）。
+func (a *App) CheckUpdate() (UpdateInfo, error) {
+	proxyURL, err := url.Parse("http://127.0.0.1:10808")
+	if err != nil {
+		return UpdateInfo{}, err
+	}
+	client := &http.Client{
+		Transport: &http.Transport{ Proxy: http.ProxyURL(proxyURL) },
+		Timeout:   12 * time.Second,
+	}
+	resp, err := client.Get("https://api.github.com/repos/xssong17/GUNCODE/releases/latest")
+	if err != nil {
+		return UpdateInfo{}, err
+	}
+	defer resp.Body.Close()
+	var r struct {
+		TagName string `json:"tag_name"`
+		HTMLURL string `json:"html_url"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
+		return UpdateInfo{}, err
+	}
+	return UpdateInfo{Latest: r.TagName, ReleaseUrl: r.HTMLURL}, nil
 }
 
 // NewApp creates a new App application struct
@@ -68,6 +102,11 @@ func (a *App) shutdown(ctx context.Context) {
 }
 
 // GetAppInfo 返回应用与数据概览。
+// OpenExternal 在系统默认浏览器中打开外部链接（Wails 内点击 <a> 默认不会跳到外部浏览器）。
+func (a *App) OpenExternal(url string) {
+	runtime.BrowserOpenURL(a.ctx, url)
+}
+
 func (a *App) GetAppInfo() (AppInfo, error) {
 	categories, err := store.ListCategories(a.db)
 	if err != nil {
@@ -281,6 +320,61 @@ func (a *App) ImportTextLines(lines []string) (model.ImportResult, error) {
 			Title:     parsed.WeaponName + " 配枪",
 			Mode:      parsed.Mode,
 			Code:      parsed.Payload,
+		})
+	}
+	imported, skipped, err := store.ImportLoadouts(a.db, items)
+	if err != nil {
+		return model.ImportResult{}, err
+	}
+	return model.ImportResult{Imported: imported, Skipped: skipped}, nil
+}
+
+// ImportTextRows 从多行文本批量导入改枪方案，并允许为每条配置标题 / 价格 / 标签。
+//
+// 与 ImportTextLines 的区别：每条改枪码额外携带用户配置的标题、价格（万）与标签，
+// 其中价格非空时生成「Nw」价格标签一并入库；标题为空时用枪械名。
+// 纯裸码（Line 无法识别出枪械）可经 WeaponKey / Mode / Code 显式指定后导入。
+func (a *App) ImportTextRows(rows []model.ImportRow) (model.ImportResult, error) {
+	weapons, err := store.ListWeapons(a.db)
+	if err != nil {
+		return model.ImportResult{}, err
+	}
+	byKey := make(map[string]string, len(weapons))
+	for _, w := range weapons {
+		byKey[w.Key] = w.Name
+	}
+	items := make([]model.ExportedLoadout, 0, len(rows))
+	for _, r := range rows {
+		key := strings.TrimSpace(r.WeaponKey)
+		mode := model.NormalizeMode(r.Mode)
+		code := strings.TrimSpace(r.Code)
+
+		// 优先尝试从原文解析枪械 / 模式 / 码
+		if line := strings.TrimSpace(r.Line); line != "" {
+			if p := service.ParseShareCode(line, weapons); p.Matched && p.Mode != model.ModeUnknown {
+				key = p.WeaponKey
+				mode = p.Mode
+				code = p.Payload
+			}
+		}
+		// 枪械无效 / 模式未标注 / 码为空的行跳过
+		if _, ok := byKey[key]; !ok || mode == model.ModeUnknown || code == "" {
+			continue
+		}
+		tags := append([]string{}, r.Tags...)
+		if price := strings.TrimSpace(r.Price); price != "" {
+			tags = append(tags, price+"w")
+		}
+		title := strings.TrimSpace(r.Title)
+		if title == "" {
+			title = byKey[key]
+		}
+		items = append(items, model.ExportedLoadout{
+			WeaponKey: key,
+			Title:     title,
+			Mode:      mode,
+			Code:      code,
+			Tags:      tags,
 		})
 	}
 	imported, skipped, err := store.ImportLoadouts(a.db, items)

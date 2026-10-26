@@ -65,17 +65,19 @@ func TestParseShareCode(t *testing.T) {
 	weapons := testWeapons()
 
 	cases := []struct {
-		name    string
-		input   string
-		matched bool
-		key     string
-		mode    string
-		payload string
+		name      string
+		input     string
+		matched   bool
+		key       string
+		mode      string
+		payload   string
+		priceTag  string
+		wantTitle string
 	}{
 		{
 			name:    "完整烽火地带码",
 			input:   "AKM突击步枪-烽火地带-6KJ5IFS0A021USGQ8AC2S",
-			matched: true, key: "akm", mode: model.ModeOp, payload: "6KJ5IFS0A021USGQ8AC2S",
+			matched: true, key: "akm", mode: model.ModeOp, payload: "6KJ5IFS0A021USGQ8AC2S", wantTitle: "AKM突击步枪",
 		},
 		{
 			name:    "M7 全名特例",
@@ -101,6 +103,31 @@ func TestParseShareCode(t *testing.T) {
 			name:    "PKM 通用机枪完整烽火地带码",
 			input:   "PKM通用机枪-烽火地带-6LMHJE80EMQOVLD6DHRMP",
 			matched: true, key: "pkm", mode: model.ModeOp, payload: "6LMHJE80EMQOVLD6DHRMP",
+		},
+		{
+			name:    "枪名后带价格标签仍能识别(烽火地带)",
+			input:   "AKM突击步枪40w-烽火地带-XYZ",
+			matched: true, key: "akm", mode: model.ModeOp, payload: "XYZ", priceTag: "40w", wantTitle: "AKM突击步枪40w",
+		},
+		{
+			name:    "枪名后带价格标签(全面战场)",
+			input:   "AKM突击步枪40w-全面战场-6KIS8RS064DU5TFLJ691HR93",
+			matched: true, key: "akm", mode: model.ModeWW, payload: "6KIS8RS064DU5TFLJ691HR93", priceTag: "40w", wantTitle: "AKM突击步枪40w",
+		},
+		{
+			name:    "枪名后带备注(满改)仍能识别",
+			input:   "AKM突击步枪满改-烽火地带-XYZ",
+			matched: true, key: "akm", mode: model.ModeOp, payload: "XYZ", wantTitle: "AKM突击步枪满改",
+		},
+		{
+			name:    "枪名后带任意备注(xxx)仍能识别",
+			input:   "AKM突击步枪xxx-烽火地带-XYZ",
+			matched: true, key: "akm", mode: model.ModeOp, payload: "XYZ", wantTitle: "AKM突击步枪xxx",
+		},
+		{
+			name:    "枪名含连字符(AK-12)标题保留完整",
+			input:   "AK-12突击步枪-烽火地带-XYZ",
+			matched: true, key: "ak12", mode: model.ModeOp, payload: "XYZ", wantTitle: "AK-12突击步枪",
 		},
 		{
 			name:    "别名 AK 匹配 AKM",
@@ -133,6 +160,12 @@ func TestParseShareCode(t *testing.T) {
 			}
 			if got.Payload != c.payload {
 				t.Errorf("Payload = %q, 期望 %q", got.Payload, c.payload)
+			}
+			if got.PriceTag != c.priceTag {
+				t.Errorf("PriceTag = %q, 期望 %q", got.PriceTag, c.priceTag)
+			}
+			if c.wantTitle != "" && got.Title != c.wantTitle {
+				t.Errorf("Title = %q, 期望 %q", got.Title, c.wantTitle)
 			}
 		})
 	}

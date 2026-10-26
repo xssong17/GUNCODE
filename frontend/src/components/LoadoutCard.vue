@@ -38,6 +38,15 @@ function modeClass(mode: string) {
 function isPrice(tag: string) {
   return /^\d+\s*w$/i.test(tag)
 }
+
+/** 格式化时间为「YYYY-MM-DD HH:mm」 */
+function fmtTime(iso: string) {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return ''
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`
+}
 </script>
 
 <template>
@@ -112,5 +121,11 @@ function isPrice(tag: string) {
     <p v-if="loadout.tuning" class="mt-1 truncate text-[11px] text-slate-500" :title="loadout.tuning">
       调校：{{ loadout.tuning }}
     </p>
+
+    <!-- 导入 / 更新时间 -->
+    <div class="mt-auto pt-2 text-[10px] text-slate-500">
+      <span v-if="loadout.updatedAt && loadout.updatedAt !== loadout.createdAt" title="最近更新时间">更新于 {{ fmtTime(loadout.updatedAt) }}</span>
+      <span v-else title="导入时间">导入于 {{ fmtTime(loadout.createdAt) }}</span>
+    </div>
   </article>
 </template>

@@ -4,6 +4,7 @@ import type {
   AppInfo,
   Category,
   ImportResult,
+  ImportRow,
   LoadoutDTO,
   LoadoutInput,
   ParsedCode,
@@ -82,6 +83,16 @@ export async function getAppInfo(): Promise<AppInfo> {
   return App.GetAppInfo() as Promise<AppInfo>
 }
 
+/** 在系统默认浏览器中打开外部链接（如 GitHub 项目地址） */
+export function openExternal(url: string): void {
+  App.OpenExternal(url)
+}
+
+/** 检查 GitHub 上最新 Release 版本 */
+export async function checkUpdate(): Promise<{ latest: string; releaseUrl: string }> {
+  return App.CheckUpdate() as Promise<{ latest: string; releaseUrl: string }>
+}
+
 /** 导出全部改枪方案为 JSON 备份。返回保存路径；用户取消时返回空串。 */
 export async function exportData(): Promise<string> {
   return App.ExportData() as Promise<string>
@@ -95,4 +106,9 @@ export async function importData(): Promise<ImportResult> {
 /** 从多行文本批量导入改枪方案（每行一个改枪码）。返回导入/跳过条数。 */
 export async function importTextLines(lines: string[]): Promise<ImportResult> {
   return App.ImportTextLines(lines) as Promise<ImportResult>
+}
+
+/** 从多行文本批量导入改枪方案，且每条携带标题 / 价格 / 标签配置。返回导入/跳过条数。 */
+export async function importTextRows(rows: ImportRow[]): Promise<ImportResult> {
+  return App.ImportTextRows(rows) as Promise<ImportResult>
 }

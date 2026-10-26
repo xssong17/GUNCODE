@@ -184,6 +184,8 @@ type ParsedCode struct {
 	WeaponInGameName string `json:"weaponInGameName"`
 	CategoryKey      string `json:"categoryKey"`
 	CategoryName     string `json:"categoryName"`
+	PriceTag         string `json:"priceTag"` // 枪名后携带的价格标签（如 "40w"），无则为空
+	Title            string `json:"title"`    // 识别出的标题：从枪名到模式分隔前的原文（含价格/备注）
 	Mode             string `json:"mode"`    // op / ww / unknown
 	Payload          string `json:"payload"` // 去掉枪械与模式后的码主体
 }
@@ -206,6 +208,18 @@ type ExportedLoadout struct {
 	Tuning    string   `json:"tuning"`
 	Tags      []string `json:"tags"`
 	Favorite  bool     `json:"favorite"`
+}
+
+// ImportRow 批量导入文本时单条改枪码及其用户配置（标题 / 价格 / 标签）。
+// Line 无法识别出枪械时（如纯裸码），由前端显式指定 WeaponKey / Mode / Code。
+type ImportRow struct {
+	Line      string   `json:"line"`      // 原始改枪码文本，用于识别枪械 / 模式 / 码
+	Title     string   `json:"title"`     // 方案标题；为空则用枪械名
+	Price     string   `json:"price"`     // 价格（单位：万）；为空则不设，非空则生成「Nw」价格标签
+	Tags      []string `json:"tags"`      // 普通标签
+	WeaponKey string   `json:"weaponKey"` // 可选：Line 无法识别时显式指定枪械
+	Mode      string   `json:"mode"`      // 可选：Line 无法识别时指定模式（op / ww）
+	Code      string   `json:"code"`      // 可选：Line 无法识别时指定码主体
 }
 
 // ImportResult 导入结果统计。
