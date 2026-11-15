@@ -76,6 +76,13 @@ const bgClass = computed(() => CATEGORY_BG[props.weapon.categoryKey] ?? 'from-sl
       >
         {{ STATUS_LABEL[weapon.status] }}
       </span>
+
+      <!-- 弹药型号角标 -->
+      <span
+        v-if="weapon.caliber"
+        class="absolute bottom-1 right-1 rounded bg-slate-900/65 px-1 py-0.5 text-[10px] leading-none text-slate-100"
+        :title="`该枪使用的弹药型号：${weapon.caliber}`"
+      >{{ weapon.caliber }}</span>
     </div>
 
     <!-- 信息区：名称 + 大数字改枪码数（参考"醒目数字"风格） -->

@@ -34,6 +34,14 @@ export function GetLoadout(arg1) {
   return window['go']['main']['App']['GetLoadout'](arg1);
 }
 
+export function GetPresetPrices() {
+  return window['go']['main']['App']['GetPresetPrices']();
+}
+
+export function GetPresetTags() {
+  return window['go']['main']['App']['GetPresetTags']();
+}
+
 export function ImportData() {
   return window['go']['main']['App']['ImportData']();
 }
@@ -68,6 +76,14 @@ export function ParseShareCode(arg1) {
 
 export function ResolveShareCode(arg1, arg2, arg3) {
   return window['go']['main']['App']['ResolveShareCode'](arg1, arg2, arg3);
+}
+
+export function SavePresetPrices(arg1) {
+  return window['go']['main']['App']['SavePresetPrices'](arg1);
+}
+
+export function SavePresetTags(arg1) {
+  return window['go']['main']['App']['SavePresetTags'](arg1);
 }
 
 export function ToggleFavorite(arg1, arg2) {

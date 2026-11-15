@@ -54,7 +54,7 @@ const changelogOpen = ref(false)
 const importTextOpen = ref(false)
 
 /** 应用版本号（手动维护，随发布递增；涉及大的功能/UI改动时自增） */
-const APP_VERSION = '1.3.0'
+const APP_VERSION = '1.3.1'
 </script>
 
 <template>

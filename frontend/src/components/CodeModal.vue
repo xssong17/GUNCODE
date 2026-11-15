@@ -83,13 +83,25 @@ function onWeaponInput(e: Event) {
 }
 
 // —— 可选价格标签（快捷添加到 tags，价格单选）——
-/** 价格预设：10w ~ 100w，每 10w 一个 */
-const pricePresets = Array.from({ length: 10 }, (_, i) => `${(i + 1) * 10}w`)
+/** 价格预设（可编辑，持久化到本地库）；默认 10w~100w，每 10w 一档 */
+const pricePresets = ref<string[]>([])
+const priceEditing = ref(false)
+const priceDraft = ref<string[]>([])
+const priceInput = ref('')
+
+/** 读取价格预设（失败时保持空，不影响滑块 / 手输） */
+async function loadPresetPrices() {
+  try {
+    pricePresets.value = await api.getPresetPrices()
+  } catch {
+    pricePresets.value = []
+  }
+}
 /** 价格滑块（单位：万），替代手动输入 */
 const priceSlider = ref(0)
 /** 是否为价格标签（数字 + w，如 10w / 35w / 100w） */
 function isPriceTag(t: string) {
-  return pricePresets.includes(t) || /^\d+\s*w$/i.test(t)
+  return /^\d+\s*w$/i.test(t)
 }
 /** 把某个标签追加到 tags（逗号分隔，去重；价格标签单选：加新的会先移除旧价格） */
 function pushTag(t: string) {
@@ -124,6 +136,97 @@ function removeTag(t: string) {
   tags.value = cur.join(', ')
 }
 
+// —— 预置标签（可编辑，持久化到本地数据库）——
+const presetTags = ref<string[]>([])
+const presetEditing = ref(false)
+const presetDraft = ref<string[]>([])
+const presetInput = ref('')
+
+/** 读取预置标签（失败时保持空，不影响手动输入） */
+async function loadPresetTags() {
+  try {
+    presetTags.value = await api.getPresetTags()
+  } catch {
+    presetTags.value = []
+  }
+}
+/** 点预置标签：已存在则移除，否则加入当前方案标签 */
+function togglePresetTag(t: string) {
+  if (hasTag(t)) removeTag(t)
+  else pushTag(t)
+}
+/** 进入预置标签编辑态（用草稿，取消可整体放弃） */
+function startEditPreset() {
+  presetDraft.value = [...presetTags.value]
+  presetInput.value = ''
+  presetEditing.value = true
+}
+function cancelEditPreset() {
+  presetEditing.value = false
+  presetInput.value = ''
+}
+function addPresetDraft() {
+  const t = presetInput.value.trim().replace(/[,，]/g, '')
+  if (!t) return
+  if (!presetDraft.value.includes(t)) presetDraft.value.push(t)
+  presetInput.value = ''
+}
+function removePresetDraft(i: number) {
+  presetDraft.value.splice(i, 1)
+}
+/** 保存预置标签到数据库（成功后同步到当前列表） */
+async function saveEditPreset() {
+  try {
+    await api.savePresetTags(presetDraft.value)
+    presetTags.value = [...presetDraft.value]
+    presetEditing.value = false
+    presetInput.value = ''
+  } catch {
+    // 保存失败保持在编辑态，便于用户重试
+  }
+}
+
+// —— 价格预设编辑（与预置标签同理，可增删并持久化）——
+function startEditPrice() {
+  priceDraft.value = [...pricePresets.value]
+  priceInput.value = ''
+  priceEditing.value = true
+}
+function cancelEditPrice() {
+  priceEditing.value = false
+  priceInput.value = ''
+}
+/** 规整价格输入：纯数字自动补 w（如 35 → 35w），已是 Nw 形式则保留 */
+function normalizePriceInput(raw: string): string {
+  const t = raw.trim().replace(/[,，]/g, '').toLowerCase()
+  if (!t) return ''
+  if (/^\d+$/.test(t)) return t + 'w'
+  if (/^\d+\s*w$/.test(t)) return parseInt(t) + 'w'
+  return t
+}
+function addPriceDraft() {
+  const t = normalizePriceInput(priceInput.value)
+  if (!t) return
+  if (!priceDraft.value.includes(t)) priceDraft.value.push(t)
+  priceDraft.value.sort((a, b) => parseInt(a) - parseInt(b))
+  priceInput.value = ''
+}
+function removePriceDraft(i: number) {
+  priceDraft.value.splice(i, 1)
+}
+/** 保存价格预设到数据库（并按数值升序同步） */
+async function saveEditPrice() {
+  try {
+    const sorted = [...priceDraft.value].sort((a, b) => parseInt(a) - parseInt(b))
+    await api.savePresetPrices(sorted)
+    pricePresets.value = sorted
+    priceEditing.value = false
+    priceInput.value = ''
+  } catch {
+    // 保存失败保持在编辑态
+  }
+}
+
 /** 枪械选择器容器引用：点击其外部时收起下拉（不必非要选中才收起） */
 const weaponPickerRef = ref<HTMLElement | null>(null)
 function onDocClick(e: MouseEvent) {
@@ -141,6 +244,10 @@ watch(
   () => props.open,
   (open) => {
     if (!open) return
+    loadPresetTags()
+    loadPresetPrices()
+    presetEditing.value = false
+    priceEditing.value = false
     autoParse.value = true
     titleError.value = ''
     codeError.value = ''
@@ -414,8 +521,29 @@ function submit() {
           <label class="block">
             <span class="mb-1 flex items-center justify-between text-xs text-slate-400">
               <span>🏷️ 标签</span>
-              <span class="text-slate-500">可选价格标签</span>
+              <button
+                class="rounded border px-1.5 py-0.5 text-[11px] transition"
+                :class="presetEditing ? 'border-accent text-accent' : 'border-surface-border text-slate-400 hover:border-accent/60 hover:text-accent'"
+                @click="presetEditing ? cancelEditPreset() : startEditPreset()"
+              >{{ presetEditing ? '退出编辑' : '预置标签 ✎' }}</button>
             </span>
+            <!-- 当前已选标签（醒目，置于输入框之上） -->
+            <div class="mb-1.5 rounded-md border border-accent/30 bg-accent-soft/10 px-2 py-1.5">
+              <div class="mb-1 flex items-center justify-between text-[11px]">
+                <span class="text-slate-400">当前标签 <span class="font-medium text-accent">{{ tagList.length }}</span></span>
+                <span class="text-slate-500">{{ tagList.length ? '点 × 移除' : '从下方常用标签快捷添加，或手动输入' }}</span>
+              </div>
+              <div v-if="tagList.length" class="flex flex-wrap items-center gap-1.5">
+                <span
+                  v-for="t in tagList"
+                  :key="t"
+                  class="inline-flex items-center gap-1 rounded border border-accent/50 bg-accent-soft/25 px-2 py-0.5 text-xs font-medium text-accent"
+                >
+                  {{ t }}
+                  <button class="text-accent/70 transition hover:text-rose-400" title="删除标签" @click="removeTag(t)">×</button>
+                </span>
+              </div>
+            </div>
             <div class="flex gap-1.5">
               <input
                 v-model="tagInput"
@@ -430,27 +558,101 @@ function submit() {
                 @click="addTag"
               >+</button>
             </div>
-            <!-- 已添加标签 -->
-            <div v-if="tagList.length" class="mt-1.5 flex flex-wrap items-center gap-1.5">
-              <span
-                v-for="t in tagList"
-                :key="t"
-                class="inline-flex items-center gap-1 rounded border border-surface-border bg-surface-sunken px-1.5 py-0.5 text-[11px] text-slate-300"
-              >
-                {{ t }}
-                <button class="text-slate-500 transition hover:text-rose-400" title="删除标签" @click="removeTag(t)">×</button>
-              </span>
+            <!-- 预置标签：快捷添加（编辑态可增删改并保存） -->
+            <div v-if="presetEditing" class="mt-1.5 rounded-md border border-dashed border-accent/40 bg-accent-soft/10 p-2">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span v-if="!presetDraft.length" class="text-[11px] text-slate-500">暂无预置标签，可在下方添加</span>
+                <span
+                  v-for="(p, i) in presetDraft"
+                  :key="p + i"
+                  class="inline-flex items-center gap-1 rounded border border-accent/40 bg-accent-soft/20 px-1.5 py-0.5 text-[11px] text-accent"
+                >
+                  {{ p }}
+                  <button class="text-accent/70 transition hover:text-rose-400" title="删除该预置标签" @click="removePresetDraft(i)">×</button>
+                </span>
+              </div>
+              <div class="mt-1.5 flex gap-1.5">
+                <input
+                  v-model="presetInput"
+                  type="text"
+                  placeholder="添加预置标签，回车或点 +"
+                  class="min-w-0 flex-1 rounded-md border border-surface-border bg-surface-sunken px-2 py-1 text-xs text-slate-200 placeholder:text-slate-500 focus:border-accent focus:outline-none"
+                  @keydown.enter.prevent="addPresetDraft"
+                />
+                <button
+                  class="shrink-0 rounded-md border border-accent/50 bg-accent-soft px-2 text-sm leading-none text-accent transition hover:bg-accent hover:text-slate-900"
+                  title="添加预置标签"
+                  @click="addPresetDraft"
+                >+</button>
+              </div>
+              <div class="mt-1.5 flex items-center justify-end gap-2">
+                <button class="rounded border border-surface-border px-2 py-0.5 text-[11px] text-slate-400 transition hover:bg-surface-sunken" @click="cancelEditPreset">取消</button>
+                <button class="rounded bg-accent px-2 py-0.5 text-[11px] font-medium text-slate-300 transition hover:brightness-110" @click="saveEditPreset">保存</button>
+              </div>
             </div>
-            <!-- 价格标签快捷添加（单选，带图标） -->
-            <div class="mt-1.5 flex flex-wrap items-center gap-1.5">
-              <span class="text-[11px] text-slate-500">价格：</span>
+            <div v-else-if="presetTags.length" class="mt-1.5 flex flex-wrap items-center gap-1.5">
+              <span class="text-[11px] text-slate-500">常用：</span>
               <button
-                v-for="p in pricePresets"
+                v-for="p in presetTags"
                 :key="p"
-                class="rounded border border-surface-border px-1.5 py-0.5 text-[11px] transition hover:border-accent/60 hover:text-accent"
-                :class="hasTag(p) ? 'border-accent text-accent' : 'text-slate-400'"
-                @click="addPriceTag(p)"
-              >💰{{ p }}</button>
+                class="rounded border px-1.5 py-0.5 text-[11px] transition"
+                :class="hasTag(p) ? 'border-accent bg-accent-soft/20 text-accent' : 'border-surface-border text-slate-400 hover:border-accent/60 hover:text-accent'"
+                :title="hasTag(p) ? '点击移除该标签' : '点击添加该标签'"
+                @click="togglePresetTag(p)"
+              >🏷️ {{ p }}</button>
+            </div>
+            <!-- 已添加标签（已移至上方「当前标签」区，此处不再重复展示） -->
+            <!-- 价格标签快捷添加（单选，可编辑预设） -->
+            <div class="mt-1.5">
+              <div class="mb-1 flex items-center justify-between text-[11px]">
+                <span class="text-slate-500">价格 <span class="text-accent">（单选）</span></span>
+                <button
+                  class="rounded border px-1.5 py-0.5 text-[11px] transition"
+                  :class="priceEditing ? 'border-accent text-accent' : 'border-surface-border text-slate-400 hover:border-accent/60 hover:text-accent'"
+                  @click="priceEditing ? cancelEditPrice() : startEditPrice()"
+                >{{ priceEditing ? '退出编辑' : '编辑预设 ✎' }}</button>
+              </div>
+              <div v-if="!priceEditing" class="flex flex-wrap items-center gap-1.5">
+                <button
+                  v-for="p in pricePresets"
+                  :key="p"
+                  class="rounded border px-1.5 py-0.5 text-[11px] transition"
+                  :class="hasTag(p) ? 'border-accent text-accent' : 'border-surface-border text-slate-400 hover:border-accent/60 hover:text-accent'"
+                  @click="addPriceTag(p)"
+                >💰{{ p }}</button>
+                <span v-if="!pricePresets.length" class="text-[11px] text-slate-500">暂无价格预设，点右侧「编辑预设」添加</span>
+              </div>
+              <div v-else class="rounded-md border border-dashed border-accent/40 bg-accent-soft/10 p-2">
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <span v-if="!priceDraft.length" class="text-[11px] text-slate-500">暂无价格预设，可在下方添加</span>
+                  <span
+                    v-for="(p, i) in priceDraft"
+                    :key="p + i"
+                    class="inline-flex items-center gap-1 rounded border border-accent/40 bg-accent-soft/20 px-1.5 py-0.5 text-[11px] text-accent"
+                  >
+                    {{ p }}
+                    <button class="text-accent/70 transition hover:text-rose-400" title="删除该价格预设" @click="removePriceDraft(i)">×</button>
+                  </span>
+                </div>
+                <div class="mt-1.5 flex gap-1.5">
+                  <input
+                    v-model="priceInput"
+                    type="text"
+                    placeholder="输入价格（如 35 或 35w），回车或点 +"
+                    class="min-w-0 flex-1 rounded-md border border-surface-border bg-surface-sunken px-2 py-1 text-xs text-slate-200 placeholder:text-slate-500 focus:border-accent focus:outline-none"
+                    @keydown.enter.prevent="addPriceDraft"
+                  />
+                  <button
+                    class="shrink-0 rounded-md border border-accent/50 bg-accent-soft px-2 text-sm leading-none text-accent transition hover:bg-accent hover:text-slate-900"
+                    title="添加价格预设"
+                    @click="addPriceDraft"
+                  >+</button>
+                </div>
+                <div class="mt-1.5 flex items-center justify-end gap-2">
+                  <button class="rounded border border-surface-border px-2 py-0.5 text-[11px] text-slate-400 transition hover:bg-surface-sunken" @click="cancelEditPrice">取消</button>
+                  <button class="rounded bg-accent px-2 py-0.5 text-[11px] font-medium text-slate-300 transition hover:brightness-110" @click="saveEditPrice">保存</button>
+                </div>
+              </div>
             </div>
             <div class="mt-1.5 flex items-center gap-2">
               <span class="shrink-0 text-[11px] text-slate-500">自定义价格</span>

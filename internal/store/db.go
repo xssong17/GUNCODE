@@ -54,6 +54,7 @@ func Open(path string) (*gorm.DB, error) {
 		&model.Category{},
 		&model.Weapon{},
 		&model.Loadout{},
+		&model.AppSetting{},
 	); err != nil {
 		return nil, fmt.Errorf("建表失败: %w", err)
 	}

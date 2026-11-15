@@ -19,6 +19,10 @@ export function GetAppInfo():Promise<main.AppInfo>;
 
 export function GetLoadout(arg1:number):Promise<model.LoadoutDTO>;
 
+export function GetPresetPrices():Promise<Array<string>>;
+
+export function GetPresetTags():Promise<Array<string>>;
+
 export function ImportData():Promise<model.ImportResult>;
 
 export function ImportTextLines(arg1:Array<string>):Promise<model.ImportResult>;
@@ -36,6 +40,10 @@ export function OpenExternal(arg1:string):Promise<void>;
 export function ParseShareCode(arg1:string):Promise<model.ParsedCode>;
 
 export function ResolveShareCode(arg1:string,arg2:string,arg3:string):Promise<string>;
+
+export function SavePresetPrices(arg1:Array<string>):Promise<void>;
+
+export function SavePresetTags(arg1:Array<string>):Promise<void>;
 
 export function ToggleFavorite(arg1:number,arg2:boolean):Promise<void>;
 

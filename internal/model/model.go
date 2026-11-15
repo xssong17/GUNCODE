@@ -227,3 +227,10 @@ type ImportResult struct {
 	Imported int `json:"imported"` // 成功导入条数
 	Skipped  int `json:"skipped"`  // 跳过条数（枪械不存在 / 已存在同枪同码）
 }
+
+// AppSetting 通用键值设置表，用于保存用户可编辑的配置（如预置标签）。
+type AppSetting struct {
+	Key       string    `gorm:"primaryKey;size:64;not null" json:"key"`
+	Value     string    `gorm:"type:text" json:"value"`
+	UpdatedAt time.Time `json:"updatedAt"`
+}

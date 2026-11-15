@@ -112,3 +112,23 @@ export async function importTextLines(lines: string[]): Promise<ImportResult> {
 export async function importTextRows(rows: ImportRow[]): Promise<ImportResult> {
   return App.ImportTextRows(rows) as Promise<ImportResult>
 }
+
+/** 读取用户可编辑的预置标签（首次返回默认值） */
+export async function getPresetTags(): Promise<string[]> {
+  return App.GetPresetTags() as Promise<string[]>
+}
+
+/** 保存用户编辑后的预置标签 */
+export async function savePresetTags(tags: string[]): Promise<void> {
+  return App.SavePresetTags(tags)
+}
+
+/** 读取用户可编辑的价格预设（首次返回默认 10w~100w） */
+export async function getPresetPrices(): Promise<string[]> {
+  return App.GetPresetPrices() as Promise<string[]>
+}
+
+/** 保存用户编辑后的价格预设 */
+export async function savePresetPrices(items: string[]): Promise<void> {
+  return App.SavePresetPrices(items)
+}

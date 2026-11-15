@@ -4,14 +4,46 @@
     "datasetVersion": "20261115",
     "description": "枪械分类与基础信息数据集。本文件是本应用枪械库的唯一数据源，Go 种子代码据此初始化数据库。",
     "categories": [
-      { "id": "ar", "name": "突击步枪", "order": 1 },
-      { "id": "dmr", "name": "射手步枪", "order": 2 },
-      { "id": "sniper", "name": "狙击步枪", "order": 3 },
-      { "id": "lmg", "name": "轻机枪", "order": 4 },
-      { "id": "smg", "name": "冲锋枪", "order": 5 },
-      { "id": "shotgun", "name": "霰弹枪", "order": 6 },
-      { "id": "pistol", "name": "手枪", "order": 7 },
-      { "id": "special", "name": "特殊武器", "order": 8 }
+      {
+        "id": "ar",
+        "name": "突击步枪",
+        "order": 1
+      },
+      {
+        "id": "dmr",
+        "name": "射手步枪",
+        "order": 2
+      },
+      {
+        "id": "sniper",
+        "name": "狙击步枪",
+        "order": 3
+      },
+      {
+        "id": "lmg",
+        "name": "轻机枪",
+        "order": 4
+      },
+      {
+        "id": "smg",
+        "name": "冲锋枪",
+        "order": 5
+      },
+      {
+        "id": "shotgun",
+        "name": "霰弹枪",
+        "order": 6
+      },
+      {
+        "id": "pistol",
+        "name": "手枪",
+        "order": 7
+      },
+      {
+        "id": "special",
+        "name": "特殊武器",
+        "order": 8
+      }
     ],
     "modes": [
       {
@@ -46,15 +78,17 @@
       "inGameName 存在品类后缀特例（如 M7 为『M7战斗步枪』而非『M7突击步枪』），已按实际写法记录。"
     ]
   },
-
   "weapons": [
     {
       "id": "m4a1",
       "name": "M4A1",
       "inGameName": "M4A1突击步枪",
       "category": "ar",
-      "aliases": ["M4", "M4A1卡宾"],
-      "caliber": null,
+      "aliases": [
+        "M4",
+        "M4A1卡宾"
+      ],
+      "caliber": "5.56×45mm",
       "status": "available",
       "source": "official",
       "note": "全模式通用；改枪码前缀常见『M4A1突击步枪』"
@@ -64,7 +98,10 @@
       "name": "AN94",
       "inGameName": "AN94突击步枪",
       "category": "ar",
-      "aliases": ["AN-94", "AN94突击步枪"],
+      "aliases": [
+        "AN-94",
+        "AN94突击步枪"
+      ],
       "caliber": "5.45×39mm",
       "status": "available",
       "source": "official",
@@ -75,8 +112,11 @@
       "name": "AKM",
       "inGameName": "AKM突击步枪",
       "category": "ar",
-      "aliases": ["AK47", "AK"],
-      "caliber": null,
+      "aliases": [
+        "AK47",
+        "AK"
+      ],
+      "caliber": "7.62×39mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -86,8 +126,10 @@
       "name": "AK-12",
       "inGameName": "AK-12突击步枪",
       "category": "ar",
-      "aliases": ["AK12"],
-      "caliber": null,
+      "aliases": [
+        "AK12"
+      ],
+      "caliber": "5.45×39mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -97,8 +139,10 @@
       "name": "M16A4",
       "inGameName": "M16A4突击步枪",
       "category": "ar",
-      "aliases": ["M16"],
-      "caliber": null,
+      "aliases": [
+        "M16"
+      ],
+      "caliber": "5.56×45mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -108,8 +152,10 @@
       "name": "SCAR-H",
       "inGameName": "SCAR-H战斗步枪",
       "category": "ar",
-      "aliases": ["SCAR"],
-      "caliber": null,
+      "aliases": [
+        "SCAR"
+      ],
+      "caliber": "7.62×51mm",
       "status": "available",
       "source": "official",
       "note": "游戏内全名为 SCAR-H战斗步枪（战斗步枪属步枪大类）"
@@ -120,7 +166,7 @@
       "inGameName": "K416突击步枪",
       "category": "ar",
       "aliases": [],
-      "caliber": null,
+      "caliber": "5.56×45mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -130,8 +176,10 @@
       "name": "QBZ95-1",
       "inGameName": "QBZ95-1突击步枪",
       "category": "ar",
-      "aliases": ["QBZ95"],
-      "caliber": null,
+      "aliases": [
+        "QBZ95"
+      ],
+      "caliber": "5.8×42mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -141,7 +189,10 @@
       "name": "腾龙突击步枪",
       "inGameName": "腾龙突击步枪",
       "category": "ar",
-      "aliases": ["QBZ-191", "QBZ191"],
+      "aliases": [
+        "QBZ-191",
+        "QBZ191"
+      ],
       "caliber": "5.8×42mm",
       "status": "available",
       "source": "official",
@@ -153,7 +204,7 @@
       "inGameName": "AUG突击步枪",
       "category": "ar",
       "aliases": [],
-      "caliber": null,
+      "caliber": "5.56×45mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -163,8 +214,10 @@
       "name": "AS Val",
       "inGameName": "AS Val突击步枪",
       "category": "ar",
-      "aliases": ["ASVAL"],
-      "caliber": null,
+      "aliases": [
+        "ASVAL"
+      ],
+      "caliber": "9×39mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -175,7 +228,7 @@
       "inGameName": "G3战斗步枪",
       "category": "ar",
       "aliases": [],
-      "caliber": null,
+      "caliber": "7.62×51mm",
       "status": "available",
       "source": "official",
       "note": "游戏内全名为 G3战斗步枪（战斗步枪属步枪大类）；曾误记为突击步枪"
@@ -186,7 +239,7 @@
       "inGameName": "M7战斗步枪",
       "category": "ar",
       "aliases": [],
-      "caliber": null,
+      "caliber": "6.8×51mm",
       "status": "available",
       "source": "db",
       "note": "⚠ 游戏内全名后缀是『战斗步枪』，非『突击步枪』，拼接烽火地带前缀时勿用类别名"
@@ -197,7 +250,7 @@
       "inGameName": "SG552突击步枪",
       "category": "ar",
       "aliases": [],
-      "caliber": null,
+      "caliber": "5.56×45mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -207,8 +260,10 @@
       "name": "CAR-15",
       "inGameName": "CAR-15突击步枪",
       "category": "ar",
-      "aliases": ["CAR15"],
-      "caliber": null,
+      "aliases": [
+        "CAR15"
+      ],
+      "caliber": "5.56×45mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -218,8 +273,10 @@
       "name": "AKS-74U",
       "inGameName": "AKS-74U突击步枪",
       "category": "ar",
-      "aliases": ["74U"],
-      "caliber": null,
+      "aliases": [
+        "74U"
+      ],
+      "caliber": "5.45×39mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -230,7 +287,7 @@
       "inGameName": "ASh-12战斗步枪",
       "category": "ar",
       "aliases": [],
-      "caliber": null,
+      "caliber": "12.7×55",
       "status": "available",
       "source": "official",
       "note": ""
@@ -241,7 +298,7 @@
       "inGameName": "PTR-32突击步枪",
       "category": "ar",
       "aliases": [],
-      "caliber": null,
+      "caliber": "7.62×39mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -252,7 +309,7 @@
       "inGameName": "K437突击步枪",
       "category": "ar",
       "aliases": [],
-      "caliber": null,
+      "caliber": ".300 BLK",
       "status": "available",
       "source": "db",
       "note": "有第三方改枪码页面，具体在售状态待游戏内确认"
@@ -263,7 +320,7 @@
       "inGameName": "MK47突击步枪",
       "category": "ar",
       "aliases": [],
-      "caliber": null,
+      "caliber": "7.62×39mm",
       "status": "available",
       "source": "db",
       "note": ""
@@ -274,7 +331,7 @@
       "inGameName": "KC17突击步枪",
       "category": "ar",
       "aliases": [],
-      "caliber": null,
+      "caliber": "5.45×39mm",
       "status": "available",
       "source": "user",
       "note": "有第三方改枪码页面，待核实"
@@ -285,7 +342,7 @@
       "inGameName": "AR57突击步枪",
       "category": "ar",
       "aliases": [],
-      "caliber": null,
+      "caliber": "5.7×28mm",
       "status": "available",
       "source": "user",
       "note": "仅有第三方库线索，可信度最低"
@@ -296,7 +353,7 @@
       "inGameName": "MCX-LT突击步枪",
       "category": "ar",
       "aliases": [],
-      "caliber": null,
+      "caliber": ".300 BLK",
       "status": "available",
       "source": "official",
       "note": "官方确认真实存在，补录"
@@ -307,7 +364,7 @@
       "inGameName": "RM277突击步枪",
       "category": "ar",
       "aliases": [],
-      "caliber": null,
+      "caliber": "6.8×51mm",
       "status": "available",
       "source": "official",
       "note": "官方确认真实存在，补录"
@@ -317,20 +374,23 @@
       "name": "MDR突击步枪",
       "inGameName": "MDR突击步枪",
       "category": "ar",
-      "aliases": ["MDR"],
-      "caliber": null,
+      "aliases": [
+        "MDR"
+      ],
+      "caliber": "7.62×51mm",
       "status": "available",
       "source": "official",
       "note": "官方确认真实存在，补录"
     },
-
     {
       "id": "sr25",
       "name": "SR-25",
       "inGameName": "SR-25射手步枪",
       "category": "dmr",
-      "aliases": ["SR25"],
-      "caliber": null,
+      "aliases": [
+        "SR25"
+      ],
+      "caliber": "7.62×51mm",
       "status": "available",
       "source": "official",
       "note": "半自动中远距持续输出强"
@@ -341,7 +401,7 @@
       "inGameName": "SVD射手步枪",
       "category": "dmr",
       "aliases": [],
-      "caliber": null,
+      "caliber": "7.62×54R",
       "status": "available",
       "source": "official",
       "note": ""
@@ -352,7 +412,7 @@
       "inGameName": "SKS射手步枪",
       "category": "dmr",
       "aliases": [],
-      "caliber": null,
+      "caliber": "7.62×39mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -363,7 +423,7 @@
       "inGameName": "VSS射手步枪",
       "category": "dmr",
       "aliases": [],
-      "caliber": null,
+      "caliber": "9×39mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -373,8 +433,10 @@
       "name": "MINI-14",
       "inGameName": "MINI-14射手步枪",
       "category": "dmr",
-      "aliases": ["Mini-14"],
-      "caliber": null,
+      "aliases": [
+        "Mini-14"
+      ],
+      "caliber": "5.56×45mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -385,7 +447,7 @@
       "inGameName": "M14射手步枪",
       "category": "dmr",
       "aliases": [],
-      "caliber": null,
+      "caliber": "7.62×51mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -396,7 +458,7 @@
       "inGameName": "PSG-1射手步枪",
       "category": "dmr",
       "aliases": [],
-      "caliber": null,
+      "caliber": "7.62×51mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -407,7 +469,7 @@
       "inGameName": "SVCH射手步枪",
       "category": "dmr",
       "aliases": [],
-      "caliber": null,
+      "caliber": "7.62×54R",
       "status": "available",
       "source": "db",
       "note": ""
@@ -418,19 +480,18 @@
       "inGameName": "SR9射手步枪",
       "category": "dmr",
       "aliases": [],
-      "caliber": null,
+      "caliber": "7.62×51mm",
       "status": "available",
       "source": "official",
       "note": "官方确认真实存在，补录"
     },
-
     {
       "id": "awm",
       "name": "AWM",
       "inGameName": "AWM狙击步枪",
       "category": "sniper",
       "aliases": [],
-      "caliber": null,
+      "caliber": ".338 Lapua Magnum",
       "status": "available",
       "source": "official",
       "note": ""
@@ -440,7 +501,9 @@
       "name": "SV-98",
       "inGameName": "SV-98狙击步枪",
       "category": "sniper",
-      "aliases": ["SV98"],
+      "aliases": [
+        "SV98"
+      ],
       "caliber": "7.62×54R",
       "status": "available",
       "source": "official",
@@ -452,7 +515,7 @@
       "inGameName": "M700狙击步枪",
       "category": "sniper",
       "aliases": [],
-      "caliber": null,
+      "caliber": "7.62×51mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -463,7 +526,7 @@
       "inGameName": "R93狙击步枪",
       "category": "sniper",
       "aliases": [],
-      "caliber": null,
+      "caliber": "7.62×51mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -473,20 +536,23 @@
       "name": "M82巴雷特",
       "inGameName": "M82巴雷特反器材步枪",
       "category": "sniper",
-      "aliases": ["巴雷特", "M82A1", ".50 BMG"],
-      "caliber": null,
+      "aliases": [
+        "巴雷特",
+        "M82A1",
+        ".50 BMG"
+      ],
+      "caliber": ".50 BMG",
       "status": "available",
       "source": "db",
       "note": "S9 赛季加入；官方全名写法待核实，勿自行臆造前缀"
     },
-
     {
       "id": "m249",
       "name": "M249",
       "inGameName": "M249轻机枪",
       "category": "lmg",
       "aliases": [],
-      "caliber": null,
+      "caliber": "5.56×45mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -497,7 +563,7 @@
       "inGameName": "PKM通用机枪",
       "category": "lmg",
       "aliases": [],
-      "caliber": null,
+      "caliber": "7.62×54R",
       "status": "available",
       "source": "official",
       "note": ""
@@ -507,8 +573,10 @@
       "name": "M250",
       "inGameName": "M250通用机枪",
       "category": "lmg",
-      "aliases": ["XM250"],
-      "caliber": null,
+      "aliases": [
+        "XM250"
+      ],
+      "caliber": "6.8×51mm",
       "status": "available",
       "source": "official",
       "note": "全球 PC 不删档版本加入"
@@ -518,20 +586,24 @@
       "name": "QJB-201",
       "inGameName": "QJB201轻机枪",
       "category": "lmg",
-      "aliases": ["QJB201", "QJB"],
-      "caliber": null,
+      "aliases": [
+        "QJB201",
+        "QJB"
+      ],
+      "caliber": "5.8×42mm",
       "status": "available",
       "source": "db",
       "note": ""
     },
-
     {
       "id": "mp5",
       "name": "MP5",
       "inGameName": "MP5冲锋枪",
       "category": "smg",
-      "aliases": ["MP5A3"],
-      "caliber": null,
+      "aliases": [
+        "MP5A3"
+      ],
+      "caliber": "9×19mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -542,7 +614,7 @@
       "inGameName": "MP7冲锋枪",
       "category": "smg",
       "aliases": [],
-      "caliber": null,
+      "caliber": "4.6×30mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -553,7 +625,7 @@
       "inGameName": "Vector冲锋枪",
       "category": "smg",
       "aliases": [],
-      "caliber": null,
+      "caliber": ".45 ACP",
       "status": "available",
       "source": "official",
       "note": ""
@@ -564,7 +636,7 @@
       "inGameName": "P90冲锋枪",
       "category": "smg",
       "aliases": [],
-      "caliber": null,
+      "caliber": "5.7×28mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -575,7 +647,7 @@
       "inGameName": "UZI冲锋枪",
       "category": "smg",
       "aliases": [],
-      "caliber": null,
+      "caliber": "9×19mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -585,8 +657,10 @@
       "name": "SMG-45",
       "inGameName": "SMG-45冲锋枪",
       "category": "smg",
-      "aliases": ["SMG45"],
-      "caliber": null,
+      "aliases": [
+        "SMG45"
+      ],
+      "caliber": ".45 ACP",
       "status": "available",
       "source": "official",
       "note": ""
@@ -596,8 +670,10 @@
       "name": "SR-3M",
       "inGameName": "SR-3M冲锋枪",
       "category": "smg",
-      "aliases": ["SR3M"],
-      "caliber": null,
+      "aliases": [
+        "SR3M"
+      ],
+      "caliber": "9×39mm",
       "status": "available",
       "source": "official",
       "note": "军械库归冲锋枪类"
@@ -608,7 +684,7 @@
       "inGameName": "勇士冲锋枪",
       "category": "smg",
       "aliases": [],
-      "caliber": null,
+      "caliber": "9×19mm",
       "status": "available",
       "source": "official",
       "note": "官方中文名，原型为 MP5 家族"
@@ -618,8 +694,11 @@
       "name": "野牛",
       "inGameName": "野牛冲锋枪",
       "category": "smg",
-      "aliases": ["Bizon", "PP-19"],
-      "caliber": null,
+      "aliases": [
+        "Bizon",
+        "PP-19"
+      ],
+      "caliber": "9×19mm",
       "status": "available",
       "source": "official",
       "note": "官方中文名；64 发弹匣方案流行"
@@ -635,7 +714,6 @@
       "source": "db",
       "note": "有第三方改枪码页面；参数：30 发弹匣 / 763 RPM / 初速 450 m/s"
     },
-
     {
       "id": "mk4",
       "name": "MK4",
@@ -647,26 +725,27 @@
       "source": "db",
       "note": "S7 赛季加入；默认三连发，换装深空镀铬枪管可全自动"
     },
-
     {
       "id": "thompson",
       "name": "汤姆逊",
       "inGameName": "汤姆逊冲锋枪",
       "category": "smg",
-      "aliases": ["汤姆森", "汤普森"],
+      "aliases": [
+        "汤姆森",
+        "汤普森"
+      ],
       "caliber": ".45 ACP",
       "status": "available",
       "source": "db",
       "note": "S11 赛季加入，.45 口径高射速冲锋枪"
     },
-
     {
       "id": "s12k",
       "name": "S12K",
       "inGameName": "S12K霰弹枪",
       "category": "shotgun",
       "aliases": [],
-      "caliber": null,
+      "caliber": "12 Gauge",
       "status": "available",
       "source": "official",
       "note": "支持龙息弹"
@@ -677,7 +756,7 @@
       "inGameName": "M1014霰弹枪",
       "category": "shotgun",
       "aliases": [],
-      "caliber": null,
+      "caliber": "12 Gauge",
       "status": "available",
       "source": "official",
       "note": "支持龙息弹"
@@ -688,7 +767,7 @@
       "inGameName": "M870霰弹枪",
       "category": "shotgun",
       "aliases": [],
-      "caliber": null,
+      "caliber": "12 Gauge",
       "status": "available",
       "source": "official",
       "note": ""
@@ -698,8 +777,11 @@
       "name": "725双管",
       "inGameName": "725双管霰弹枪",
       "category": "shotgun",
-      "aliases": ["725双管霰弹枪", "725"],
-      "caliber": null,
+      "aliases": [
+        "725双管霰弹枪",
+        "725"
+      ],
+      "caliber": "12 Gauge",
       "status": "available",
       "source": "db",
       "note": "支持龙息弹；2 发装填"
@@ -710,19 +792,20 @@
       "inGameName": "FS-12霰弹枪",
       "category": "shotgun",
       "aliases": [],
-      "caliber": null,
+      "caliber": "12 Gauge",
       "status": "available",
       "source": "db",
       "note": ""
     },
-
     {
       "id": "g17",
       "name": "G17",
       "inGameName": "G17手枪",
       "category": "pistol",
-      "aliases": ["GLOCK17"],
-      "caliber": null,
+      "aliases": [
+        "GLOCK17"
+      ],
+      "caliber": "9×19mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -733,7 +816,7 @@
       "inGameName": "G18手枪",
       "category": "pistol",
       "aliases": [],
-      "caliber": null,
+      "caliber": "9×19mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -744,7 +827,7 @@
       "inGameName": "M1911手枪",
       "category": "pistol",
       "aliases": [],
-      "caliber": null,
+      "caliber": ".45 ACP",
       "status": "available",
       "source": "official",
       "note": "全球 PC 不删档版本加入"
@@ -754,8 +837,10 @@
       "name": "QSZ92G",
       "inGameName": "QSZ92G手枪",
       "category": "pistol",
-      "aliases": ["92G"],
-      "caliber": null,
+      "aliases": [
+        "92G"
+      ],
+      "caliber": "9×19mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -765,8 +850,10 @@
       "name": "93R",
       "inGameName": "93R手枪",
       "category": "pistol",
-      "aliases": ["马格南93R"],
-      "caliber": null,
+      "aliases": [
+        "马格南93R"
+      ],
+      "caliber": "9×19mm",
       "status": "available",
       "source": "official",
       "note": ""
@@ -776,8 +863,11 @@
       "name": "沙漠之鹰",
       "inGameName": "沙漠之鹰手枪",
       "category": "pistol",
-      "aliases": ["沙鹰", "Desert Eagle"],
-      "caliber": null,
+      "aliases": [
+        "沙鹰",
+        "Desert Eagle"
+      ],
+      "caliber": ".50 AE",
       "status": "available",
       "source": "official",
       "note": ""
@@ -787,19 +877,23 @@
       "name": ".357左轮",
       "inGameName": ".357左轮手枪",
       "category": "pistol",
-      "aliases": ["357左轮", ".357 revolver"],
-      "caliber": null,
+      "aliases": [
+        "357左轮",
+        ".357 revolver"
+      ],
+      "caliber": ".357 Magnum",
       "status": "available",
       "source": "official",
       "note": ""
     },
-
     {
       "id": "bow",
       "name": "复合弓",
       "inGameName": "复合弓",
       "category": "special",
-      "aliases": ["弓"],
+      "aliases": [
+        "弓"
+      ],
       "caliber": null,
       "status": "available",
       "source": "db",
@@ -810,8 +904,10 @@
       "name": "杠杆步枪",
       "inGameName": "杠杆步枪",
       "category": "dmr",
-      "aliases": ["马林杠杆步枪"],
-      "caliber": null,
+      "aliases": [
+        "马林杠杆步枪"
+      ],
+      "caliber": "45-70 Govt",
       "status": "available",
       "source": "db",
       "note": "官方军械库无 special 分类（特殊武器仅复合弓）；按射手步枪归类，游戏内全名待核实"

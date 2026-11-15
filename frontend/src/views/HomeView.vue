@@ -514,7 +514,14 @@ defineExpose({ onExport, onImport, refresh, onImportTextResult })
                   {{ currentWeapon?.categoryName }}
                 </span>
               </div>
-              <div class="mt-1 text-xs text-slate-400">{{ weaponCounts.get(selectedWeaponId) ?? 0 }} 套改枪方案</div>
+              <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                <span
+                  v-if="currentWeapon?.caliber"
+                  class="inline-flex items-center rounded border border-accent/40 bg-accent-soft/15 px-1.5 py-0.5 font-medium text-accent"
+                  :title="`该枪使用的弹药型号：${currentWeapon.caliber}`"
+                >{{ currentWeapon.caliber }}</span>
+                <span>{{ weaponCounts.get(selectedWeaponId) ?? 0 }} 套改枪方案</span>
+              </div>
             </div>
           </div>
 

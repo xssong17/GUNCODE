@@ -375,3 +375,23 @@ func (a *App) ImportTextRows(rows []model.ImportRow) (model.ImportResult, error)
 	}
 	return model.ImportResult{Imported: imported, Skipped: skipped}, nil
 }
+
+// GetPresetTags 返回用户可编辑的预置标签（未设置过则返回默认值）。
+func (a *App) GetPresetTags() []string {
+	return store.GetPresetTags(a.db)
+}
+
+// SavePresetTags 保存用户编辑后的预置标签。
+func (a *App) SavePresetTags(tags []string) error {
+	return store.SavePresetTags(a.db, tags)
+}
+
+// GetPresetPrices 返回用户可编辑的价格预设（未设置过则返回默认 10w~100w）。
+func (a *App) GetPresetPrices() []string {
+	return store.GetPresetPrices(a.db)
+}
+
+// SavePresetPrices 保存用户编辑后的价格预设。
+func (a *App) SavePresetPrices(items []string) error {
+	return store.SavePresetPrices(a.db, items)
+}
